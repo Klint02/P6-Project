@@ -15,7 +15,8 @@ app.listen(25256, function () {
 var http = require('http');
 
 var options = {
-    host: '127.0.0.1:25255',
+    host: '127.0.0.1',
+    port: '8080',
     path: '/'
 }
 var request = http.request(options, function (res) {

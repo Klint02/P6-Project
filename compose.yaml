@@ -10,7 +10,7 @@ services:
     image: "node:18-alpine"
     command: "node --watch --trace-warnings server-index.js"
     ports: 
-      - "25255:8080"
+      - "8080:25255"
     working_dir: /app
     volumes:
       - ./src/server:/app
@@ -30,7 +30,7 @@ services:
     image: "node:18-alpine"
     command: "node --watch --trace-warnings client-index.js"
     ports: 
-      - "25256:8080"
+      - "8081:25256"
     working_dir: /app
     volumes:
       - ./src/client:/app
