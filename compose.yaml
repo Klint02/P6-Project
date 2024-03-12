@@ -8,9 +8,10 @@ services:
 
   node-server:
     image: "node:18-alpine"
+    network_mode: host
     command: "node --watch --trace-warnings server-index.js"
     ports: 
-      - "8080:25255"
+      - "8080:8080"
     working_dir: /app
     volumes:
       - ./src/server:/app
@@ -28,9 +29,10 @@ services:
 
   node-server-2:
     image: "node:18-alpine"
+    network_mode: host
     command: "node --watch --trace-warnings client-index.js"
     ports: 
-      - "8081:25256"
+      - "8081:8081"
     working_dir: /app
     volumes:
       - ./src/client:/app

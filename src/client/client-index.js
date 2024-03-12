@@ -1,35 +1,53 @@
+const { response } = require("express");
 const express = require("express")
 var app = express()
+const http = require('http');
 app.get("/",function(request,response) {
     response.send("<h1> hmm </h1>")
 })
 
-app.get("/",function(request,response) {
-    response.send("<h1> hmm </h1>")
-})
-
-app.listen(25256, function () {
-    console.log("Started application on port %d", 25256)
+//Actual port 8081
+app.listen(8081, function () {
+    console.log("Started application on port %d", 8081)
 });
 
-var http = require('http');
+fetch('https://api.energidataservice.dk/dataset/PowerSystemRightNow?limit=1') 
+    .then(response => response.json())
+    .then(data=> {
+        console.log(data.dataset);
+});
 
-var options = {
-    host: '127.0.0.1',
-    port: '8080',
-    path: '/'
-}
-var request = http.request(options, function (res) {
-    var data = '';
-    res.on('data', function (chunk) {
-        data += chunk;
+const postData = JSON.stringify({
+    'hmm': 'Hello World!',
+  });
+  
+  const options = {
+    hostname: '127.0.0.1',
+    port: 8080,
+    path: '/connect',
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Content-Length': Buffer.byteLength(postData),
+    },
+  };
+  
+  const req = http.request(options, (res) => {
+    console.log(`STATUS: ${res.statusCode}`);
+    console.log(`HEADERS: ${JSON.stringify(res.headers)}`);
+    res.setEncoding('utf8');
+    res.on('data', (chunk) => {
+      console.log(`BODY: ${chunk}`);
     });
-    res.on('end', function () {
-        console.log(data);
-
+    res.on('end', () => {
+      console.log('No more data in response.');
     });
-});
-request.on('error', function (e) {
-    console.log(e.message);
-});
-request.end();
+  });
+  
+  req.on('error', (e) => {
+    console.error(`problem with request: ${e.message}`);
+  });
+  
+  // Write data to request body
+  req.write(postData);
+  req.end();
