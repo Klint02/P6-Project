@@ -12,7 +12,7 @@ app.get("/",function(request, res) {
     res.json(data);
 })
 
-app.post("/connect", function(req, res) {
+app.post("/api/getdata", function(req, res) {
     value = req;
     console.log(value, "WOWOOWWO")
     res.json(data);
@@ -20,6 +20,6 @@ app.post("/connect", function(req, res) {
 
 
 //Actual port is 8080
-app.listen(8080, function () {
-    console.log("Started application on port %d", 8080)
+app.listen(8082, function () {
+    console.log("Started application on port %d", 8082)
 });

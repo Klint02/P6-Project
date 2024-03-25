@@ -6,18 +6,6 @@ services:
     volumes:
       - ./src/server:/app
 
-  node-server:
-    image: "node:21-alpine"
-    network_mode: host
-    command: "node --watch --trace-warnings server-index.js"
-    working_dir: /app
-    volumes:
-      - ./src/server:/app
-
-    depends_on:
-      node-init:
-        condition: service_completed_successfully
-
   node-init-2:
     image: "node:21-alpine"
     command: "npm install"
@@ -25,14 +13,47 @@ services:
     volumes:
       - ./src/client:/app
 
-  node-server-2:
+#######################
+
+  node-server:
     image: "node:21-alpine"
-    network_mode: host
+    networks:
+      hydro_net:
+        ipv4_address: 192.120.0.2
+
+    command: "node --watch --trace-warnings server-index.js"
+    working_dir: /app
+    volumes:
+      - ./src/server:/app
+    ports:
+      - 8082:8082
+
+    depends_on:
+      node-init:
+        condition: service_completed_successfully
+
+  node-client:
+    image: "node:21-alpine"
+    networks:
+      hydro_net:
+        ipv4_address: 192.120.0.3
     command: "node --watch --trace-warnings client-index.js"
     working_dir: /app
     volumes:
       - ./src/client:/app
+    ports:
+      - 8083:8083
 
     depends_on:
       node-init-2:
         condition: service_completed_successfully
+
+
+networks:
+  hydro_net:
+    driver: bridge
+    ipam:
+          driver: default
+          config:
+              - subnet: "192.120.0.0/24"
+                gateway: "192.120.0.1"

@@ -7,8 +7,8 @@ app.get("/",function(request,response) {
 })
 
 //Actual port 8081
-app.listen(8081, function () {
-    console.log("Started application on port %d", 8081)
+app.listen(8083, function () {
+    console.log("Started application on port %d", 8083)
 });
 
 fetch('https://api.energidataservice.dk/dataset/PowerSystemRightNow?limit=1') 
@@ -22,10 +22,10 @@ const postData = JSON.stringify({
   });
   
   const options = {
-    hostname: '127.0.0.1',
-    port: 8080,
-    path: '/connect',
-    method: 'POST',
+    hostname: '192.120.0.2',
+    port: 8082,
+    path: '/',
+    method: 'GET',
     headers: {
       'Content-Type': 'application/json',
       'Content-Length': Buffer.byteLength(postData),
