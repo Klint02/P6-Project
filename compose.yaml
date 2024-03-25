@@ -10,8 +10,6 @@ services:
     image: "node:21-alpine"
     network_mode: host
     command: "node --watch --trace-warnings server-index.js"
-    ports: 
-      - "8080:8080"
     working_dir: /app
     volumes:
       - ./src/server:/app
@@ -31,8 +29,6 @@ services:
     image: "node:21-alpine"
     network_mode: host
     command: "node --watch --trace-warnings client-index.js"
-    ports: 
-      - "8081:8081"
     working_dir: /app
     volumes:
       - ./src/client:/app
