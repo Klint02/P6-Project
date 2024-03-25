@@ -13,7 +13,7 @@ app.get("/",function(request, res) {
 })
 
 app.post("/connect", function(req, res) {
-    value = req.query.hmm;
+    value = req;
     console.log(value, "WOWOOWWO")
     res.json(data);
 })

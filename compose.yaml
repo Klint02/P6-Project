@@ -1,13 +1,13 @@
 services:
   node-init:
-    image: "node:18-alpine"
+    image: "node:21-alpine"
     command: "npm install"
     working_dir: /app
     volumes:
       - ./src/server:/app
 
   node-server:
-    image: "node:18-alpine"
+    image: "node:21-alpine"
     network_mode: host
     command: "node --watch --trace-warnings server-index.js"
     ports: 
@@ -21,14 +21,14 @@ services:
         condition: service_completed_successfully
 
   node-init-2:
-    image: "node:18-alpine"
+    image: "node:21-alpine"
     command: "npm install"
     working_dir: /app
     volumes:
       - ./src/client:/app
 
   node-server-2:
-    image: "node:18-alpine"
+    image: "node:21-alpine"
     network_mode: host
     command: "node --watch --trace-warnings client-index.js"
     ports: 

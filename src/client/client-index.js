@@ -32,6 +32,7 @@ const postData = JSON.stringify({
     },
   };
   
+  http.get
   const req = http.request(options, (res) => {
     console.log(`STATUS: ${res.statusCode}`);
     console.log(`HEADERS: ${JSON.stringify(res.headers)}`);
