@@ -9,6 +9,7 @@
   "author": "",
   "license": "GPL-2.0-only",
   "dependencies": {
-    "express": "^4.18.3"
+    "express": "^4.18.3",
+    "mysql": "^2.18.1"
   }
 }

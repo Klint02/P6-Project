@@ -27,6 +27,8 @@ services:
       - ./src/server:/app
     ports:
       - 8082:8082
+    expose:
+      - 8082
 
     depends_on:
       node-init:
@@ -43,12 +45,43 @@ services:
       - ./src/client:/app
     ports:
       - 8083:8083
+    expose:
+      - 8083
 
     depends_on:
       node-init-2:
         condition: service_completed_successfully
 
+  db:
+    image: mysql:5.7
+    networks:
+      hydro_net:
+        ipv4_address: 192.120.0.99
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'p6'
+      MYSQL_USER: 'hydrohomie'
+      MYSQL_PASSWORD: '1234'
+      MYSQL_ROOT_PASSWORD: '1234'
+    ports:
+      - 3306:3306
+    expose:
+      - 3306
 
+  phpmyadmin:
+      image: phpmyadmin/phpmyadmin
+      networks:
+        hydro_net:
+          ipv4_address: 192.120.0.100
+      links:
+        - db
+      environment:
+        PMA_HOST: db
+        PMA_PORT: 3306
+        PMA_ARBITRARY: 1
+      restart: always
+      ports:
+        - 8081:80
 networks:
   hydro_net:
     driver: bridge
