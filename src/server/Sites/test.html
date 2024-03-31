@@ -1,21 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
+
 <body>
     <h1>Test virker</h1>
-    <button type="button" onclick="coolShit()">Hent data</button>
+
+    <p id="Test0"></p>
+    <p id="Test1"></p>
+    <p id="Test2"></p>
+    <p id="Test3"></p>
+    <p id="Test4"></p>
+
 
 </body>
 <script>
-    var data
-    function coolShit(){
-        console.log("virker")
-        data = fetch('https://api.energidataservice.dk/dataset/ElectricityBalanceNonv?limit=5').then((response)=>response.json().then((json)=>console.log(json)))
-        
-    }
+    //Fetcher data fra energinet api og ligger det over i variablen 'data'.
+    var data = fetch('https://api.energidataservice.dk/dataset/ElectricityBalanceNonv?limit=5').then((response) => response.json()).then((data => {
+        //printer json filen i consollen så for få et overblik.
+        console.log(data)
+        //for-loop der går igennem de forskellige arrays der er i json filen.
+        for (let i = 0; i < data.records.length; i++) {
+            //laver en text variabel der skal bruges til at display tabellerne.
+            let text = "<table border='1' width='300' style='float: left;margin: 1em'>"
+            //for-loop der gennemgår alle atributter inde i hver array, og laver en tabel med 2 kolonner, den ene er atributtens navn og den anden er værdien.
+            //dataen bliver så lagt ind i variablen text.
+            for (let x in data.records[i]) {
+                text += "<tr><td>" + x + "</td><td>" + data.records[i][x] + "</td></tr>";
+            }
+            //closing-tag til text variablen.
+            text += "</table>"
+            //Det sidste den gør er at loop sætte den respetive tabel og sætter den ind i det html-id der er ovenfor.
+            document.getElementById(`Test${i}`).innerHTML = text;
+        }
+    }))
+
+
 </script>
+
 </html>
