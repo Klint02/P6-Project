@@ -5,6 +5,7 @@
 </html>
 
 <script>
+    //TODO: change from relative paths to absolute, do this dynamically
     async function fetch_component(url) {
         const response = await fetch(url);
 
@@ -13,13 +14,18 @@
         return data;
     }
 
-    document.addEventListener("DOMContentLoaded", async function() {
-        let component = await fetch_component("/internal/logs");
-        console.log(component[0]["js"]);
-        document.body.insertAdjacentHTML( 'beforeend', component[0]["html"]);
-        
+    async function add_component_to_DOM(placement, component_route) {
+        let component = await fetch_component(component_route);
+        placement.insertAdjacentHTML( 'beforeend', component[0]["html"]);
         let script = document.createElement('script');
         script.textContent = component[0]["js"];
-        document.body.appendChild(script);
+        placement.appendChild(script);
+    }
+
+    document.addEventListener("DOMContentLoaded", async function() {
+
+        add_component_to_DOM(document.body, "/internal/db_controls");
+        add_component_to_DOM(document.body, "/internal/logs");
+        
         })
 </script>

@@ -28,7 +28,7 @@ app.get("/internal/logs",async function(request, response) {
 })
 
 app.get("/internal/db_controls", function(request, response) {
-    response.sendFile(__dirname + "/sites/components/db_controls.html");
+    response.send(send_component([__dirname + "/sites/components/db_controls.html"]));
 })
 
 app.get("/internal/db_controls/migrate", function(request, response) {

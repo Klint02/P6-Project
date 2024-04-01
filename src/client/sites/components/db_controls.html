@@ -1,7 +1,9 @@
 <div id="db_controls">
-    <button onclick=""></button>
+    <button onclick="send_test_log()">migrate</button>
 </div>
 
 <script>
-    
+    function send_test_log() {
+        fetch("/internal/db_controls/migrate");
+    }
 </script>

@@ -33,7 +33,9 @@ export default class logger {
     }
 
     migrate_db(db_name) {
-
+        const tables = [
+            "CREATE TABLE logs (timestamp TIMESTAMP, message TEXT)"
+        ]
         console.log("[LOG] migrating DB");
         let db = this.db;
         let query_promise = new Promise(function(query_resolve, query_reject) {
@@ -50,14 +52,37 @@ export default class logger {
         query_promise.then(
             function(value) { 
                 if (typeof(value) != "string") {
-                    value.array.forEach(sql_string => {
-                        db.query(sql_string, function(err, result) {
-                            if (err) throw err;
-                        });                        
+                    let table_deletion_promise = new Promise(function(query_resolve, query_reject) {
+                        value.forEach(sql_string => {
+                            db.query(sql_string, function(err, result) {
+                                if (err) throw err;
+                                console.log(`[LOG] ran sql "${sql_string}"`);
+                            });                        
+                        });
+                        query_resolve("done");
                     });
+                    
+                    table_deletion_promise.then(
+                        function(value) {
+                            tables.forEach((sql_string) => {
+                                db.query(sql_string, function (err) {
+                                    if (err) throw err;
+                                    console.log(`[LOG] Created Table with ${sql_string}`);
+                        
+                                });
+                            })
+                        }
+                    )
 
                 } else {
-                    console.log(value);
+                    console.log(value, "wowowowo");
+                    tables.forEach((sql_string) => {
+                        db.query(sql_string, function (err) {
+                            if (err) throw err;
+                            console.log(`[LOG] Created Table with ${sql_string}`);
+                
+                        });
+                    })
                 }
 
             }
@@ -83,16 +108,7 @@ export default class logger {
         console.log("[LOG] Dropped all tables");
         */
         /*
-        const tables = [
-            "CREATE TABLE logs (timestamp TIMESTAMP, message TEXT)"
-        ]
-        tables.forEach((sql_string) => {
-            this.db.query(sql_string, function (err) {
-                if (err) throw err;
-                console.log("[LOG] Created Table 'logs'");
-    
-            });
-        })
+        
 */
     }
 

@@ -14,15 +14,5 @@ export function send_component(paths) {
         component.js = data.substring(data.indexOf("<script>") + 8, data.length - 9);
         components.push(component);
     }
-    /*
-    paths.array.forEach(file => {
-        let obj;
-        fs.readFile(file, function(err, data) {
-            console.log(data);
-        });
-        
-    });
-    return 
-    */
    return components;
 }
