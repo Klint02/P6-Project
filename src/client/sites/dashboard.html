@@ -1,0 +1,25 @@
+<html>
+    <body>
+        
+    </body>
+</html>
+
+<script>
+    async function fetch_component(url) {
+        const response = await fetch(url);
+
+        const data = response.json();
+
+        return data;
+    }
+
+    document.addEventListener("DOMContentLoaded", async function() {
+        let component = await fetch_component("/internal/logs");
+        console.log(component[0]["js"]);
+        document.body.insertAdjacentHTML( 'beforeend', component[0]["html"]);
+        
+        let script = document.createElement('script');
+        script.textContent = component[0]["js"];
+        document.body.appendChild(script);
+        })
+</script>

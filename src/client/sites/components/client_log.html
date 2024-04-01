@@ -1,0 +1,20 @@
+<h1>Logs for clientdd: </h1>
+
+<div id="logs"></div>
+<script>
+    async function load_data() {
+        const response = await fetch('../api/tempdata');
+
+        const data = response.json();
+
+        return data;
+    }
+
+    async function init_logs() {
+        const obj = await load_data();
+        document.getElementById("logs").innerHTML = `STATUS: ${obj["Status"]}` ;
+        alert("I HAVE LOADED");
+    }
+
+    init_logs();
+</script>

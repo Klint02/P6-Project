@@ -51,7 +51,7 @@ export default class logger {
             function(value) { 
                 if (typeof(value) != "string") {
                     value.array.forEach(sql_string => {
-                        db.query(value[0], function(err, result) {
+                        db.query(sql_string, function(err, result) {
                             if (err) throw err;
                         });                        
                     });
@@ -62,6 +62,8 @@ export default class logger {
 
             }
         )
+
+
         
         /*
         .on('result', function() {
