@@ -1,9 +1,38 @@
 <div id="db_controls">
-    <button onclick="send_test_log()">migrate</button>
+    <button onclick="migrate()">migrate</button>
+    <button onclick="send_test_log()">test warning logs</button>
+    <button onclick="send_test_log2()">test debug logs</button>
+
 </div>
 
 <script>
-    function send_test_log() {
+    function migrate() {
         fetch("/internal/db_controls/migrate");
+    }
+
+    function send_test_log() {
+        fetch("/internal/db_controls/log", {
+            method: "POST",
+            body: JSON.stringify({
+                type: "WARNING",
+                message: "SHEESH IS HAPPENING MY GUY, fix it pls"
+            }),
+            headers: {
+                "Content-type": "application/json; charset=UTF-8"
+            }
+        });
+    }
+
+    function send_test_log2() {
+        fetch("/internal/db_controls/log", {
+            method: "POST",
+            body: JSON.stringify({
+                type: "debug",
+                message: "just a debug, move on"
+            }),
+            headers: {
+                "Content-type": "application/json; charset=UTF-8"
+            }
+        });
     }
 </script>

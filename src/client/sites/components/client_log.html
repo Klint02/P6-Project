@@ -1,19 +1,35 @@
-<h1>Logs for clientdd: </h1>
+<h1>Logs for client: </h1>
 
-<div id="logs"></div>
+<div id="">
+    <table id="logs" style="width:50%;">
+        <tr>
+            <th>Timestamp</th>
+            <th>Log type</th>
+            <th>Log Message</th>
+        </tr>
+    </table>
+</div>
 <script>
-    async function load_data() {
-        const response = await fetch('../api/tempdata');
+    async function load_request(url) {
+        const response = await fetch(url);
 
         const data = response.json();
 
         return data;
     }
-
     async function init_logs() {
-        const obj = await load_data();
-        document.getElementById("logs").innerHTML = `STATUS: ${obj["Status"]}` ;
+        let logs = await load_request("/internal/logs/get_logs")
+        let log_table_rows = "";
+        logs.forEach(log => {
+            log_table_rows += `<tr>
+                                    <td>${log["timestamp"]}</td>
+                                    <td>${log["type"]}</td>
+                                    <td>${log["message"]}</td>
+                                </tr>`
+        });
+        document.getElementById("logs").innerHTML +=  log_table_rows;
+        return table;
     }
-
     init_logs();
+
 </script>
