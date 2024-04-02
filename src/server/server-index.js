@@ -1,9 +1,8 @@
-const express = require("express");
-var app = express();
+import express from 'express';
+const app = express();
 app.use(express.json());
 
-
-value = 0;
+let value = 0;
 const data = {
     "Server-type": "Central",
     "Status": "online"
