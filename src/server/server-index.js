@@ -38,3 +38,56 @@ app.post("/api/getdata", function(req, res) {
 app.listen(8082, function () {
     console.log("Started application on port %d", 8082)
 });
+
+//Array of different "servers"
+let servers = [
+    {
+        "name": "Central",
+        state: "not init",
+        lastKnownPercantage: 10,
+        lowerBound: 15,
+        middleBound: 30,
+        upperBound: 50
+    },
+    {
+        "name": "Central2",
+        state: "idle",
+        lastKnownPercantage: 16,
+        lowerBound: 15,
+        middleBound: 30,
+        upperBound: 50
+    },
+    {
+        "name": "Central3",
+        state: "running",
+        lastKnownPercantage: 47,
+        lowerBound: 15,
+        middleBound: 30,
+        upperBound: 50
+    },
+    {
+        "name": "Central4",
+        state: "running",
+        lastKnownPercantage: 100,
+        lowerBound: 15,
+        middleBound: 30,
+        upperBound: 50
+    },
+    {
+        "name": "Central5",
+        state: "idle",
+        lastKnownPercantage: 60,
+        lowerBound: 15,
+        middleBound: 30,
+        upperBound: 50
+    },
+    {
+        "name": "Central5",
+        state: "not init",
+        lastKnownPercantage: 25,
+        lowerBound: 15,
+        middleBound: 30,
+        upperBound: 50
+    }
+
+];
