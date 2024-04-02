@@ -8,8 +8,22 @@ const data = {
     "Status": "online"
 }
 
-app.get("/",function(request, res) {
+app.get("/baba", function (req, res) {
+    console.log("HAHHAHAHA")
     res.json(data);
+})
+
+app.get("/",function(request, res) {
+
+    const filename = '/Sites/test.html'
+    res.sendFile(__dirname + filename, function(err){
+        if(err){
+            console.log("Error sending file:", err)
+        }else{
+            console.log("Sent:", filename)
+        }
+    })
+    console.log('JALALALALALLALALALL')
 })
 
 app.post("/api/getdata", function(req, res) {
