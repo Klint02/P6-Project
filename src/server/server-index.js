@@ -3,6 +3,7 @@ const app = express();
 app.use(express.json());
 
 let value = 0;
+let __dirname = "/app";
 const data = {
     "Server-type": "Central",
     "Status": "online"
