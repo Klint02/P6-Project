@@ -9,6 +9,11 @@ import { send_component } from "./component_builder.mjs";
 let __dirname = "/app";
 var db_name = "p6"
 
+const data = {
+    "Server-type": "Client",
+    "Status": "online",
+    "ServerKey": null
+}
 
 var con = mysql.createConnection({
   host: "192.120.0.99",
@@ -17,9 +22,9 @@ var con = mysql.createConnection({
   database: db_name
 });
 
-
 var log = new logger(con);
 
+setInterval(ShakeHand, 10000)
 
 app.get("/",function(request,response) {
     response.sendFile(__dirname + "/sites/dashboard.html");
@@ -46,14 +51,24 @@ app.post("/internal/db_controls/log", function(request, response) {
     log.log(request.body["type"], request.body["message"]);
 })
 
-const data = {
-    "Server-type": "Central",
-    "Status": "online"
-}
-
 app.get("/api/tempdata",function(request, res) {
     res.json(data);
 })
+
+async function ShakeHand(){
+    console.log("FECKER");
+    if (data.ServerKey == null) {
+        fetch("http://192.120.0.2:8082/api/connect", {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+                "Content-type": "application/json; charset=UTF-8"
+            }
+        })
+        .then((response) => response.json())
+        .then((json) => console.log(json));
+    }
+}
 
 //Actual port 8081
 app.listen(8083, function () {

@@ -2,6 +2,7 @@ import express from 'express';
 const app = express();
 app.use(express.json());
 
+let __dirname = "/app";
 let value = 0;
 const data = {
     "Server-type": "Central",
@@ -32,6 +33,11 @@ app.post("/api/getdata", function(req, res) {
     res.json(data);
 })
 
+
+app.post("/api/connect", function(req, res) {
+    console.log(req.body, "WEEEEEEEE")
+    res.json(data);
+})
 
 //Actual port is 8080
 app.listen(8082, function () {
