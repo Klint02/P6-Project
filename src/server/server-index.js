@@ -33,14 +33,13 @@ app.post("/api/getdata", function(req, res) {
     res.json(data);
 })
 
-
-//Actual port is 8080
-app.listen(8082, function () {
-    console.log("Started application on port %d", 8082)
+// This is the endpoint to get the array of servers
+app.get('/api/servers', (req, res) =>{ // 
+    res.json(serverArray);
 });
 
 //Array of different "servers"
-let servers = [
+let serverArray = [
     {
         "name": "Central",
         state: "not init",
@@ -91,3 +90,9 @@ let servers = [
     }
 
 ];
+
+//Actual port is 8080
+app.listen(8082, function () {
+    console.log("Started application on port %d", 8082)
+});
+

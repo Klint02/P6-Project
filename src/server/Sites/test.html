@@ -16,6 +16,11 @@
     <p id="Test3"></p>
     <p id="Test4"></p>
 
+    <div class="test">
+        <h1>Servers List</h1>
+        <ul id="serverList"></ul>
+
+    </div>
 
 </body>
 <script>
@@ -39,7 +44,27 @@
         }
     }))
 
+    // Function to load the array of servers from the server
+    async function loadServers() {
+    try {
+        const response = await fetch('api/servers'); 
+        const servers = await response.json();
 
+        const list = document.getElementById('serverList'); 
+        servers.forEach(server => {
+
+            const item = document.createElement('li');
+            item.textContent = `${server.name} - ${server.state}`;
+            list.appendChild(item); 
+
+        });
+        
+    } catch(error) {
+        console.log('Error fetching servers', error);
+    }
+}
+
+window.onload = loadServers;
 </script>
 
 </html>
