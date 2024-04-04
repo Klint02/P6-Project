@@ -23,7 +23,7 @@
     </div>
 
 </body>
-<script>
+<script type="text/javascript">
     //Fetcher data fra energinet api og ligger det over i variablen 'data'.
     var data = fetch('https://api.energidataservice.dk/dataset/EnergySurplusPrStationShort?limit=5').then((response) => response.json()).then((data => {
         //printer json filen i consollen så for få et overblik.
@@ -120,8 +120,40 @@ async function changeServerState(serverName, newState){
         alert('Error changing server state');
     }
 }
+// This function allows to add styles for the pages, aswell as the components
+function addStyles(styles){
+    let css = document.createElement('style');
+    css.type = 'text/css';
 
+    if(css.styleSheet) {
+        css.styleSheet.cssText = styles;
+    } else {
+        css.appendChild(document.createTextNode(styles));
+    }
+
+    document.getElementsByTagName('head')[0].appendChild(css);
+}
+
+// Tests styles 
+let style = 'h1 {color: blue;}';
+// style the select and options in a nice way
+let styles = `
+select {
+    padding: 5px;
+    margin: 5px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background-color: #f8f8f8;
+    color: #555;
+    font-family: Arial;
+}`;
+
+// keep the window.onload = loadServers function to loaded as the last thing
+window.onload = addStyles(styles);
+window.onload = addStyles(style);
 window.onload = loadServers;
+
 </script>
 
 </html>
