@@ -51,21 +51,37 @@
         const servers = await response.json();
         let serverID = 0;
 
+        // Get the list element
         const list = document.getElementById('serverList'); 
+        // Clear the list
+        list.innerHTML = '';
+        // Loop through the servers
         servers.forEach(server => {
-
+            // Create a new list item for each server
             const item = document.createElement('li');
             item.textContent = `${'Server Name:'} ${server.name} - ${'\nServer state:'} 
-            ${server.state} - ${'Last known percantage:'} ${server.lastKnownPercantage} ${'%'} `;
+            ${server.state} - ${'Last known percantage:'} ${server.lastKnownPercantage + '%'}  `;
             item.id = `server${serverID++}`;
             
-            const changeStateButton = document.createElement('button');
-            changeStateButton.textContent = 'Change state';
-            changeStateButton.addEventListener('click', () => {
-                changeServerState(server.name);
+            // Create a dropdown menu to change the state of the server
+            const options = ["not init" ,"idle", "running"];
+            const changeStateSelect = document.createElement('select',options);
+            
+            // Create a dropdown menu with the possible states
+            options.forEach(optionValue => {
+                const optionElement = document.createElement('option');
+                optionElement.value = optionValue;
+                optionElement.textContent = optionValue;
+                optionElement.selected = server.state === optionValue;
+                changeStateSelect.appendChild(optionElement);
             });
 
-            item.appendChild(changeStateButton);
+            changeStateSelect.addEventListener('change',() => {
+                changeServerState(server.name, changeStateSelect.value);
+            });
+           
+            item.appendChild(document.createTextNode('Change to: '))
+            item.appendChild(changeStateSelect);
             list.appendChild(item); 
 
         });
@@ -75,28 +91,33 @@
     }
 }
 
-async function changeServerState(serverName){
-    const newState = prompt(`Enter new state for ${serverName}:`); 
-
+// Function to change the state of a server
+async function changeServerState(serverName, newState){
     try {
-        const response = await fetch(`api/servers/${serverName}`, {
+        // Send a POST request to the server to change the state
+        const response = await fetch(`api/servers/${encodeURIComponent(serverName)}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({ state: newState })
         });
-
+        // If the request was successful, reload the server list
         if(response.ok) {
             console.log(`Server state updated for ${serverName}`);
-            document.getElementById('serverList').innerHTML = '';
+           // document.getElementById('serverList').innerHTML = '';
             loadServers();
-        } else {
+        } 
+        // if the request was not succesful log an error
+        else {
             console.error('Failed to change server state');
+            alert('Failed to change server state');
         }
 
-    } catch(error) {
+    } 
+    catch(error) {
         console.error('Error changing server state', error);
+        alert('Error changing server state');
     }
 }
 

@@ -37,7 +37,7 @@ app.post("/api/getdata", function(req, res) {
 app.get('/api/servers', (req, res) =>{ // 
     res.json(serverArray);
 });
-
+ // endpoint to update the state of a server
 app.post('/api/servers/:id', (req, res) => {
     const { id } = req.params;
     const { state: newState } = req.body;
@@ -94,7 +94,7 @@ let serverArray = [
         upperBound: 50
     },
     {
-        "name": "Central5",
+        "name": "Central6",
         state: "not init",
         lastKnownPercantage: 25,
         lowerBound: 15,
