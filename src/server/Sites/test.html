@@ -25,7 +25,7 @@
 </body>
 <script type="text/javascript">
     //Fetcher data fra energinet api og ligger det over i variablen 'data'.
-    var data = fetch('https://api.energidataservice.dk/dataset/EnergySurplusPrStationShort?limit=5').then((response) => response.json()).then((data => {
+    var data = fetch('https://api.energidataservice.dk/dataset/EnergySurplusPrStationShort?limit=2').then((response) => response.json()).then((data => {
         //printer json filen i consollen så for få et overblik.
         console.log(data)
         //for-loop der går igennem de forskellige arrays der er i json filen.
@@ -134,6 +134,7 @@ function addStyles(styles){
     document.getElementsByTagName('head')[0].appendChild(css);
 }
 
+
 // Tests styles 
 let style = 'h1 {color: blue;}';
 // style the select and options in a nice way
@@ -148,11 +149,28 @@ select {
     color: #555;
     font-family: Arial;
 }`;
+// style the select options such that green is idle, red is running and blue is not init
+
 
 // keep the window.onload = loadServers function to loaded as the last thing
+let background = 'body {background: linear-gradient(#A9F1DF, #FFBBBB);}';
+// style the tables in a nice way
+let table = `
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 10px;
+    font-family: Arial;
+    font-size: 16px;
+    text-align: left;
+}`;
+
 window.onload = addStyles(styles);
 window.onload = addStyles(style);
+window.onload = addStyles(table);
+window.onload = addStyles(background);
 window.onload = loadServers;
+
 
 </script>
 
