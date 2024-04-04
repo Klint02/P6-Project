@@ -25,7 +25,7 @@
 </body>
 <script>
     //Fetcher data fra energinet api og ligger det over i variablen 'data'.
-    var data = fetch('https://api.energidataservice.dk/dataset/PowerSystemRightNow?limit=1').then((response) => response.json()).then((data => {
+    var data = fetch('https://api.energidataservice.dk/dataset/EnergySurplusPrStationShort?limit=5').then((response) => response.json()).then((data => {
         //printer json filen i consollen så for få et overblik.
         console.log(data)
         //for-loop der går igennem de forskellige arrays der er i json filen.
