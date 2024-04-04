@@ -49,18 +49,54 @@
     try {
         const response = await fetch('api/servers'); 
         const servers = await response.json();
+        let serverID = 0;
 
         const list = document.getElementById('serverList'); 
         servers.forEach(server => {
 
             const item = document.createElement('li');
-            item.textContent = `${server.name} - ${server.state}`;
+            item.textContent = `${'Server Name:'} ${server.name} - ${'\nServer state:'} 
+            ${server.state} - ${'Last known percantage:'} ${server.lastKnownPercantage} ${'%'} `;
+            item.id = `server${serverID++}`;
+            
+            const changeStateButton = document.createElement('button');
+            changeStateButton.textContent = 'Change state';
+            changeStateButton.addEventListener('click', () => {
+                changeServerState(server.name);
+            });
+
+            item.appendChild(changeStateButton);
             list.appendChild(item); 
 
         });
-        
+
     } catch(error) {
         console.log('Error fetching servers', error);
+    }
+}
+
+async function changeServerState(serverName){
+    const newState = prompt(`Enter new state for ${serverName}:`); 
+
+    try {
+        const response = await fetch(`api/servers/${serverName}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ state: newState })
+        });
+
+        if(response.ok) {
+            console.log(`Server state updated for ${serverName}`);
+            document.getElementById('serverList').innerHTML = '';
+            loadServers();
+        } else {
+            console.error('Failed to change server state');
+        }
+
+    } catch(error) {
+        console.error('Error changing server state', error);
     }
 }
 

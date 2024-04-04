@@ -38,6 +38,19 @@ app.get('/api/servers', (req, res) =>{ //
     res.json(serverArray);
 });
 
+app.post('/api/servers/:id', (req, res) => {
+    const { id } = req.params;
+    const { state: newState } = req.body;
+
+    const server = serverArray.find(server => server.name === id);
+    if(server){
+        server.state = newState;
+        res.status(200).send('State updated successfully');
+    } else {
+        res.status(404).send('Server not found');
+    }
+});
+
 //Array of different "servers"
 let serverArray = [
     {
@@ -90,6 +103,8 @@ let serverArray = [
     }
 
 ];
+
+
 
 //Actual port is 8080
 app.listen(8082, function () {
