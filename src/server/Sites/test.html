@@ -4,8 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
- 
+    <title>Brint Stationer</title>
 </head>
 
 <body>
@@ -20,13 +19,13 @@
     <div class="test">
         <h1>Servers List</h1>
         <ul id="serverList"></ul>
-
     </div>
 
 </body>
 <script type="text/javascript">
     //Fetcher data fra energinet api og ligger det over i variablen 'data'.
-    var data = fetch('https://api.energidataservice.dk/dataset/EnergySurplusPrStationShort?limit=2').then((response) => response.json()).then((data => {
+    var data = fetch('https://api.energidataservice.dk/dataset/EnergySurplusPrStationShort?limit=2')
+    .then((response) => response.json()).then((data => {
         //printer json filen i consollen så for få et overblik.
         console.log(data)
         //for-loop der går igennem de forskellige arrays der er i json filen.
@@ -60,12 +59,16 @@
         servers.forEach(server => {
             // Create a new list item for each server
             const item = document.createElement('li');
-            item.innerHTML = `${'Server Name:'} ${server.name} ${'Last known percantage:'} ${server.lastKnownPercantage + '%'}  `;
+            item.innerHTML = `${'Server Name:'} ${server.name} - ${'Last known percantage:'} ${server.lastKnownPercantage + '%'}  `;
             item.id = `server${serverID++}`;
+
+            // Create a span element to display the state of the server
             const stateSpan = document.createElement('span');
             stateSpan.textContent = `${'Server State: '} ${server.state}`;
+            // Set the color of the span element based on the state of the server
             if(server.state === 'idle'){
-                stateSpan.style.color = 'green';
+                // Color emerald green
+                stateSpan.style.color = '#50C878';
             } 
             else if(server.state === 'running'){
                 stateSpan.style.color = 'yellow';
@@ -76,6 +79,7 @@
 
             item.appendChild(document.createTextNode(' - '));
             item.appendChild(stateSpan);
+            
             // Create a dropdown menu to change the state of the server
             const options = ["not init" ,"idle", "running"];
             const changeStateSelect = document.createElement('select',options);
@@ -140,7 +144,8 @@ function addStyles(styles){
 
     if(css.styleSheet) {
         css.styleSheet.cssText = styles;
-    } else {
+    } 
+    else {
         css.appendChild(document.createTextNode(styles));
     }
 
@@ -166,7 +171,7 @@ select {
 
 
 // keep the window.onload = loadServers function to loaded as the last thing
-let background = 'body {background: linear-gradient(#A9F1DF, #FFBBBB);}';
+let background = 'body {background: linear-gradient(90deg, #A9F1DF, #FFBBBB);}';
 // style the tables in a nice way
 let table = `
 table {
@@ -188,19 +193,14 @@ let serverList = `
     border-radius: 5px;
 }`;
 
-
-
-
-
-
-
-window.onload = addStyles(serverList);
-window.onload = addStyles(styles);
-window.onload = addStyles(style);
-window.onload = addStyles(table);
-window.onload = addStyles(background);
-window.onload = loadServers;
-
+window.onload = () => {
+    addStyles(serverList);
+    addStyles(styles);
+    addStyles(style);
+    addStyles(table);
+    addStyles(background);
+    loadServers();
+}
 
 </script>
 

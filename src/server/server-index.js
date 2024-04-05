@@ -55,48 +55,48 @@ app.post('/api/servers/:id', (req, res) => {
 let serverArray = [
     {
         "name": "Central",
-        state: "not init",
         lastKnownPercantage: 10,
+        state: "not init",
         lowerBound: 15,
         middleBound: 30,
         upperBound: 50
     },
     {
         "name": "Central2",
-        state: "idle",
         lastKnownPercantage: 16,
+        state: "idle",
         lowerBound: 15,
         middleBound: 30,
         upperBound: 50
     },
     {
         "name": "Central3",
-        state: "running",
         lastKnownPercantage: 47,
+        state: "running",
         lowerBound: 15,
         middleBound: 30,
         upperBound: 50
     },
     {
         "name": "Central4",
-        state: "running",
         lastKnownPercantage: 100,
+        state: "running",
         lowerBound: 15,
         middleBound: 30,
         upperBound: 50
     },
     {
         "name": "Central5",
-        state: "idle",
         lastKnownPercantage: 60,
+        state: "idle",
         lowerBound: 15,
         middleBound: 30,
         upperBound: 50
     },
     {
         "name": "Central6",
-        state: "not init",
         lastKnownPercantage: 25,
+        state: "not init",
         lowerBound: 15,
         middleBound: 30,
         upperBound: 50
