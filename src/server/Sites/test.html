@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+ 
 </head>
 
 <body>
@@ -59,10 +60,22 @@
         servers.forEach(server => {
             // Create a new list item for each server
             const item = document.createElement('li');
-            item.textContent = `${'Server Name:'} ${server.name} - ${'\nServer state:'} 
-            ${server.state} - ${'Last known percantage:'} ${server.lastKnownPercantage + '%'}  `;
+            item.innerHTML = `${'Server Name:'} ${server.name} ${'Last known percantage:'} ${server.lastKnownPercantage + '%'}  `;
             item.id = `server${serverID++}`;
-            
+            const stateSpan = document.createElement('span');
+            stateSpan.textContent = `${'Server State: '} ${server.state}`;
+            if(server.state === 'idle'){
+                stateSpan.style.color = 'green';
+            } 
+            else if(server.state === 'running'){
+                stateSpan.style.color = 'yellow';
+            } 
+            else {
+                stateSpan.style.color = 'red';
+            }
+
+            item.appendChild(document.createTextNode(' - '));
+            item.appendChild(stateSpan);
             // Create a dropdown menu to change the state of the server
             const options = ["not init" ,"idle", "running"];
             const changeStateSelect = document.createElement('select',options);
@@ -79,8 +92,8 @@
             changeStateSelect.addEventListener('change',() => {
                 changeServerState(server.name, changeStateSelect.value);
             });
-           
-            item.appendChild(document.createTextNode('Change to: '))
+         
+            item.appendChild(document.createTextNode(' Change to: '))
             item.appendChild(changeStateSelect);
             list.appendChild(item); 
 
@@ -165,6 +178,23 @@ table {
     text-align: left;
 }`;
 
+let serverList = `
+#serverList {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    border: 1px solid #555;
+    border-radius: 5px;
+}`;
+
+
+
+
+
+
+
+window.onload = addStyles(serverList);
 window.onload = addStyles(styles);
 window.onload = addStyles(style);
 window.onload = addStyles(table);
