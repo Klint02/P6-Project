@@ -2,34 +2,7 @@ export default class logger {
     constructor (db) {
         
         this.db = db;
-        this.hmm = "hmm"
-        var sql = "SELECT EXISTS( SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_NAME LIKE 'logs')";
-        this.db.query(sql, function(err, result) {
-            if (err) {
-                throw err;
-            } else {
-                if (result != 1) {
-                    
-                }
-            }
-        });
-
-        
-        /*
-        this.db.query(sql, function(err, result) {
-            if (err) {
-                throw err;
-            } else {
-                if (result != 1) {
-                    this.db.query("CREATE TABLE logs (timestamp TIMESTAMP(YYYY-MM-DD hh:mm:ss), message TEXT)"), function (err){
-                        if (err) throw err;
-                        console.log("Created Table 'logs'");
-                    };
-                }
-            }
-          })
-          */
-          
+   
     }
 
     migrate_db(db_name) {
