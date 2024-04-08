@@ -1,4 +1,4 @@
-import express, { response } from 'express';
+import express from 'express';
 const app = express();
 import bodyParser from 'body-parser';
 app.use(bodyParser.json());
@@ -13,10 +13,13 @@ const data = {
     "Server-type": "Client",
     "Status": "online",
     "CurrentFill": 0,
+    "CurrentChargeRate": 0,
     "ServerKey": null
 }
 
 const BoundData = {
+    "MaxChargeRate": 70,
+    "MinChargeRate": 10,
     "UBound": 80,
     "MBound": 50,
     "LBound": 20
@@ -62,12 +65,36 @@ app.get("/api/tempdata",function(request, res) {
     res.json(data);
 })
 
+app.post("/api/takecommand",function(req, res) {
+    if (req.body["Key"] == data.ServerKey) {//needs a key specific to the server
+        switch(req.body["Command"]){
+            case "Charge":
+                data.CurrentChargeRate = req.body["Rate"];
+                break
+            case "Stop":
+                data.CurrentChargeRate = 0;
+                break
+            case "Yeet":
+                console.log("dont yeet")
+                break
+        }
+        res.json({
+            "status": data.status,
+            "CurrentChargeRate": data.CurrentChargeRate
+        });
+    }
+    else {
+        res.json({
+            "Status": data.Status,
+        });
+    }
+})
+
 async function ShakeHand(){
-    
     if (data.ServerKey == null) {
-        const response = await fetch("http://192.120.0.2:8082/api/connect", {
+        const response = await fetch("http://192.120.0.2:8082/api/shake", {
             method: "POST",
-            body: JSON.stringify(Object.assign({}, data, BoundData)),
+            body: Object.assign({}, data, BoundData),
             headers: {
                 "Content-type": "application/json; charset=UTF-8"
             }
@@ -77,7 +104,7 @@ async function ShakeHand(){
         console.log("new key from server", data.ServerKey);
     }
     else {
-        const response = await fetch("http://192.120.0.2:8082/api/connect", {
+        const response = await fetch("http://192.120.0.2:8082/api/shake", {
             method: "POST",
             body: JSON.stringify(data),
             headers: {

@@ -12,7 +12,8 @@ const data = {
 const Keys = [];
 
 function GetNewKey(){
-    let Key = (Keys.length * 2)+3;//should be changed to a better key system
+    let key = (Keys.length * 2)+3;//should be changed to a better key system
+    let Key = key.toString;
     Keys.push(Key);
     return Key;
 }
@@ -41,8 +42,23 @@ app.post("/api/getdata", function(req, res) {
     res.json(data);
 })
 
+async function GiveCommand(command, rate){
+    
+    const response = await fetch("192.120.0.3:8083/api/takecommand", {
+        method: "POST",
+        body: JSON.stringify({
+            "Key": Keys[1],
+            "Command": command,
+            "Rate": rate
+        }),
+        headers: {
+            "Content-type": "application/json; charset=UTF-8"
+        }
+    });
+    
+}
 
-app.post("/api/connect", function(req, res) {
+app.post("/api/shake", function(req, res) {
     console.log("Data from client", req.body);
     if (req.body["ServerKey"] == null){
         let NewServerKey = GetNewKey();
@@ -54,7 +70,6 @@ app.post("/api/connect", function(req, res) {
     else if (Keys.includes(req.body["ServerKey"])){
         res.json({
             "Status": data.Status,
-            "Command": "none"
         });
     }
 })
