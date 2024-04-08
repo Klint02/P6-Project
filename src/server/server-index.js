@@ -1,6 +1,10 @@
 import express from 'express';
 const app = express();
 app.use(express.json());
+import { send_component } from "/app/shared/mjs/component_builder.mjs";
+
+import { calc_distribution } from './distribution-algorithm.mjs';
+
 
 let value = 0;
 let __dirname = "/app";
@@ -10,13 +14,12 @@ const data = {
 }
 
 app.get("/baba", function (req, res) {
-    console.log("HAHHAHAHA")
     res.json(data);
 })
 
 app.get("/",function(request, res) {
 
-    const filename = '/Sites/test.html'
+    const filename = '/sites/dashboard.html'
     res.sendFile(__dirname + filename, function(err){
         if(err){
             console.log("Error sending file:", err)
@@ -24,7 +27,6 @@ app.get("/",function(request, res) {
             console.log("Sent:", filename)
         }
     })
-    console.log('JALALALALALLALALALL')
 })
 
 app.post("/api/getdata", function(req, res) {
@@ -51,63 +53,69 @@ app.post('/api/servers/:id', (req, res) => {
     }
 });
 
+app.get("/internal/db_controls", function(request, response) {
+    response.send(send_component([__dirname + "/shared/components/db_controls.html"]));
+})
+
+app.get('/internal/run-algorithm', function(request, response) {
+    calc_distribution(serverArray);
+})
+
 //Array of different "servers"
 let serverArray = [
     {
         "name": "Central",
-        lastKnownPercantage: 10,
-        state: "not init",
-        lowerBound: 15,
-        middleBound: 30,
-        upperBound: 50
+        "lastKnownPercantage": 10,
+        "state": "not init",
+        "lowerBound": 15,
+        "middleBound": 30,
+        "upperBound": 50
     },
     {
         "name": "Central2",
-        lastKnownPercantage: 16,
-        state: "idle",
-        lowerBound: 15,
-        middleBound: 30,
-        upperBound: 50
+        "lastKnownPercantage": 16,
+        "state": "idle",
+        "lowerBound": 15,
+        "middleBound": 30,
+        "upperBound": 50
     },
     {
         "name": "Central3",
-        lastKnownPercantage: 47,
-        state: "running",
-        lowerBound: 15,
-        middleBound: 30,
-        upperBound: 50
+        "lastKnownPercantage": 47,
+        "state": "running",
+        "lowerBound": 15,
+        "middleBound": 30,
+        "upperBound": 50
     },
     {
         "name": "Central4",
-        lastKnownPercantage: 100,
-        state: "running",
-        lowerBound: 15,
-        middleBound: 30,
-        upperBound: 50
+        "lastKnownPercantage": 100,
+        "state": "running",
+        "lowerBound": 15,
+        "middleBound": 30,
+        "upperBound": 50
     },
     {
         "name": "Central5",
-        lastKnownPercantage: 60,
-        state: "idle",
-        lowerBound: 15,
-        middleBound: 30,
-        upperBound: 50
+        "lastKnownPercantage": 60,
+        "state": "idle",
+        "lowerBound": 15,
+        "middleBound": 30,
+        "upperBound": 50
     },
     {
         "name": "Central6",
-        lastKnownPercantage: 25,
-        state: "not init",
-        lowerBound: 15,
-        middleBound: 30,
-        upperBound: 50
+        "lastKnownPercantage": 25,
+        "state": "not init",
+        "lowerBound": 15,
+        "middleBound": 30,
+        "upperBound": 50
     }
 
 ];
 
 
 
-//Actual port is 8080
 app.listen(8082, function () {
     console.log("Started application on port %d", 8082)
 });
-

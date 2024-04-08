@@ -4,7 +4,7 @@ import bodyParser from 'body-parser';
 app.use(bodyParser.json());
 import mysql from 'mysql';
 import logger  from "./logger.mjs";
-import { send_component } from "./component_builder.mjs";
+import { send_component } from "/app/shared/mjs/component_builder.mjs";
 
 let __dirname = "/app";
 var db_name = "p6"
@@ -35,7 +35,7 @@ app.get("/internal/logs/get_logs", async function(request, response) {
 })
 
 app.get("/internal/db_controls", function(request, response) {
-    response.send(send_component([__dirname + "/sites/components/db_controls.html"]));
+    response.send(send_component([__dirname + "/shared/components/db_controls.html"]));
 })
 
 app.get("/internal/db_controls/migrate", function(request, response) {

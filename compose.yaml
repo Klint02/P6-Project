@@ -25,6 +25,7 @@ services:
     working_dir: /app
     volumes:
       - ./src/server:/app
+      - ./src/shared:/app/shared
     ports:
       - 8082:8082
     expose:
@@ -43,6 +44,7 @@ services:
     working_dir: /app
     volumes:
       - ./src/client:/app
+      - ./src/shared:/app/shared
     ports:
       - 8083:8083
     expose:
