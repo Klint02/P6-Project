@@ -2,11 +2,8 @@ import express from 'express';
 const app = express();
 app.use(express.json());
 import { send_component } from "/app/shared/mjs/component_builder.mjs";
-
 import { calc_distribution } from './distribution-algorithm.mjs';
 
-
-let __dirname = "/app";
 let value = 0;
 let __dirname = "/app";
 const data = {
