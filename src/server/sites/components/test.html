@@ -11,8 +11,7 @@
     <ul id="serverList"></ul>
 </div>
 
-
-<script type="text/javascript">
+<script>
     //Fetcher data fra energinet api og ligger det over i variablen 'data'.
     var data = fetch('https://api.energidataservice.dk/dataset/PowerSystemRightNow?limit=1')
     .then((response) => response.json()).then((data => {
@@ -36,160 +35,162 @@
 
     // Function to load the array of servers from the server
     async function loadServers() {
-    try {
-        const response = await fetch('api/servers'); 
-        const servers = await response.json();
-        let serverID = 0;
+        try {
+            const response = await fetch('api/servers'); 
+            const servers = await response.json();
+            let serverID = 0;
 
-        // Get the list element
-        const list = document.getElementById('serverList'); 
-        // Clear the list
-        list.innerHTML = '';
-        // Loop through the servers
-        servers.forEach(server => {
-            // Create a new list item for each server
-            const item = document.createElement('li');
-            item.innerHTML = `${'Server Name:'} ${server.name} - ${'Last known percantage:'} ${server.lastKnownPercantage + '%'}  `;
-            item.id = `server${serverID++}`;
+            // Get the list element
+            const list = document.getElementById('serverList'); 
+            // Clear the list
+            list.innerHTML = '';
+            // Loop through the servers
+            servers.forEach(server => {
+                // Create a new list item for each server
+                const item = document.createElement('li');
+                item.innerHTML = `${'Server Name:'} ${server.name} - ${'Last known percantage:'} ${server.lastKnownPercantage + '%'}  `;
+                item.id = `server${serverID++}`;
 
-            // Create a span element to display the state of the server
-            const stateSpan = document.createElement('span');
-            stateSpan.textContent = `${'Server State: '} ${server.state}`;
-            // Set the color of the span element based on the state of the server
-            if(server.state === 'idle'){
-                // Color emerald green
-                stateSpan.style.color = '#50C878';
+                // Create a span element to display the state of the server
+                const stateSpan = document.createElement('span');
+                stateSpan.textContent = `${'Server State: '} ${server.state}`;
+                // Set the color of the span element based on the state of the server
+                if(server.state === 'idle'){
+                    // Color emerald green
+                    stateSpan.style.color = '#50C878';
+                } 
+                else if(server.state === 'running'){
+                    stateSpan.style.color = 'yellow';
+                } 
+                else {
+                    stateSpan.style.color = 'red';
+                }
+
+                item.appendChild(document.createTextNode(' - '));
+                item.appendChild(stateSpan);
+                
+                // Create a dropdown menu to change the state of the server
+                const options = ["not init" ,"idle", "running"];
+                const changeStateSelect = document.createElement('select',options);
+                
+                // Create a dropdown menu with the possible states
+                options.forEach(optionValue => {
+                    const optionElement = document.createElement('option');
+                    optionElement.value = optionValue;
+                    optionElement.textContent = optionValue;
+                    optionElement.selected = server.state === optionValue;
+                    changeStateSelect.appendChild(optionElement);
+                });
+
+                changeStateSelect.addEventListener('change',() => {
+                    changeServerState(server.name, changeStateSelect.value);
+                });
+            
+                item.appendChild(document.createTextNode(' Change to: '))
+                item.appendChild(changeStateSelect);
+                list.appendChild(item); 
+
+            });
+
+        } catch(error) {
+            console.log('Error fetching servers', error);
+        }
+    }
+
+    // Function to change the state of a server
+    async function changeServerState(serverName, newState){
+        try {
+            // Send a POST request to the server to change the state
+            const response = await fetch(`api/servers/${encodeURIComponent(serverName)}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ state: newState })
+            });
+            // If the request was successful, reload the server list
+            if(response.ok) {
+                console.log(`Server state updated for ${serverName}`);
+            // document.getElementById('serverList').innerHTML = '';
+                loadServers();
             } 
-            else if(server.state === 'running'){
-                stateSpan.style.color = 'yellow';
-            } 
+            // if the request was not succesful log an error
             else {
-                stateSpan.style.color = 'red';
+                console.error('Failed to change server state');
+                alert('Failed to change server state');
             }
 
-            item.appendChild(document.createTextNode(' - '));
-            item.appendChild(stateSpan);
-            
-            // Create a dropdown menu to change the state of the server
-            const options = ["not init" ,"idle", "running"];
-            const changeStateSelect = document.createElement('select',options);
-            
-            // Create a dropdown menu with the possible states
-            options.forEach(optionValue => {
-                const optionElement = document.createElement('option');
-                optionElement.value = optionValue;
-                optionElement.textContent = optionValue;
-                optionElement.selected = server.state === optionValue;
-                changeStateSelect.appendChild(optionElement);
-            });
-
-            changeStateSelect.addEventListener('change',() => {
-                changeServerState(server.name, changeStateSelect.value);
-            });
-         
-            item.appendChild(document.createTextNode(' Change to: '))
-            item.appendChild(changeStateSelect);
-            list.appendChild(item); 
-
-        });
-
-    } catch(error) {
-        console.log('Error fetching servers', error);
-    }
-}
-
-// Function to change the state of a server
-async function changeServerState(serverName, newState){
-    try {
-        // Send a POST request to the server to change the state
-        const response = await fetch(`api/servers/${encodeURIComponent(serverName)}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ state: newState })
-        });
-        // If the request was successful, reload the server list
-        if(response.ok) {
-            console.log(`Server state updated for ${serverName}`);
-           // document.getElementById('serverList').innerHTML = '';
-            loadServers();
         } 
-        // if the request was not succesful log an error
+        catch(error) {
+            console.error('Error changing server state', error);
+            alert('Error changing server state');
+        }
+    }
+    // This function allows to add styles for the pages, aswell as the components
+    function addStyles(styles){
+        let css = document.createElement('style');
+        css.type = 'text/css';
+
+        if(css.styleSheet) {
+            css.styleSheet.cssText = styles;
+        } 
         else {
-            console.error('Failed to change server state');
-            alert('Failed to change server state');
+            css.appendChild(document.createTextNode(styles));
         }
 
-    } 
-    catch(error) {
-        console.error('Error changing server state', error);
-        alert('Error changing server state');
-    }
-}
-// This function allows to add styles for the pages, aswell as the components
-function addStyles(styles){
-    let css = document.createElement('style');
-    css.type = 'text/css';
-
-    if(css.styleSheet) {
-        css.styleSheet.cssText = styles;
-    } 
-    else {
-        css.appendChild(document.createTextNode(styles));
+        document.getElementsByTagName('head')[0].appendChild(css);
     }
 
-    document.getElementsByTagName('head')[0].appendChild(css);
-}
+
+    // Tests styles 
+    let style = 'h1 {color: blue;}';
+    // style the select and options in a nice way
+    let styles = `
+    select {
+        padding: 5px;
+        margin: 5px;
+        font-size: 16px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        background-color: #f8f8f8;
+        color: #555;
+        font-family: Arial;
+    }`;
+    // style the select options such that green is idle, red is running and blue is not init
 
 
-// Tests styles 
-let style = 'h1 {color: blue;}';
-// style the select and options in a nice way
-let styles = `
-select {
-    padding: 5px;
-    margin: 5px;
-    font-size: 16px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    background-color: #f8f8f8;
-    color: #555;
-    font-family: Arial;
-}`;
-// style the select options such that green is idle, red is running and blue is not init
+    // keep the window.onload = loadServers function to loaded as the last thing
+    let background = 'body {background: linear-gradient(90deg, #A9F1DF, #FFBBBB);}';
+    // style the tables in a nice way
+    let table = `
+    table {
+        border-collapse: collapse;
+        width: 100%;
+        margin: 10px;
+        font-family: Arial;
+        font-size: 16px;
+        text-align: left;
+    }`;
+
+    let serverList = `
+    #serverList {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        border: 1px solid #555;
+        border-radius: 5px;
+    }`;
 
 
-// keep the window.onload = loadServers function to loaded as the last thing
-let background = 'body {background: linear-gradient(90deg, #A9F1DF, #FFBBBB);}';
-// style the tables in a nice way
-let table = `
-table {
-    border-collapse: collapse;
-    width: 100%;
-    margin: 10px;
-    font-family: Arial;
-    font-size: 16px;
-    text-align: left;
-}`;
-
-let serverList = `
-#serverList {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    border: 1px solid #555;
-    border-radius: 5px;
-}`;
-
-window.onload = () => {
-    addStyles(serverList);
-    addStyles(styles);
-    addStyles(style);
-    addStyles(table);
-    addStyles(background);
-    loadServers();
-}
+    function init() {
+        addStyles(serverList);
+        addStyles(styles);
+        addStyles(style);
+        addStyles(table);
+        addStyles(background);
+        loadServers();
+    }
+    init();
 
 </script>

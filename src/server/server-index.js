@@ -100,6 +100,10 @@ app.get("/components/test", function(request, response) {
     response.send(send_component([__dirname + "/sites/components/test.html"]));
 });
 
+app.get("/components/test", function(request, response) {
+    response.send(send_component([__dirname + "/sites/components/test.html"]));
+})
+
 app.get('/internal/run-algorithm', function(request, response) {
     calc_distribution(serverArray);
 })
