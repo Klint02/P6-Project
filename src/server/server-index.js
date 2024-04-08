@@ -96,6 +96,9 @@ app.post('/api/servers/:id', (req, res) => {
 app.get("/internal/db_controls", function(request, response) {
     response.send(send_component([__dirname + "/shared/components/db_controls.html"]));
 })
+app.get("/components/test", function(request, response) {
+    response.send(send_component([__dirname + "/sites/components/test.html"]));
+});
 
 app.get('/internal/run-algorithm', function(request, response) {
     calc_distribution(serverArray);

@@ -1,27 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
+<h1>Test virker</h1>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brint Stationer</title>
-</head>
+<p id="Test0"></p>
+<p id="Test1"></p>
+<p id="Test2"></p>
+<p id="Test3"></p>
+<p id="Test4"></p>
 
-<body>
-    <h1>Test virker</h1>
+<div class="test">
+    <h1>Servers List</h1>
+    <ul id="serverList"></ul>
+</div>
 
-    <p id="Test0"></p>
-    <p id="Test1"></p>
-    <p id="Test2"></p>
-    <p id="Test3"></p>
-    <p id="Test4"></p>
 
-    <div class="test">
-        <h1>Servers List</h1>
-        <ul id="serverList"></ul>
-    </div>
-
-</body>
 <script type="text/javascript">
     //Fetcher data fra energinet api og ligger det over i variablen 'data'.
     var data = fetch('https://api.energidataservice.dk/dataset/PowerSystemRightNow?limit=1')
@@ -203,5 +193,3 @@ window.onload = () => {
 }
 
 </script>
-
-</html>
