@@ -3,6 +3,7 @@ const app = express();
 app.use(express.json());
 
 let value = 0;
+let __dirname = "/app";
 const data = {
     "Server-type": "Central",
     "Status": "online"
@@ -32,8 +33,81 @@ app.post("/api/getdata", function(req, res) {
     res.json(data);
 })
 
+// This is the endpoint to get the array of servers
+app.get('/api/servers', (req, res) =>{ // 
+    res.json(serverArray);
+});
+ // endpoint to update the state of a server
+app.post('/api/servers/:id', (req, res) => {
+    const { id } = req.params;
+    const { state: newState } = req.body;
+
+    const server = serverArray.find(server => server.name === id);
+    if(server){
+        server.state = newState;
+        res.status(200).send('State updated successfully');
+    } else {
+        res.status(404).send('Server not found');
+    }
+});
+
+//Array of different "servers"
+let serverArray = [
+    {
+        "name": "Central",
+        lastKnownPercantage: 10,
+        state: "not init",
+        lowerBound: 15,
+        middleBound: 30,
+        upperBound: 50
+    },
+    {
+        "name": "Central2",
+        lastKnownPercantage: 16,
+        state: "idle",
+        lowerBound: 15,
+        middleBound: 30,
+        upperBound: 50
+    },
+    {
+        "name": "Central3",
+        lastKnownPercantage: 47,
+        state: "running",
+        lowerBound: 15,
+        middleBound: 30,
+        upperBound: 50
+    },
+    {
+        "name": "Central4",
+        lastKnownPercantage: 100,
+        state: "running",
+        lowerBound: 15,
+        middleBound: 30,
+        upperBound: 50
+    },
+    {
+        "name": "Central5",
+        lastKnownPercantage: 60,
+        state: "idle",
+        lowerBound: 15,
+        middleBound: 30,
+        upperBound: 50
+    },
+    {
+        "name": "Central6",
+        lastKnownPercantage: 25,
+        state: "not init",
+        lowerBound: 15,
+        middleBound: 30,
+        upperBound: 50
+    }
+
+];
+
+
 
 //Actual port is 8080
 app.listen(8082, function () {
     console.log("Started application on port %d", 8082)
 });
+
