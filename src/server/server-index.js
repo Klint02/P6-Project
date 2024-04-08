@@ -102,55 +102,61 @@ app.get("/components/test", function(request, response) {
 })
 
 app.get('/internal/run-algorithm', function(request, response) {
-    calc_distribution(serverArray);
+    calc_distribution(serverArray, 350);
 })
 
 //Array of different "servers"
 let serverArray = [
     {
         "name": "Central",
-        "lastKnownPercantage": 10,
-        "state": "not init",
+        "lastKnownPercentage": 10,
+        "state": "idle",
+        "maxInput": 150,
         "lowerBound": 15,
         "middleBound": 30,
         "upperBound": 50
     },
     {
         "name": "Central2",
-        "lastKnownPercantage": 16,
+        "lastKnownPercentage": 16,
         "state": "idle",
+        "maxInput": 175,
         "lowerBound": 15,
         "middleBound": 30,
         "upperBound": 50
     },
     {
         "name": "Central3",
-        "lastKnownPercantage": 47,
-        "state": "running",
+        "lastKnownPercentage": 47,
+        "state": "idle",
+        "maxInput": 125,
         "lowerBound": 15,
         "middleBound": 30,
         "upperBound": 50
     },
     {
         "name": "Central4",
-        "lastKnownPercantage": 100,
-        "state": "running",
+        "lastKnownPercentage": 100,
+        "state": "idle",
+        "maxInput": 250,
         "lowerBound": 15,
         "middleBound": 30,
         "upperBound": 50
     },
     {
         "name": "Central5",
-        "lastKnownPercantage": 60,
+        "lastKnownPercentage": 60,
         "state": "idle",
+        "maxInput": 100,
         "lowerBound": 15,
         "middleBound": 30,
         "upperBound": 50
     },
     {
         "name": "Central6",
-        "lastKnownPercantage": 25,
-        "state": "not init",
+        "lastKnownPercentage": 25,
+        "state": "idle",
+        "maxInput": 150,
         "lowerBound": 15,
         "middleBound": 30,
         "upperBound": 50

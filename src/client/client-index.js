@@ -34,7 +34,7 @@ var con = mysql.createConnection({
 
 var log = new logger(con);
 
-setInterval(ShakeHand, 10000)
+//setInterval(ShakeHand, 10000)
 
 app.get("/",function(request,response) {
     response.sendFile(__dirname + "/sites/dashboard.html");
