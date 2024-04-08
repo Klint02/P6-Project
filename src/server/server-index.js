@@ -9,6 +9,14 @@ const data = {
     "Status": "online"
 }
 
+const Keys = [];
+
+function GetNewKey(){
+    let Key = (Keys.length * 2)+3;//should be changed to a better key system
+    Keys.push(Key);
+    return Key;
+}
+
 app.get("/baba", function (req, res) {
     console.log("HAHHAHAHA")
     res.json(data);
@@ -35,8 +43,20 @@ app.post("/api/getdata", function(req, res) {
 
 
 app.post("/api/connect", function(req, res) {
-    console.log(req.body, "WEEEEEEEE")
-    res.json(data);
+    console.log("Data from client", req.body);
+    if (req.body["ServerKey"] == null){
+        let NewServerKey = GetNewKey();
+        res.json({
+            "Status": data.Status,
+            "NewServerKey": NewServerKey
+      });
+    }
+    else if (Keys.includes(req.body["ServerKey"])){
+        res.json({
+            "Status": data.Status,
+            "Command": "none"
+        });
+    }
 })
 
 //Actual port is 8080

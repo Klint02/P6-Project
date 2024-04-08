@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { response } from 'express';
 const app = express();
 import bodyParser from 'body-parser';
 app.use(bodyParser.json());
@@ -12,7 +12,14 @@ var db_name = "p6"
 const data = {
     "Server-type": "Client",
     "Status": "online",
+    "CurrentFill": 0,
     "ServerKey": null
+}
+
+const BoundData = {
+    "UBound": 80,
+    "MBound": 50,
+    "LBound": 20
 }
 
 var con = mysql.createConnection({
@@ -56,17 +63,29 @@ app.get("/api/tempdata",function(request, res) {
 })
 
 async function ShakeHand(){
-    console.log("FECKER");
+    
     if (data.ServerKey == null) {
-        fetch("http://192.120.0.2:8082/api/connect", {
+        const response = await fetch("http://192.120.0.2:8082/api/connect", {
+            method: "POST",
+            body: JSON.stringify(Object.assign({}, data, BoundData)),
+            headers: {
+                "Content-type": "application/json; charset=UTF-8"
+            }
+        });
+        const movies = await response.json();
+        data.ServerKey = movies.NewServerKey;
+        console.log("new key from server", data.ServerKey);
+    }
+    else {
+        const response = await fetch("http://192.120.0.2:8082/api/connect", {
             method: "POST",
             body: JSON.stringify(data),
             headers: {
                 "Content-type": "application/json; charset=UTF-8"
             }
-        })
-        .then((response) => response.json())
-        .then((json) => console.log(json));
+        });
+        const movies = await response.json();
+        console.log("data from server", movies);
     }
 }
 
