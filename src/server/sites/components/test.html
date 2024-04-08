@@ -73,7 +73,7 @@
                 serverList += `<li id="${item.id}">Server Name: ${server.name} - Last known percantage: ${server.lastKnownPercantage}% 
                  - <span class="${server.state}">Server State: ${server.state}</span> 
                  Change to: 
-                    <select onChange="test(${id})">
+                    <select onChange="test()">
                         <option value="not init">not init</option>
                         <option value="idle">idle</option>
                         <option value="running">running</option>
@@ -114,7 +114,7 @@
         }
     }
 
-   async function test(serverID){
+   async function test(){
         console.log("test");
         //const response = await fetch('api/servers');
         
@@ -210,7 +210,7 @@ td,tr{
 }`;
 let tableScroll=`#table-scroll{
   height: 500px;
-  width: 100;
+  width: 100%;
   overflow:auto;  
   margin-top:20px;
   white-space:nowrap;
