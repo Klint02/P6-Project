@@ -20,9 +20,9 @@ function GetNewKey(){
     return Key;
 }
 
-app.get("/baba", function (req, res) {
-    res.json(data);
-})
+// app.get("/baba", function (req, res) {
+//     res.json(data);
+// })
 
 app.get("/",function(request, res) {
 
@@ -113,7 +113,7 @@ let serverArray = [
     {
         "name": "Central",
         "lastKnownPercantage": 10,
-        "state": "not init",
+        "state": "not_init",
         "lowerBound": 15,
         "middleBound": 30,
         "upperBound": 50
@@ -153,7 +153,7 @@ let serverArray = [
     {
         "name": "Central6",
         "lastKnownPercantage": 25,
-        "state": "not init",
+        "state": "not_init",
         "lowerBound": 15,
         "middleBound": 30,
         "upperBound": 50
