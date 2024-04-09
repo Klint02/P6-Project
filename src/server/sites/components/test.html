@@ -2,9 +2,11 @@
     .not_init {
         color: #0000FF;
     }
+
     .idle {
         color: yellow;
     }
+
     .running {
         color: red;
     }
@@ -12,36 +14,47 @@
 
 <h1>Test virker</h1>
 
-<div id="table-scroll">
-    <p id="Test0"></p>
-</div>
+
 
 <div class="test">
     <h1>Servers List</h1>
     <ul id="serverList"></ul>
 </div>
+<div id="table-scroll">
+    <p id="Test0"></p>
+</div>
 
 <script>
     //Fetcher data fra energinet api og ligger det over i variablen 'data'.
     function fetchingAndShit() {
-        var data = fetch('https://api.energidataservice.dk/dataset/EnergySurplusPrStationShort')
+        var data = fetch('https://api.energidataservice.dk/dataset/PowerSystemRightNow')
             .then((response) => response.json()).then((data => {
                 console.log(data)
-                let text = "<table border='1' width='500' height=100px;  >"
+                let text = "<table border='1'>"
                 text += "<tr>";
                 for (let item in data.records[0]) {
-                    text += `<th>${item} </th>`;
+                    
+                    if (data.records[0][item] != null) {
+                        if(item.substring(0,10)!="Exchange_D"&&item.substring(0,10)!="Exchange_B"){
+                        text += `<th>${item}</th>`;
+
+                        }
+                    }
                 }
                 text += "</tr>";
                 for (let i = 0; i < data.records.length; i++) {
                     text += "<tr>";
                     for (let item in data.records[i]) {
-                        text += "<td>" + data.records[i][item] + "</td>";
+                        if (data.records[i][item] != null) {
+                        if(item.substring(0,10)!="Exchange_D"&&item.substring(0,10)!="Exchange_B"){
+
+                            text += "<td>" + data.records[i][item] + "</td>";
+                        }
+                        }
                     }
                     text += "</tr>";
                 }
                 text += "</table>"
-
                 document.getElementById(`Test0`).innerHTML = text;
             }))
     }
@@ -49,12 +62,12 @@
     // Function to load the array of servers from the server
     async function loadServers() {
         try {
-            const response = await fetch('api/servers'); 
+            const response = await fetch('api/servers');
             const servers = await response.json();
             let serverID = 0;
 
             // Get the list element
-            const list = document.getElementById('serverList'); 
+            const list = document.getElementById('serverList');
             // Clear the list
             list.innerHTML = '';
             let serverList = '';
@@ -69,7 +82,7 @@
                 const stateSpan = document.createElement('span');
                 stateSpan.textContent = `${'Server State: '} ${server.state}`;
                 // Set the color of the span element based on the state of the server
-              
+
                 serverList += `<li id="${item.id}">Server Name: ${server.name} - Last known percantage: ${server.lastKnownPercantage}% 
                  - <span class="${server.state}">Server State: ${server.state}</span> 
                  Change to: 
@@ -81,8 +94,8 @@
                 </li>`
 
 
-              //  item.appendChild(document.createTextNode(' - '));
-              
+                //  item.appendChild(document.createTextNode(' - '));
+
                 /*
                 // Create a dropdown menu to change the state of the server
                 const options = ["not init" ,"idle", "running"];
@@ -109,19 +122,19 @@
 
             list.innerHTML = serverList;
 
-        } catch(error) {
+        } catch (error) {
             console.log('Error fetching servers', error);
         }
     }
 
-   async function test(){
+    async function test() {
         console.log("test");
         //const response = await fetch('api/servers');
-        
+
     }
 
     // Function to change the state of a server
-    async function changeServerState(serverName, newState){
+    async function changeServerState(serverName, newState) {
         try {
             // Send a POST request to the server to change the state
             const response = await fetch(`api/servers/${encodeURIComponent(serverName)}`, {
@@ -132,31 +145,31 @@
                 body: JSON.stringify({ state: newState })
             });
             // If the request was successful, reload the server list
-            if(response.ok) {
+            if (response.ok) {
                 console.log(`Server state updated for ${serverName}`);
-            // document.getElementById('serverList').innerHTML = '';
+                // document.getElementById('serverList').innerHTML = '';
                 loadServers();
-            } 
+            }
             // if the request was not succesful log an error
             else {
                 console.error('Failed to change server state');
                 alert('Failed to change server state');
             }
 
-        } 
-        catch(error) {
+        }
+        catch (error) {
             console.error('Error changing server state', error);
             alert('Error changing server state');
         }
     }
     // This function allows to add styles for the pages, aswell as the components
-    function addStyles(styles){
+    function addStyles(styles) {
         let css = document.createElement('style');
         css.type = 'text/css';
 
-        if(css.styleSheet) {
+        if (css.styleSheet) {
             css.styleSheet.cssText = styles;
-        } 
+        }
         else {
             css.appendChild(document.createTextNode(styles));
         }
@@ -200,16 +213,17 @@
         list-style-type: none;
         margin: 0;
         padding: 0;
+        height:500px;
         width: 100%;
         border: 1px solid #555;
         border-radius: 5px;
     }`;
-    let cleanLook=`
-td,tr{
+    let cleanLook = `
+td,tr,th{
     padding:10px;
 }`;
-let tableScroll=`#table-scroll{
-  height: 500px;
+    let tableScroll = `#table-scroll{
+  height: 200px;
   width: 100%;
   overflow:auto;  
   margin-top:20px;
