@@ -35,8 +35,8 @@
 
 <script>
     //Fetcher data fra energinet api og ligger det over i variablen 'data'.
-    function fetchingAndShit() {
-        var data = fetch('https://api.energidataservice.dk/dataset/PowerSystemRightNow')
+   async function fetchingAndShit() {
+        var data = await fetch('https://api.energidataservice.dk/dataset/PowerSystemRightNow')
             .then((response) => response.json()).then((data => {
                 console.log(data)
                 let text = "<table border='1'>"
@@ -99,33 +99,7 @@
                         <option value="running">running</option>
                     </select>
                 </li>`
-                //console.log(server);
-
-
-                //  item.appendChild(document.createTextNode(' - '));
-
-                /*
-                // Create a dropdown menu to change the state of the server
-                const options = ["not init" ,"idle", "running"];
-                const changeStateSelect = document.createElement('select',options);
                 
-                // Create a dropdown menu with the possible states
-                options.forEach(optionValue => {
-                    const optionElement = document.createElement('option');
-                    optionElement.value = optionValue;
-                    optionElement.textContent = optionValue;
-                    optionElement.selected = server.state === optionValue;
-                    changeStateSelect.appendChild(optionElement);
-                });
-
-                changeStateSelect.addEventListener('change',() => {
-                    changeServerState(server.name, changeStateSelect.value);
-                });
-            
-                item.appendChild(document.createTextNode(' Change to: '))
-                item.appendChild(changeStateSelect);
-                list.appendChild(item); 
-*/
             });
 
             list.innerHTML = serverList;
@@ -135,41 +109,26 @@
         }
     }
 
-    async function test() {
-        console.log("test");
-        //const response = await fetch('api/servers');
+    async function changeServerState(serverName,elementID){ 
+        console.log("ElementID", elementID); 
+        const element = document.getElementById(elementID); 
+ 
+        const data = { 
+            "Name": serverName, 
+            "state": element.value 
+        }; 
+        console.log(data); 
+        const response = await fetch('/api/updateServers', { 
+            method: 'POST', 
+            headers: { 
+                'Content-Type': 'application/json' 
+            }, 
+            body: JSON.stringify(data) 
+        }); 
+         
+    } 
 
-    }
-
-    // Function to change the state of a server
-    async function changeServerState(serverName, newState) {
-        try {
-            // Send a POST request to the server to change the state
-            const response = await fetch(`api/servers/${encodeURIComponent(serverName)}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ state: newState })
-            });
-            // If the request was successful, reload the server list
-            if (response.ok) {
-                console.log(`Server state updated for ${serverName}`);
-                // document.getElementById('serverList').innerHTML = '';
-                loadServers();
-            }
-            // if the request was not succesful log an error
-            else {
-                console.error('Failed to change server state');
-                alert('Failed to change server state');
-            }
-
-        }
-        catch (error) {
-            console.error('Error changing server state', error);
-            alert('Error changing server state');
-        }
-    }
+    
     // This function allows to add styles for the pages, aswell as the components
     function addStyles(styles) {
         let css = document.createElement('style');
