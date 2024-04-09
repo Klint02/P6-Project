@@ -1,4 +1,15 @@
-<h1>Test virker</h1>
+<style>
+    .notinit {
+        color: aqua;
+    }
+
+    .idle {
+        color: brown;
+    }
+
+</style>
+
+<h1 id="baba" class="large" onclick="baba()">Test virker</h1>
 
 <p id="Test0"></p>
 <p id="Test1"></p>
@@ -12,6 +23,17 @@
 </div>
 
 <script>
+    function baba() {
+        let classes = document.getElementById("baba").classList;
+        console.log(classes);
+        classes.replace("large", "smol");
+        console.log(classes);
+    let serverList = "";
+        serverlist += `<li id="server0">Server Name: Central - Last known percantage: %   - 
+                            <span class="${color}">Server State:  not init</span> Change to: <select><option value="not init">not init</option><option value="idle">idle</option><option value="running">running</option></select></li>`
+"        
+    }
+    
     //Fetcher data fra energinet api og ligger det over i variablen 'data'.
     var data = fetch('https://api.energidataservice.dk/dataset/PowerSystemRightNow?limit=1')
     .then((response) => response.json()).then((data => {
