@@ -8,7 +8,8 @@ let value = 0;
 let __dirname = "/app";
 const data = {
     "Server-type": "Central",
-    "Status": "online"
+    "Status": "online",
+    "Key": "257052945"
 }
 
 const Keys = [];
@@ -61,14 +62,26 @@ async function GiveCommand(command, rate){
 
 app.post("/api/shake", function(req, res) {
     console.log("Data from client", req.body);
-    if (req.body["ServerKey"] == null){
-        let NewServerKey = GetNewKey();
+    if (req.body["Key"] == null){
+        let NewKey = GetNewKey();
         res.json({
             "Status": data.Status,
-            "NewServerKey": NewServerKey
+            "NewKey": NewKey,
+            "ServerKey": data.Key
       });
+      serverArray.push({
+        "Key": req.body["Key"],
+        "name": req.body["Name"],
+        "lastKnownPercantage": req.body["CurrentFill"],
+        "state": req.body["Status"],
+        "lowerBound": req.body["LBound"],
+        "middleBound": req.body["MBound"],
+        "upperBound": req.body["UBound"],
+        "MaxChargeRate": req.body["MaxChargeRate"],
+        "MinChargeRate": req.body["MinChargeRate"]
+      })
     }
-    else if (Keys.includes(req.body["ServerKey"])){
+    else if (Keys.includes(req.body["Key"])){
         res.json({
             "Status": data.Status,
         });
@@ -102,57 +115,7 @@ app.get('/internal/run-algorithm', function(request, response) {
 })
 
 //Array of different "servers"
-let serverArray = [
-    {
-        "name": "Central",
-        "lastKnownPercantage": 10,
-        "state": "not init",
-        "lowerBound": 15,
-        "middleBound": 30,
-        "upperBound": 50
-    },
-    {
-        "name": "Central2",
-        "lastKnownPercantage": 16,
-        "state": "idle",
-        "lowerBound": 15,
-        "middleBound": 30,
-        "upperBound": 50
-    },
-    {
-        "name": "Central3",
-        "lastKnownPercantage": 47,
-        "state": "running",
-        "lowerBound": 15,
-        "middleBound": 30,
-        "upperBound": 50
-    },
-    {
-        "name": "Central4",
-        "lastKnownPercantage": 100,
-        "state": "running",
-        "lowerBound": 15,
-        "middleBound": 30,
-        "upperBound": 50
-    },
-    {
-        "name": "Central5",
-        "lastKnownPercantage": 60,
-        "state": "idle",
-        "lowerBound": 15,
-        "middleBound": 30,
-        "upperBound": 50
-    },
-    {
-        "name": "Central6",
-        "lastKnownPercantage": 25,
-        "state": "not init",
-        "lowerBound": 15,
-        "middleBound": 30,
-        "upperBound": 50
-    }
-
-];
+let serverArray = [];
 
 app.listen(8082, function () {
     console.log("Started application on port %d", 8082)

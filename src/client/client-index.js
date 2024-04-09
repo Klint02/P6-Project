@@ -11,18 +11,20 @@ var db_name = "p6"
 
 const data = {
     "Server-type": "Client",
+    "Name": "tester",
     "Status": "idle",
     "CurrentFill": 0,
     "CurrentChargeRate": 0,
-    "ServerKey": null
+    "Key": null
 }
 
-const BoundData = {
+const MoreData = {
     "MaxChargeRate": 70,
     "MinChargeRate": 10,
     "UBound": 80,
     "MBound": 50,
-    "LBound": 20
+    "LBound": 20,
+    "serverKey": null
 }
 
 var con = mysql.createConnection({
@@ -70,9 +72,11 @@ app.post("/api/takecommand",function(req, res) {
         switch(req.body["Command"]){
             case "Charge":
                 data.CurrentChargeRate = req.body["Rate"];
+                data.status = "running"
                 break
             case "Stop":
                 data.CurrentChargeRate = 0;
+                data.status = "idle";
                 break
             case "Yeet":
                 console.log("dont yeet")
@@ -91,17 +95,18 @@ app.post("/api/takecommand",function(req, res) {
 })
 
 async function ShakeHand(){
-    if (data.ServerKey == null) {
+    if (data.Key == null) {
         const response = await fetch("http://192.120.0.2:8082/api/shake", {
             method: "POST",
-            body: Object.assign({}, data, BoundData),
+            body: Object.assign({}, data, MoreData),
             headers: {
                 "Content-type": "application/json; charset=UTF-8"
             }
         });
         const movies = await response.json();
-        data.ServerKey = movies.NewServerKey;
-        console.log("new key from server", data.ServerKey);
+        data.Key = movies.NewKey;
+        MoreData.serverKey = movies.ServerKey
+        console.log("new key from server", data.Key);
     }
     else {
         const response = await fetch("http://192.120.0.2:8082/api/shake", {
