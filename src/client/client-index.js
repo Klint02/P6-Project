@@ -36,7 +36,7 @@ var con = mysql.createConnection({
 
 var log = new logger(con);
 
-setInterval(ShakeHand, 10000)
+var ShakingHand = setInterval(ShakeHand, 10000)
 
 app.get("/",function(request,response) {
     response.sendFile(__dirname + "/sites/dashboard.html");
@@ -71,20 +71,32 @@ app.post("/api/takecommand",function(req, res) {
     if (req.body["Key"] == data.ServerKey) {//needs a key specific to the server
         switch(req.body["Command"]){
             case "Charge":
-                data.CurrentChargeRate = req.body["Rate"];
-                data.status = "running"
+                data.CurrentChargeRate = req.body["Rate"]
+                data.Status = "running"
                 break
             case "Stop":
                 data.CurrentChargeRate = 0;
-                data.status = "idle";
+                data.Status = "idle"
+                break
+            case "offline":
+                if (data.Status != "not init"){
+                    data.CurrentChargeRate = 0;
+                    data.Status = "not init"
+                    clearInterval(ShakingHand)
+                }
+                break
+            case "start":
+                if (data.Status == "not init"){
+                    data.Status = "idle"
+                    var ShakingHand = setInterval(ShakeHand, 10000)
+                }
                 break
             case "Yeet":
                 console.log("dont yeet")
                 break
         }
         res.json({
-            "status": data.status,
-            "CurrentChargeRate": data.CurrentChargeRate
+            "Status": data.Status
         });
     }
     else {
