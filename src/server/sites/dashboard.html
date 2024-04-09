@@ -1,12 +1,37 @@
 <html>
-    <style>
-    </style>
-    <body>
+<style>
+</style>
+
+<body>
+
+    <div id="row" style="display:flex">
+        <div id="column-left" style="width: 80%;">
+            <div  style="display: flex; height: 600px;">
+                <h1>Random ass graf</h1>
+            </div>
+        <div id="table-scroll">
+            <p id="Test0"></p>
+        </div>
+        </div>
         
-    </body>
+            
+
+
+
+        <div id="column-right" style="width:20%;">
+            <div class="test">
+                <ul id="serverList"></ul>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+
 </html>
 
 <script>
+
     //TODO: change from relative paths to absolute, do this dynamically
     async function fetch_component(url) {
         const response = await fetch(url);
@@ -18,16 +43,17 @@
 
     async function add_component_to_DOM(placement, component_route) {
         let component = await fetch_component(component_route);
-        placement.insertAdjacentHTML( 'beforeend', component[0]["html"]);
+        placement.insertAdjacentHTML('beforeend', component[0]["html"]);
         let script = document.createElement('script');
         script.textContent = component[0]["js"];
         placement.appendChild(script);
     }
 
-    document.addEventListener("DOMContentLoaded", async function() {
+    document.addEventListener("DOMContentLoaded", async function () {
 
-        add_component_to_DOM(document.body, "/internal/db_controls");
-        add_component_to_DOM(document.body, "/components/test");
+        //add_component_to_DOM(document.getElementById("column2"), "/internal/db_controls");
+        add_component_to_DOM(document.getElementById("column-left"), "/components/test");
+        add_component_to_DOM(document.getElementById("column-right"), "/components/test");
 
-        })
+    })
 </script>
