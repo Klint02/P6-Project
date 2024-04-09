@@ -12,17 +12,11 @@
     }
 </style>
 
-<h1>Test virker</h1>
 
 
-
-<div class="test">
-    <h1>Servers List</h1>
-    <ul id="serverList"></ul>
-</div>
-<div id="table-scroll">
+<!-- <div id="table-scroll">
     <p id="Test0"></p>
-</div>
+</div> -->
 
 <script>
     //Fetcher data fra energinet api og ligger det over i variablen 'data'.
@@ -33,10 +27,10 @@
                 let text = "<table border='1'>"
                 text += "<tr>";
                 for (let item in data.records[0]) {
-                    
+
                     if (data.records[0][item] != null) {
-                        if(item.substring(0,10)!="Exchange_D"&&item.substring(0,10)!="Exchange_B"){
-                        text += `<th>${item}</th>`;
+                        if (item.substring(0, 10) != "Exchange_D" && item.substring(0, 10) != "Exchange_B") {
+                            text += `<th>${item}</th>`;
 
                         }
                     }
@@ -46,10 +40,10 @@
                     text += "<tr>";
                     for (let item in data.records[i]) {
                         if (data.records[i][item] != null) {
-                        if(item.substring(0,10)!="Exchange_D"&&item.substring(0,10)!="Exchange_B"){
+                            if (item.substring(0, 10) != "Exchange_D" && item.substring(0, 10) != "Exchange_B") {
 
-                            text += "<td>" + data.records[i][item] + "</td>";
-                        }
+                                text += "<td>" + data.records[i][item] + "</td>";
+                            }
                         }
                     }
                     text += "</tr>";
@@ -201,7 +195,6 @@
     let table = `
     table {
         border-collapse: collapse;
-        width: 100%;
         margin: 10px;
         font-family: Arial;
         font-size: 16px;
@@ -213,8 +206,7 @@
         list-style-type: none;
         margin: 0;
         padding: 0;
-        height:500px;
-        width: 100%;
+        height:100%;
         border: 1px solid #555;
         border-radius: 5px;
     }`;
@@ -222,11 +214,11 @@
 td,tr,th{
     padding:10px;
 }`;
-    let tableScroll = `#table-scroll{
-  height: 200px;
-  width: 100%;
+    let tableScroll = `
+    #table-scroll{
+  height:390;
   overflow:auto;  
-  margin-top:20px;
+  margin-bottom:20px;
   white-space:nowrap;
 
 }`;
