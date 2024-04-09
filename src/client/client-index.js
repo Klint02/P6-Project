@@ -11,7 +11,7 @@ var db_name = "p6"
 
 const data = {
     "Server-type": "Client",
-    "Status": "online",
+    "Status": "idle",
     "CurrentFill": 0,
     "CurrentChargeRate": 0,
     "ServerKey": null
