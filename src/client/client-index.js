@@ -24,7 +24,8 @@ const MoreData = {
     "UBound": 80,
     "MBound": 50,
     "LBound": 20,
-    "serverKey": null
+    "ServerKey": null,
+    "IP": "http://192.120.03.:8083" // needs to be gotten from compose.yaml
 }
 
 var con = mysql.createConnection({
@@ -68,7 +69,8 @@ app.get("/api/tempdata",function(request, res) {
 })
 
 app.post("/api/takecommand",function(req, res) {
-    if (req.body["Key"] == data.ServerKey) {//needs a key specific to the server
+    //console.log("Command from server", req.body);
+    if (req.body["Key"] === MoreData.ServerKey) {//needs a key specific to the server
         switch(req.body["Command"]){
             case "Charge":
                 data.CurrentChargeRate = req.body["Rate"]
@@ -110,15 +112,15 @@ async function ShakeHand(){
     if (data.Key == null) {
         const response = await fetch("http://192.120.0.2:8082/api/shake", {
             method: "POST",
-            body: Object.assign({}, data, MoreData),
+            body: JSON.stringify(Object.assign({}, data, MoreData)),
             headers: {
                 "Content-type": "application/json; charset=UTF-8"
             }
         });
-        const movies = await response.json();
-        data.Key = movies.NewKey;
-        MoreData.serverKey = movies.ServerKey
-        console.log("new key from server", data.Key);
+        const movies = await response.json()
+        data.Key = movies.NewKey
+        MoreData.ServerKey = movies.ServerKey
+        console.log("new key from server", movies.NewKey)
     }
     else {
         const response = await fetch("http://192.120.0.2:8082/api/shake", {

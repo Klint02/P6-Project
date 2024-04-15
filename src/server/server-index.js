@@ -15,8 +15,8 @@ const data = {
 const Keys = [];
 
 function GetNewKey(){
-    let key = (Keys.length * 2)+3;//should be changed to a better key system
-    let Key = key.toString;
+    let Key = (Keys.length * 2)+3;//should be changed to a better key system
+    //let Key = key.toString;
     Keys.push(Key);
     return Key;
 }
@@ -44,24 +44,32 @@ app.post("/api/getdata", function(req, res) {
 })
 
 
-async function GiveCommand(command, rate){
-    
-    const response = await fetch("192.120.0.3:8083/api/takecommand", {
-        method: "POST",
-        body: JSON.stringify({
-            "Key": Keys[1],
+async function GiveCommand(key, command, rate = 0){
+    let FetchIP = (serverArray.find((element) => element.Key == key).IP + "/api/takecommand")
+    let Body = JSON.stringify({
+        "Key": data.Key,
+        "Command": command
+    })
+    if (rate != 0){
+        Body = JSON.stringify({
+            "Key": data.Key,
             "Command": command,
             "Rate": rate
-        }),
+        })
+    }
+    const response = await fetch(FetchIP, {
+        method: "POST",
+        body: Body,
         headers: {
             "Content-type": "application/json; charset=UTF-8"
         }
     });
-    
+    const movies = await response.json()
+    console.log(movies)
 }
 
 app.post("/api/shake", function(req, res) {
-    console.log("Data from client", req.body);
+    //console.log("Data from client", req.body);
     if (req.body["Key"] == null){
         let NewKey = GetNewKey();
         res.json({
@@ -70,21 +78,32 @@ app.post("/api/shake", function(req, res) {
             "ServerKey": data.Key
       });
       serverArray.push({
-        "Key": req.body["Key"],
-        "name": req.body["Name"],
-        "lastKnownPercantage": req.body["CurrentFill"],
-        "state": req.body["Status"],
+        "Key": NewKey,
+        "Name": req.body["Name"],
+        "LastKnownPercantage": req.body["CurrentFill"],
+        "State": req.body["Status"],
+        "IP": req.body["IP"],
         "lowerBound": req.body["LBound"],
-        "middleBound": req.body["MBound"],
-        "upperBound": req.body["UBound"],
+        "MiddleBound": req.body["MBound"],
+        "UpperBound": req.body["UBound"],
         "MaxChargeRate": req.body["MaxChargeRate"],
         "MinChargeRate": req.body["MinChargeRate"]
       })
     }
     else if (Keys.includes(req.body["Key"])){
+        let serverI = serverArray.findIndex((element) => element.Key == req.body["Key"])
+        serverArray[serverI].LastKnownPercantage = req.body["CurrentFill"]
+        serverArray[serverI].State = req.body["Status"]
         res.json({
             "Status": data.Status,
         });
+        //console.log("data saved", serverArray[0]);
+        GiveCommand(serverArray[0].Key, "Charge", 50);
+    }
+    else { //the client has key but it is not one of ours
+        res.json({
+            "Error": "yes"
+        })
     }
 })
 
