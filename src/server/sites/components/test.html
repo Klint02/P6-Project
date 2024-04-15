@@ -1,30 +1,27 @@
 <style>
-    .not_init {
-        color: #0000FF;
-    }
+    h1 {color: blue;}
 
-    .idle {
-        color: yellow;
-    }
+    body {background: linear-gradient(90deg, #A9F1DF, #FFBBBB);}
 
-    .running {
-        color: red;
-    }
-    .button {
-        background-color: #04AA6D; /* Green */
-        border: none;
-        min-width: 50px;
-        min-height: 50px;
-        color: white;
-        padding: 20px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
+    table {
+        border-collapse: collapse;
+        margin: 10px;
+        font-family: Arial;
         font-size: 16px;
-        margin: 4px 2px;
-        cursor: pointer;
-        border-radius: 50%;
+        text-align: left;
+    }
+
+    td,tr,th{
+    padding:10px;
 }
+#table-scroll{
+  height:390;
+  overflow:auto;  
+  margin-bottom:20px;
+  white-space:nowrap;
+
+}
+
 </style>
 
 
@@ -68,146 +65,9 @@
             }))
     }
 
-    // Function to load the array of servers from the server
-    async function loadServers() {
-        try {
-            const response = await fetch('api/servers');
-            const servers = await response.json();
-            let serverID = 0;
 
-            // Get the list element
-            const list = document.getElementById('serverList');
-            // Clear the list
-            list.innerHTML = '';
-            let serverList = '';
-            // Loop through the servers
-            servers.forEach(server => {
-                // Create a new list item for each server
-                const item = document.createElement('li');
-                item.innerHTML = `${'Server Name:'} ${server.name} - ${'Last known percantage:'} ${server.lastKnownPercantage + '%'}  `;
-                item.id = `server${serverID++}`;
-
-                
-                // Set the color of the span element based on the state of the server
-
-                serverList += `<li id="${item.id}">Server Name: ${server.name} - Last known percantage: ${server.lastKnownPercantage}% 
-                 - <span class="${server.state}">Server State: ${server.state}</span> 
-                 Change to: 
-                    <select id="select${item.id}" onChange="changeServerState('${server.name}','select${item.id}')">
-                        <option value="not_init">not init</option>
-                        <option value="idle">idle</option>
-                        <option value="running">running</option>
-                    </select>
-                </li>`
-                
-            });
-
-            list.innerHTML = serverList;
-
-        } catch (error) {
-            console.log('Error fetching servers', error);
-        }
-    }
-
-    async function changeServerState(serverName,elementID){ 
-        console.log("ElementID", elementID); 
-        const element = document.getElementById(elementID); 
- 
-        const data = { 
-            "Name": serverName, 
-            "state": element.value 
-        }; 
-        console.log(data); 
-        const response = await fetch('/api/updateServers', { 
-            method: 'POST', 
-            headers: { 
-                'Content-Type': 'application/json' 
-            }, 
-            body: JSON.stringify(data) 
-        }); 
-         
-    } 
-
+    fetchingAndShit(); 
     
-    // This function allows to add styles for the pages, aswell as the components
-    function addStyles(styles) {
-        let css = document.createElement('style');
-        css.type = 'text/css';
-
-        if (css.styleSheet) {
-            css.styleSheet.cssText = styles;
-        }
-        else {
-            css.appendChild(document.createTextNode(styles));
-        }
-
-        document.getElementsByTagName('head')[0].appendChild(css);
-    }
-
-
-    // Tests styles 
-    let style = 'h1 {color: blue;}';
-    // style the select and options in a nice way
-    let styles = `
-    select {
-        padding: 5px;
-        margin: 5px;
-        font-size: 16px;
-        border-radius: 5px;
-        border: 1px solid #ccc;
-        background-color: #f8f8f8;
-        color: #555;
-        font-family: Arial;
-    }`;
-    // style the select options such that green is idle, red is running and blue is not init
-
-
-    // keep the window.onload = loadServers function to loaded as the last thing
-    let background = 'body {background: linear-gradient(90deg, #A9F1DF, #FFBBBB);}';
-    // style the tables in a nice way
-    let table = `
-    table {
-        border-collapse: collapse;
-        margin: 10px;
-        font-family: Arial;
-        font-size: 16px;
-        text-align: left;
-    }`;
-
-    let serverList = `
-    #serverList {
-        list-style-type: none;
-        margin: 0;
-        padding: 0;
-        height:100%;
-        border: 1px solid #555;
-        border-radius: 5px;
-    }`;
-    let cleanLook = `
-td,tr,th{
-    padding:10px;
-}`;
-    let tableScroll = `
-    #table-scroll{
-  height:390;
-  overflow:auto;  
-  margin-bottom:20px;
-  white-space:nowrap;
-
-}`;
-
-
-    function init() {
-        addStyles(serverList);
-        addStyles(styles);
-        addStyles(tableScroll);
-        addStyles(cleanLook);
-        addStyles(style);
-        addStyles(table);
-        addStyles(background);
-        fetchingAndShit();
-        loadServers();
-    }
-    init();
+   
 
 </script>

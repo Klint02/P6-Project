@@ -84,7 +84,7 @@ app.get('/api/servers', (req, res) =>{ //
  // endpoint to update the state of a server
 app.post('/api/updateServers', (req, res) => {
     res.json("Server state updated successfully");
-    console.log(req.body)
+    console.log(req.body);
      //const { id } = req.params;
      //const { state: newState } = req.body;
 
@@ -95,6 +95,10 @@ app.post('/api/updateServers', (req, res) => {
     // } else {
     //     res.status(404).send('Server not found');
     // }
+});
+
+app.get("/components/serverList", function(request, response) {
+    response.send(send_component([__dirname + "/sites/components/serverList.html"]));
 });
 
 app.get("/internal/db_controls", function(request, response) {
@@ -118,50 +122,38 @@ let serverArray = [
         "name": "Central",
         "lastKnownPercantage": 10,
         "state": "not_init",
+        "URL" : "0.0.0.0:8080",
         "lowerBound": 15,
         "middleBound": 30,
         "upperBound": 50
     },
     {
-        "name": "Central2",
-        "lastKnownPercantage": 16,
-        "state": "idle",
-        "lowerBound": 15,
-        "middleBound": 30,
-        "upperBound": 50
-    },
-    {
-        "name": "Central3",
-        "lastKnownPercantage": 47,
-        "state": "running",
-        "lowerBound": 15,
-        "middleBound": 30,
-        "upperBound": 50
-    },
-    {
-        "name": "Central4",
-        "lastKnownPercantage": 100,
-        "state": "running",
-        "lowerBound": 15,
-        "middleBound": 30,
-        "upperBound": 50
-    },
-    {
-        "name": "Central5",
-        "lastKnownPercantage": 60,
-        "state": "idle",
-        "lowerBound": 15,
-        "middleBound": 30,
-        "upperBound": 50
-    },
-    {
-        "name": "Central6",
-        "lastKnownPercantage": 25,
+        "name": "Central",
+        "lastKnownPercantage": 10,
         "state": "not_init",
+        "URL" : "0.0.0.0:8081",
         "lowerBound": 15,
         "middleBound": 30,
         "upperBound": 50
-    }
+    },
+    {
+        "name": "Central",
+        "lastKnownPercantage": 10,
+        "state": "not_init",
+        "URL" : "0.0.0.0:8082",
+        "lowerBound": 15,
+        "middleBound": 30,
+        "upperBound": 50
+    },
+    {
+        "name": "Central",
+        "lastKnownPercantage": 10,
+        "state": "not_init",
+        "URL" : "0.0.0.0:8083",
+        "lowerBound": 15,
+        "middleBound": 30,
+        "upperBound": 50
+    },
 
 ];
 
