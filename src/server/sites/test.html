@@ -59,7 +59,7 @@
         servers.forEach(server => {
             // Create a new list item for each server
             const item = document.createElement('li');
-            item.innerHTML = `${'Server Name:'} ${server.name} - ${'Last known percantage:'} ${server.lastKnownPercantage + '%'}  `;
+            item.innerHTML = `${'Server Name:'} ${server.name} - ${'Last known percantage:'} ${server.lastKnownPercentage + '%'}  `;
             item.id = `server${serverID++}`;
 
             // Create a span element to display the state of the server

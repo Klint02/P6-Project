@@ -73,18 +73,12 @@
 
     document.addEventListener("DOMContentLoaded", async function() {
             let components = [
-            {
-                        "type": "non-shared",
-                        "name": "test2.html",
-                        "placement": document.body,
-                        "tags": []
-                    },
-                    {
-                        "type": "shared",
-                        "name": "db_controls.html",
-                        "placement": document.body,
-                        "tags": []
-                    }
+                {
+                    "type": "non-shared",
+                    "name": "serverList.html",
+                    "placement": document.getElementById("column-right"),
+                    "tags": []
+                }
             ]
             add_components_to_DOM(components);
   

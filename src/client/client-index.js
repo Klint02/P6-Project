@@ -25,7 +25,7 @@ const MoreData = {
     "MBound": 50,
     "LBound": 20,
     "ServerKey": null,
-    "IP": "http://192.120.03.:8083" // needs to be gotten from compose.yaml
+    "IP": "http://192.120.0.3:8083" // needs to be gotten from compose.yaml
 }
 
 var con = mysql.createConnection({

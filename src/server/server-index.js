@@ -68,7 +68,7 @@ async function GiveCommand(key, command, rate = 0){
     });
     const movies = await response.json()
     let serverI = serverArray.findIndex((element) => element.Key == movies.Key)
-    serverArray[serverI].LastKnownPercantage = movies.CurrentFill
+    serverArray[serverI].LastKnownPercentage = movies.CurrentFill
     serverArray[serverI].State = movies.Status
     //console.log(movies)
 }
@@ -85,7 +85,7 @@ app.post("/api/shake", function(req, res) {
       serverArray.push({
         "Key": NewKey,
         "Name": req.body["Name"],
-        "LastKnownPercantage": req.body["CurrentFill"],
+        "LastKnownPercentage": req.body["CurrentFill"],
         "State": req.body["Status"],
         "IP": req.body["IP"],
         "LowerBound": req.body["LBound"],
