@@ -1,0 +1,31 @@
+
+
+<div id="frame">
+
+</div>
+
+<style>
+    #frame {
+        width: 100%;
+        height: 100%;
+    }
+</style>
+
+<script>
+        const frame = document.getElementById("frame");
+        let components = [
+                {
+                    "type": "non-shared",
+                    "name": "client_log.html",
+                    "placement": frame,
+                    "tags": [{"client_name": "bababa"}, {"logs_id": "log1"}, {"ip": "\"1.0.0.0:8080\""}, {"function": "1+1"}]
+                },
+                {
+                    "type": "non-shared",
+                    "name": "client_log.html",
+                    "placement": frame,
+                    "tags": [{"client_name": "bababa"}, {"logs_id": "log2"}, {"ip": "08080"}, {"function": "console.log(\"hej\")"}]
+                }
+            ]
+            add_components_to_DOM(components);
+</script>

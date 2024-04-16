@@ -35,6 +35,10 @@ app.get("/",function(request, res) {
     })
 })
 
+app.post("/fetch/component", function(request, response) {
+    response.send(send_component(request.body, __dirname));
+})
+
 app.post("/api/getdata", function(req, res) {
     value = req;
     console.log(value, "WOWOOWWO")
@@ -125,6 +129,10 @@ app.post('/api/updateServers', (req, res) => {
     //     res.status(404).send('Server not found');
     // }
 });
+
+app.get('/internal/run-algorithm', function(request, response) {
+    calc_distribution(serverArray, 350);
+})
 
 app.get("/components/serverList", function(request, response) {
     response.send(send_component([__dirname + "/sites/components/serverList.html"]));

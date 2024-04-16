@@ -1,7 +1,13 @@
-<h1>Logs for client: </h1>
+<style>
+    table, th, td {
+      border:1px solid black;
+    }
+</style>
+
+<h1>Logs for {{ client_name }}: </h1>
 
 <div id="">
-    <table id="logs" style="width:50%;">
+    <table id="{{ logs_id }}" style="width:50%;">
         <tr>
             <th>Timestamp</th>
             <th>Log type</th>
@@ -27,7 +33,7 @@
                                     <td>${log["message"]}</td>
                                 </tr>`
         });
-        document.getElementById("logs").innerHTML +=  log_table_rows;
+        document.getElementById("{{ logs_id }}").innerHTML +=  log_table_rows;
        
     }
     init_logs();

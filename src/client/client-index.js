@@ -37,23 +37,20 @@ var con = mysql.createConnection({
 
 var log = new logger(con);
 
+
 var ShakingHand = setInterval(ShakeHand, 10000)
 
 app.get("/",function(request,response) {
     response.sendFile(__dirname + "/sites/dashboard.html");
 })
 
-app.get("/internal/logs",async function(request, response) {
-    response.send(send_component([__dirname + "/sites/components/client_log.html"]));
+app.post("/fetch/component", function(request, response) {
+    response.send(send_component(request.body, __dirname));
 })
 
 app.get("/internal/logs/get_logs", async function(request, response) {
     let result = await log.generic_SQL("SELECT * FROM `logs` ORDER BY Timestamp DESC");
     response.send(JSON.stringify(result));
-})
-
-app.get("/internal/db_controls", function(request, response) {
-    response.send(send_component([__dirname + "/shared/components/db_controls.html"]));
 })
 
 app.get("/internal/db_controls/migrate", function(request, response) {
