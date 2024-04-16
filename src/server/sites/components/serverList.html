@@ -1,0 +1,114 @@
+<style>
+    .not_init {
+        color: #0000FF;
+    }
+
+    .idle {
+        color: yellow;
+    }
+
+    .running {
+        color: red;
+    }
+    .button {
+        background-color: #04AA6D; /* Green */
+        border: none;
+        min-width: 50px;
+        min-height: 50px;
+        color: white;
+        padding: 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 50%;
+}
+select {
+        padding: 2%;
+        margin: 2%;
+        font-size: 16px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        background-color: #f8f8f8;
+        color: #555;
+        font-family: Arial;
+    }
+</style>
+
+<button class="button">hej</button>
+<nav class="nav">
+   <p>HEJ</p>
+   <p>TEST</p>
+   <p>GED</p>
+</nav>
+
+
+<script>
+    // Function to load the array of servers from the server
+async function loadServers() {
+    
+    try {
+        const response = await fetch('api/servers');
+        const servers = await response.json();
+        let serverID = 0;
+
+        // Get the list element
+        const list = document.getElementsByClassName('serverList')[0];
+        // Clear the list
+        list.innerHTML = '';
+        let serverList = '';
+        // Loop through the servers
+        servers.forEach(server => {
+            // Create a new list item for each server
+            const item = document.createElement('li');
+            item.innerHTML = `${'Server Name:'} ${server.name} - ${'Last known percantage:'} ${server.lastKnownPercantage + '%'} ${server.URL} `;
+            item.id = `server${serverID++}`;
+
+            
+            // Set the color of the span element based on the state of the server
+
+            serverList += `<li id="${item.id}">Server Name: ${server.name} - Last known percantage: ${server.lastKnownPercantage}% URL: ${server.URL}   
+             - <span class="${server.state}">Server State: ${server.state}</span> 
+             Change to: 
+                <select id="select${item.id}" onChange="changeServerState('${server.name}','select${item.id}')">
+                    <option value="not_init">not init</option>
+                    <option value="idle">idle</option>
+                    <option value="running">running</option>
+                </select>
+            </li>`
+            
+        });
+
+        list.innerHTML = serverList;
+
+    } catch (error) {
+        console.log('Error fetching servers', error);
+    }
+}
+
+async function changeServerState(serverName,elementID){ 
+    console.log("ElementID", elementID); 
+    const element = document.getElementById(elementID); 
+
+    const data = { 
+        "Name": serverName, 
+        "state": element.value 
+    }; 
+    console.log(data); 
+    const response = await fetch('/api/updateServers', { 
+        method: 'POST', 
+        headers: { 
+            'Content-Type': 'application/json' 
+        }, 
+        body: JSON.stringify(data) 
+    }); 
+}   
+     
+   
+    
+loadServers()
+
+
+</script>

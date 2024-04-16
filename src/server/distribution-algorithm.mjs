@@ -35,9 +35,9 @@ export function calc_distribution(servers, current_kwh, distribution_type) {
 
     }
 
-    console.log(lower_bound);
-    console.log(middle_bound);
-    console.log(distribution);
+    //console.log(lower_bound);
+    //console.log(middle_bound);
+    //console.log(distribution);
     
     return distribution
 }
