@@ -11,6 +11,9 @@ export function send_component(paths, root) {
         let path = "";
         if (paths[i]["type"] == "non-shared") {
             path = `${root}/sites/components/${paths[i]["name"]}`;
+        } else {
+            path = `${root}/shared/components/${paths[i]["name"]}`;
+
         }
         const data = fs.readFileSync(path, "utf8");
         let index_of_js = data.indexOf("<script>");

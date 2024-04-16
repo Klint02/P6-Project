@@ -20,10 +20,6 @@ function GetNewKey(){
     return Key;
 }
 
-app.get("/baba", function (req, res) {
-    res.json(data);
-})
-
 app.get("/",function(request, res) {
 
     const filename = '/sites/dashboard.html'
@@ -34,6 +30,10 @@ app.get("/",function(request, res) {
             console.log("Sent:", filename)
         }
     })
+})
+
+app.post("/fetch/component", function(request, response) {
+    response.send(send_component(request.body, __dirname));
 })
 
 app.post("/api/getdata", function(req, res) {
@@ -92,14 +92,6 @@ app.post('/api/servers/:id', (req, res) => {
         res.status(404).send('Server not found');
     }
 });
-
-app.get("/internal/db_controls", function(request, response) {
-    response.send(send_component([__dirname + "/shared/components/db_controls.html"]));
-})
-
-app.get("/components/test", function(request, response) {
-    response.send(send_component([__dirname + "/sites/components/test.html"]));
-})
 
 app.get('/internal/run-algorithm', function(request, response) {
     calc_distribution(serverArray, 350);

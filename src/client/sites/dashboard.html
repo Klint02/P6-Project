@@ -1,16 +1,11 @@
 <html>
-    <style>
-        table, th, td {
-          border:1px solid black;
-        }
-    </style>
+
     <body>
         
     </body>
 </html>
 
 <script>
-    //TODO: change from relative paths to absolute, do this dynamically
     async function fetch_component(url, components) {
         const response = await fetch(url, {
             method: "POST",
@@ -38,7 +33,6 @@
     }
 
     document.addEventListener("DOMContentLoaded", async function() {
-            //add_component_to_DOM(document.body, "/init");
             let components = [
                 {
                     "type": "non-shared",
