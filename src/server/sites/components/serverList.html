@@ -10,11 +10,11 @@
     .running {
         color: red;
     }
-    .button {
+    .btn {
         background-color: #04AA6D; /* Green */
         border: none;
-        min-width: 50px;
-        min-height: 50px;
+        min-width: 10px;
+        min-height: 25px;
         color: white;
         padding: 20px;
         text-align: center;
@@ -35,9 +35,18 @@ select {
         color: #555;
         font-family: Arial;
     }
+.nav {
+        display: flex;
+        justify-content: space-around;
+        background-color: #f8f8f8;
+        padding: 2%;
+        margin: 2%;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
 </style>
 
-<button class="button">hej</button>
+<!--<button class="btn" onclick="btnForChangingStateOfServer()">hej</button>-->
 <nav class="nav">
    <p>HEJ</p>
    <p>TEST</p>
@@ -70,13 +79,8 @@ async function loadServers() {
             // Set the color of the span element based on the state of the server
 
             serverList += `<li id="${item.id}">Server Name: ${server.Name} - Last known percantage: ${server.LastKnownPercentage}% URL: ${server.IP}   
-             - <span class="${server.State}">Server State: ${server.State}</span> 
-             Change to: 
-                <select id="select${item.id}" onChange="changeServerState('${server.Name}','select${item.id}')">
-                    <option value="not_init">not init</option>
-                    <option value="idle">idle</option>
-                    <option value="running">running</option>
-                </select>
+             - <span class="${server.State}">Server State: ${server.State}</span> <button class ="btn" onclick="btnForChangingStateOfServer()">Change State</button>
+
             </li>`
             
         });
@@ -105,7 +109,36 @@ async function changeServerState(serverName,elementID){
         body: JSON.stringify(data) 
     }); 
 }   
-     
+
+// Function to change the state of the server using the button
+async function btnForChangingStateOfServer(){
+  try
+  {
+     const response = await fetch('api/servers');
+     const servers = await response.json();
+
+     servers.forEach(server => {
+        console.log(server.Name);
+        if(server.State === "running"){
+           server.State = "idle";
+           console.log(server.State);
+        }
+        if(server.State === "not_init"){
+           server.State = "idle";
+           console.log(server.State);
+        }
+        // Skal lige o
+
+     });
+
+  }
+  catch (error) {
+    console.log('Error fetching servers', error);
+  }
+
+
+
+}
    
     
 loadServers()
