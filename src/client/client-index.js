@@ -97,9 +97,7 @@ app.post("/api/takecommand",function(req, res) {
                 console.log("dont yeet")
                 break
         }
-        res.json({
-            "Status": data.Status
-        });
+        res.json(data);
     }
     else {
         res.json({
