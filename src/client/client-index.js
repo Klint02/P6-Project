@@ -11,18 +11,21 @@ var db_name = "p6"
 
 const data = {
     "Server-type": "Client",
-    "Status": "online",
+    "Name": "tester",
+    "Status": "idle",
     "CurrentFill": 0,
     "CurrentChargeRate": 0,
-    "ServerKey": null
+    "Key": null
 }
 
-const BoundData = {
+const MoreData = {
     "MaxChargeRate": 70,
     "MinChargeRate": 10,
     "UBound": 80,
     "MBound": 50,
-    "LBound": 20
+    "LBound": 20,
+    "ServerKey": null,
+    "IP": "http://192.120.03.:8083" // needs to be gotten from compose.yaml
 }
 
 var con = mysql.createConnection({
@@ -34,7 +37,7 @@ var con = mysql.createConnection({
 
 var log = new logger(con);
 
-setInterval(ShakeHand, 10000)
+var ShakingHand = setInterval(ShakeHand, 10000)
 
 app.get("/",function(request,response) {
     response.sendFile(__dirname + "/sites/dashboard.html");
@@ -66,22 +69,35 @@ app.get("/api/tempdata",function(request, res) {
 })
 
 app.post("/api/takecommand",function(req, res) {
-    if (req.body["Key"] == data.ServerKey) {//needs a key specific to the server
+    //console.log("Command from server", req.body);
+    if (req.body["Key"] === MoreData.ServerKey) {//needs a key specific to the server
         switch(req.body["Command"]){
             case "Charge":
-                data.CurrentChargeRate = req.body["Rate"];
+                data.CurrentChargeRate = req.body["Rate"]
+                data.Status = "running"
                 break
             case "Stop":
                 data.CurrentChargeRate = 0;
+                data.Status = "idle"
+                break
+            case "offline":
+                if (data.Status != "not init"){
+                    data.CurrentChargeRate = 0;
+                    data.Status = "not init"
+                    clearInterval(ShakingHand)
+                }
+                break
+            case "start":
+                if (data.Status == "not init"){
+                    data.Status = "idle"
+                    var ShakingHand = setInterval(ShakeHand, 10000)
+                }
                 break
             case "Yeet":
                 console.log("dont yeet")
                 break
         }
-        res.json({
-            "status": data.status,
-            "CurrentChargeRate": data.CurrentChargeRate
-        });
+        res.json(data);
     }
     else {
         res.json({
@@ -91,17 +107,18 @@ app.post("/api/takecommand",function(req, res) {
 })
 
 async function ShakeHand(){
-    if (data.ServerKey == null) {
+    if (data.Key == null) {
         const response = await fetch("http://192.120.0.2:8082/api/shake", {
             method: "POST",
-            body: Object.assign({}, data, BoundData),
+            body: JSON.stringify(Object.assign({}, data, MoreData)),
             headers: {
                 "Content-type": "application/json; charset=UTF-8"
             }
         });
-        const movies = await response.json();
-        data.ServerKey = movies.NewServerKey;
-        console.log("new key from server", data.ServerKey);
+        const movies = await response.json()
+        data.Key = movies.NewKey
+        MoreData.ServerKey = movies.ServerKey
+        console.log("new key from server", movies.NewKey)
     }
     else {
         const response = await fetch("http://192.120.0.2:8082/api/shake", {
