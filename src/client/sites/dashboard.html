@@ -11,26 +11,44 @@
 
 <script>
     //TODO: change from relative paths to absolute, do this dynamically
-    async function fetch_component(url) {
-        const response = await fetch(url);
+    async function fetch_component(url, components) {
+        const response = await fetch(url, {
+            method: "POST",
+            body: JSON.stringify(components),
+            headers: {
+                "Content-type": "application/json; charset=UTF-8"
+            }
+        })
 
         const data = response.json();
 
         return data;
     }
 
-    async function add_component_to_DOM(placement, component_route) {
-        let component = await fetch_component(component_route);
-        placement.insertAdjacentHTML( 'beforeend', component[0]["html"]);
-        let script = document.createElement('script');
-        script.textContent = component[0]["js"];
-        placement.appendChild(script);
+    async function add_components_to_DOM(components_request) {
+        let components = await fetch_component("/fetch/component", components_request);
+            components.forEach((component, index) => {
+            components_request[index]["placement"].insertAdjacentHTML( 'beforeend', component["html"]);
+            let script = document.createElement('script');
+            script.textContent = component["js"];
+            components_request[index]["placement"].appendChild(script);
+            
+        });            
+        
     }
 
     document.addEventListener("DOMContentLoaded", async function() {
+            //add_component_to_DOM(document.body, "/init");
+            let components = [
+                {
+                    "type": "non-shared",
+                    "name": "client_frame.html",
+                    "placement": document.body,
+                    "tags": []
+                }
+            ]
+            add_components_to_DOM(components);
 
-        add_component_to_DOM(document.body, "/internal/db_controls");
-        add_component_to_DOM(document.body, "/internal/logs");
         
         })
 </script>
