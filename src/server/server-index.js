@@ -1,5 +1,7 @@
 import express from 'express';
 const app = express();
+import bodyParser from 'body-parser';
+app.use(bodyParser.json());
 app.use(express.json());
 import { send_component } from "/app/shared/mjs/component_builder.mjs";
 import { calc_distribution } from './distribution-algorithm.mjs';
@@ -20,10 +22,6 @@ function GetNewKey(){
     Keys.push(Key);
     return Key;
 }
-
-app.get("/baba", function (req, res) {
-    res.json(data);
-})
 
 app.get("/",function(request, res) {
 
@@ -113,17 +111,23 @@ app.get('/api/servers', (req, res) =>{ //
     res.json(serverArray);
 });
  // endpoint to update the state of a server
-app.post('/api/servers/:id', (req, res) => {
-    const { id } = req.params;
-    const { state: newState } = req.body;
+app.post('/api/updateServers', (req, res) => {
+    res.json("Server state updated successfully");
+    console.log(req.body);
+     //const { id } = req.params;
+     //const { state: newState } = req.body;
 
-    const server = serverArray.find(server => server.name === id);
-    if(server){
-        server.state = newState;
-        res.status(200).send('State updated successfully');
-    } else {
-        res.status(404).send('Server not found');
-    }
+    // const server = serverArray.find(server => server.name === id);
+    // if(server){
+    //     server.state = newState;
+    //     res.status(200).send('State updated successfully');
+    // } else {
+    //     res.status(404).send('Server not found');
+    // }
+});
+
+app.get("/components/serverList", function(request, response) {
+    response.send(send_component([__dirname + "/sites/components/serverList.html"]));
 });
 
 app.get("/internal/db_controls", function(request, response) {
