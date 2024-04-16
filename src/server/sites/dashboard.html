@@ -1,0 +1,32 @@
+<html>
+    <style>
+    </style>
+    <body>
+        
+    </body>
+</html>
+
+<script>
+    //TODO: change from relative paths to absolute, do this dynamically
+    async function fetch_component(url) {
+        const response = await fetch(url);
+
+        const data = response.json();
+
+        return data;
+    }
+
+    async function add_component_to_DOM(placement, component_route) {
+        let component = await fetch_component(component_route);
+        placement.insertAdjacentHTML( 'beforeend', component[0]["html"]);
+        let script = document.createElement('script');
+        script.textContent = component[0]["js"];
+        placement.appendChild(script);
+    }
+
+    document.addEventListener("DOMContentLoaded", async function() {
+
+        add_component_to_DOM(document.body, "/internal/db_controls");
+        
+        })
+</script>

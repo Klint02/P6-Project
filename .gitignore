@@ -2,8 +2,11 @@
 
 /src/client/node_modules
 
+/src/client/shared
+
 /src/server/package-lock.json
 
 /src/server/node_modules
 
+/src/server/shared
 
