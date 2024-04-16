@@ -66,7 +66,7 @@ app.get("/api/tempdata",function(request, res) {
 })
 
 app.post("/api/takecommand",function(req, res) {
-    //console.log("Command from server", req.body);
+    console.log("Command from server", req.body);
     if (req.body["Key"] === MoreData.ServerKey) {//needs a key specific to the server
         switch(req.body["Command"]){
             case "Charge":
