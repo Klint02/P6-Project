@@ -1,17 +1,9 @@
 <style>
-    .not_init {
-        color: #0000FF;
-    }
-
-    .idle {
-        color: yellow;
-    }
-
-    .running {
-        color: red;
+    .status {
+        color: #f700ff;
     }
     .btn {
-        background-color: #04AA6D; /* Green */
+        background-color: #f700ff;
         border: none;
         max-width: 5px;
         max-height: 5px;
@@ -24,8 +16,8 @@
         margin: 4px 2px;
         cursor: pointer;
         border-radius: 50%;
-}
-select {
+    }
+    select {
         padding: 2%;
         margin: 2%;
         font-size: 16px;
@@ -35,7 +27,7 @@ select {
         color: #555;
         font-family: Arial;
     }
-.nav {
+    .nav {
         display: flex;
         justify-content: space-around;
         background-color: #f8f8f8;
@@ -43,6 +35,13 @@ select {
         margin: 2%;
         border-radius: 5px;
         border: 1px solid #ccc;
+    }
+    .server {
+        background-color: #555555;
+        border: 1px solid black;        
+        border-radius: 5px;
+        margin-top: 2px;
+        margin-bottom: 2px;
     }
 </style>
 
@@ -71,26 +70,41 @@ async function loadServers() {
         // Loop through the servers
         servers.forEach(server => {
             // Create a new list item for each server
-            const item = document.createElement('li');
-            item.innerHTML = `${'Server Name:'} ${server.Name} - ${'Last known percantage:'} ${server.LastKnownPercentage + '%'} ${server.IP} `;
+            const item = document.createElement('div');
             item.id = `server${serverID++}`;
 
-            
-            // Set the color of the span element based on the state of the server
-
-            serverList += `<li id="${item.id}">Server Name: ${server.Name} - Last known percantage: ${server.LastKnownPercentage}% URL: ${server.IP}   
-             -  <button class ="btn" onclick="changeServerState('${server.Name}', '${item.id}' )"></button>
-
-            </li>`
-            
+            serverList += `<div state="${server.State}" class="server" id="${item.id}"> Server: <span class="status"> ${server.Name} </span> <button class ="btn" onclick="changeServerState('${server.Name}', '${item.id}' )"></button>
+                <br> Current fill: ${server.LastKnownPercentage}% <br> URL: ${server.IP} </div>`
         });
 
-
         list.innerHTML = serverList;
-
+        UpdateServerColor();
     } catch (error) {
         console.log('Error fetching servers', error);
     }
+}
+
+function UpdateServerColor(){
+    var list = document.getElementsByClassName('serverList')[0].getElementsByTagName('div');
+    console.log(list)
+    let color = "#f700ff";
+    for (i=0; i<list.length; i++){
+        switch(list[i].attributes.state.value){
+            case "running":
+                color = "#04AA6D"
+                break
+            case "not_init ":
+                color = "red"
+                break
+            case "idle":
+                color = "yellow"
+                break
+
+        }
+        list[i].getElementsByTagName('span')[0].style.color = color;
+        list[i].getElementsByTagName('button')[0].style.backgroundColor = color;
+    }
+    
 }
 
 async function changeServerState(serverName,elementID){ 
@@ -99,7 +113,7 @@ async function changeServerState(serverName,elementID){
 
     const data = { 
         "Name": serverName, 
-        "state": element.value 
+        "state": element.attributes.state.value
     }; 
     console.log(data); 
     const response = await fetch('/api/updateServers', { 
@@ -124,7 +138,7 @@ async function btnForChangingStateOfServer(){
 
         if(server.State === "running"){
            server.State = "not_init";
-           btn.style.background = "blue";
+           btn.style.background = "red";
            //console.log(server.State);
         }
         else if(server.State === "not_init"){
@@ -134,22 +148,19 @@ async function btnForChangingStateOfServer(){
         }
         else if(server.State === "idle"){
            server.State = "running";
-           btn.style.background = "red";
+           btn.style.background = "#04AA6D";
            //console.log(server.State);
         }
-
      });
-
   }
   catch (error) {
     console.log('Error fetching servers', error);
   }
-
-
-
 }
-   
-    
+
+
+
+
 loadServers()
 
 
