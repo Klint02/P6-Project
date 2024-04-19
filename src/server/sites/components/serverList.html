@@ -13,10 +13,10 @@
     .btn {
         background-color: #04AA6D; /* Green */
         border: none;
-        min-width: 10px;
-        min-height: 25px;
+        max-width: 5px;
+        max-height: 5px;
         color: white;
-        padding: 20px;
+        padding-top: 10px;
         text-align: center;
         text-decoration: none;
         display: inline-block;
@@ -79,11 +79,12 @@ async function loadServers() {
             // Set the color of the span element based on the state of the server
 
             serverList += `<li id="${item.id}">Server Name: ${server.Name} - Last known percantage: ${server.LastKnownPercentage}% URL: ${server.IP}   
-             - <span class="${server.State}">Server State: ${server.State}</span> <button class ="btn" onclick="btnForChangingStateOfServer()">Change State</button>
+             -  <button class ="btn" onclick="changeServerState('${server.Name}', '${item.id}' )"></button>
 
             </li>`
             
         });
+
 
         list.innerHTML = serverList;
 
@@ -106,28 +107,36 @@ async function changeServerState(serverName,elementID){
         headers: { 
             'Content-Type': 'application/json' 
         }, 
-        body: JSON.stringify(data) 
-    }); 
+        body: JSON.stringify(data)
+    });
+   btnForChangingStateOfServer();
 }   
 
 // Function to change the state of the server using the button
 async function btnForChangingStateOfServer(){
+   const btn = document.getElementsByClassName('btn')[0];
   try
   {
      const response = await fetch('api/servers');
      const servers = await response.json();
 
      servers.forEach(server => {
-        console.log(server.Name);
+
         if(server.State === "running"){
-           server.State = "idle";
-           console.log(server.State);
+           server.State = "not_init";
+           btn.style.background = "blue";
+           //console.log(server.State);
         }
-        if(server.State === "not_init"){
+        else if(server.State === "not_init"){
            server.State = "idle";
-           console.log(server.State);
+           btn.style.background = "yellow"
+           //console.log(server.State);
         }
-        // Skal lige o
+        else if(server.State === "idle"){
+           server.State = "running";
+           btn.style.background = "red";
+           //console.log(server.State);
+        }
 
      });
 
