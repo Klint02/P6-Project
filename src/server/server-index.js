@@ -68,13 +68,14 @@ async function GiveCommand(key, command, rate = 0){
     });
     const movies = await response.json()
     let serverI = serverArray.findIndex((element) => element.Key == movies.Key)
-    serverArray[serverI].LastKnownPercantage = movies.CurrentFill
+    serverArray[serverI].LastKnownPercentage = movies.CurrentFill
     serverArray[serverI].State = movies.Status
     //console.log(movies)
+    //console.log("updated saved server information", serverArray[serverI])
 }
 
 app.post("/api/shake", function(req, res) {
-    //console.log("Data from client", req.body);
+    console.log("Data from client", req.body);
     if (req.body["Key"] == null){
         let NewKey = GetNewKey();
         res.json({
@@ -85,7 +86,7 @@ app.post("/api/shake", function(req, res) {
       serverArray.push({
         "Key": NewKey,
         "Name": req.body["Name"],
-        "LastKnownPercantage": req.body["CurrentFill"],
+        "LastKnownPercentage": req.body["CurrentFill"],
         "State": req.body["Status"],
         "IP": req.body["IP"],
         "LowerBound": req.body["LBound"],
@@ -94,6 +95,7 @@ app.post("/api/shake", function(req, res) {
         "MaxChargeRate": req.body["MaxChargeRate"],
         "MinChargeRate": req.body["MinChargeRate"]
       })
+      console.log("pushed to array", serverArray);
     }
     else if (Keys.includes(req.body["Key"])){
         res.json({
@@ -105,7 +107,7 @@ app.post("/api/shake", function(req, res) {
     }
     else { //the client has key but it is not one of ours
         res.json({
-            "Error": "yes"
+            "Error": "has key but not ours"
         })
     }
 })

@@ -63,16 +63,16 @@ async function loadServers() {
         servers.forEach(server => {
             // Create a new list item for each server
             const item = document.createElement('li');
-            item.innerHTML = `${'Server Name:'} ${server.name} - ${'Last known percantage:'} ${server.lastKnownPercantage + '%'} ${server.URL} `;
+            item.innerHTML = `${'Server Name:'} ${server.Name} - ${'Last known percantage:'} ${server.LastKnownPercentage + '%'} ${server.IP} `;
             item.id = `server${serverID++}`;
 
             
             // Set the color of the span element based on the state of the server
 
-            serverList += `<li id="${item.id}">Server Name: ${server.name} - Last known percantage: ${server.lastKnownPercantage}% URL: ${server.URL}   
-             - <span class="${server.state}">Server State: ${server.state}</span> 
+            serverList += `<li id="${item.id}">Server Name: ${server.Name} - Last known percantage: ${server.LastKnownPercentage}% URL: ${server.IP}   
+             - <span class="${server.State}">Server State: ${server.State}</span> 
              Change to: 
-                <select id="select${item.id}" onChange="changeServerState('${server.name}','select${item.id}')">
+                <select id="select${item.id}" onChange="changeServerState('${server.Name}','select${item.id}')">
                     <option value="not_init">not init</option>
                     <option value="idle">idle</option>
                     <option value="running">running</option>
