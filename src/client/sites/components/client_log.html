@@ -24,7 +24,7 @@
         return data;
     }
     async function init_logs() {
-        let logs = await load_request("/internal/logs/get_logs")
+        let logs = await load_request("http://{{ serverURL }}/internal/logs/get_logs")
         let log_table_rows = "";
         logs.forEach(log => {
             log_table_rows += `<tr>
@@ -37,6 +37,4 @@
        
     }
     init_logs();
-
-    {{ function }}
 </script>

@@ -52,6 +52,7 @@
             method: "POST",
             body: JSON.stringify(components),
             headers: {
+                "Access-Control-Allow-Origin": "*",
                 "Content-type": "application/json; charset=UTF-8"
             }
         })
@@ -61,24 +62,59 @@
         return data;
     }
 
-    async function add_components_to_DOM(components_request) {
-        let components = await fetch_component("/fetch/component", components_request);
-            components.forEach((component, index) => {
-            components_request[index]["placement"].insertAdjacentHTML( 'beforeend', component["html"]);
+    function request_sorter(components_request) {
+        let request_map = new Map();
+        components_request.forEach((request) => {
+            if (!request_map.has(request["serverURL"])) {
+                request_map.set(request["serverURL"], []);
+            }
+            request_map.get(request["serverURL"]).push(request);
+        })
+        return request_map;
+    }
+    async function add_components_from_server(url, components) {
+        let components_fetched = await fetch_component(url, components);
+        components_fetched.forEach((component, index) => {
+            if (index == 0) {
+                components[index]["placement"].innerHTML = "";
+            }
+            components[index]["placement"].insertAdjacentHTML( 'beforeend', component["html"]);
             let script = document.createElement('script');
             script.textContent = component["js"];
-            components_request[index]["placement"].appendChild(script);
+            components[index]["placement"].appendChild(script);           
             
-        });            
+        });      
+
+    }
+
+    async function add_components_to_DOM(components_request) {
+        let components_promised;
+        let components_request_sorted = request_sorter(components_request);
+        components_request_sorted.forEach((element, key) => {
+            if (key != "") {
+                add_components_from_server(`http://${key}/fetch/component`, element);
+            } else {
+                add_components_from_server(`/fetch/component`, element);
+            }
+            
+        });
     }
 
     document.addEventListener("DOMContentLoaded", async function() {
             let components = [
                 {
                     "type": "non-shared",
+                    "name": "client_frame.html",
+                    "placement": document.getElementById("column-left"),
+                    "tags": [{"serverURL": "\"192.120.0.3:8083\"" }],
+                    "serverURL": "192.120.0.3:8083"
+                },
+                {
+                    "type": "non-shared",
                     "name": "serverList.html",
                     "placement": document.getElementById("column-right"),
-                    "tags": []
+                    "tags": [],
+                    "serverURL": ""
                 }
             ]
             add_components_to_DOM(components);
@@ -86,6 +122,5 @@
         //add_component_to_DOM(document.getElementById("column2"), "/internal/db_controls");
         //add_component_to_DOM(document.getElementById("column-left"), "/components/test");
         //add_component_to_DOM(document.getElementById("column-right"), "/components/serverList");
-
     })
 </script>

@@ -2,6 +2,11 @@ import express from 'express';
 const app = express();
 import bodyParser from 'body-parser';
 app.use(bodyParser.json());
+import cors from 'cors';
+app.use(cors({
+    origin: "*"
+    
+}));
 import mysql from 'mysql';
 import logger  from "./logger.mjs";
 import { send_component } from "/app/shared/mjs/component_builder.mjs";
@@ -46,11 +51,16 @@ app.get("/",function(request,response) {
     response.sendFile(__dirname + "/sites/dashboard.html");
 })
 
-app.post("/fetch/component", function(request, response) {
+var corsOptions = {
+    origin: '*',
+    optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+  }
+
+app.post("/fetch/component", cors(corsOptions), function(request, response) {
     response.send(send_component(request.body, __dirname));
 })
 
-app.get("/internal/logs/get_logs", async function(request, response) {
+app.get("/internal/logs/get_logs", cors(corsOptions), async function(request, response) {
     let result = await log.generic_SQL("SELECT * FROM `logs` ORDER BY Timestamp DESC");
     response.send(JSON.stringify(result));
 })

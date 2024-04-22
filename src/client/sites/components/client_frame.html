@@ -18,13 +18,17 @@
                     "type": "non-shared",
                     "name": "client_log.html",
                     "placement": frame,
-                    "tags": [{"client_name": "bababa"}, {"logs_id": "log1"}, {"ip": "\"1.0.0.0:8080\""}, {"function": "console.log(\"original hej\")"}]
+                    "tags": [{"client_name": "bababa"}, {"logs_id": "log1"}, { "serverURL": {{ serverURL }} }],
+                    "serverURL": "192.120.0.3:8083"
+
+
                 },
                 {
                     "type": "non-shared",
                     "name": "client_log.html",
                     "placement": frame,
-                    "tags": [{"client_name": "bobobobo"}, {"logs_id": "log2"}, {"ip": "08080"}, {"function": "console.log(\"hej\")"}]
+                    "tags": [{"client_name": "bobobobo"}, {"logs_id": "log2"}, { "serverURL": {{ serverURL }} }],
+                    "serverURL": "192.120.0.3:8083"
                 }
             ]
             add_components_to_DOM(components);
