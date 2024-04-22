@@ -71,10 +71,11 @@ async function GiveCommand(key, command, rate = 0){
     serverArray[serverI].LastKnownPercentage = movies.CurrentFill
     serverArray[serverI].State = movies.Status
     //console.log(movies)
+    //console.log("updated saved server information", serverArray[serverI])
 }
 
 app.post("/api/shake", function(req, res) {
-    //console.log("Data from client", req.body);
+    console.log("Data from client", req.body);
     if (req.body["Key"] == null){
         let NewKey = GetNewKey();
         res.json({
@@ -94,6 +95,7 @@ app.post("/api/shake", function(req, res) {
         "MaxChargeRate": req.body["MaxChargeRate"],
         "MinChargeRate": req.body["MinChargeRate"]
       })
+      console.log("pushed to array", serverArray);
     }
     else if (Keys.includes(req.body["Key"])){
         res.json({
@@ -105,7 +107,7 @@ app.post("/api/shake", function(req, res) {
     }
     else { //the client has key but it is not one of ours
         res.json({
-            "Error": "yes"
+            "Error": "has key but not ours"
         })
     }
 })
@@ -118,16 +120,6 @@ app.get('/api/servers', (req, res) =>{ //
 app.post('/api/updateServers', (req, res) => {
     res.json("Server state updated successfully");
     console.log(req.body);
-     //const { id } = req.params;
-     //const { state: newState } = req.body;
-
-    // const server = serverArray.find(server => server.name === id);
-    // if(server){
-    //     server.state = newState;
-    //     res.status(200).send('State updated successfully');
-    // } else {
-    //     res.status(404).send('Server not found');
-    // }
 });
 
 app.get('/internal/run-algorithm', function(request, response) {

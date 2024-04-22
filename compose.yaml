@@ -40,7 +40,7 @@ services:
     networks:
       hydro_net:
         ipv4_address: 192.120.0.3
-    command: "node --watch --trace-warnings client-index.js"
+    command: "node --watch --trace-warnings client-index.js tester 192.120.0.3:8083 70 10 80 50 20"
     working_dir: /app
     volumes:
       - ./src/client:/app
