@@ -120,16 +120,6 @@ app.get('/api/servers', (req, res) =>{ //
 app.post('/api/updateServers', (req, res) => {
     res.json("Server state updated successfully");
     console.log(req.body);
-     //const { id } = req.params;
-     //const { state: newState } = req.body;
-
-    // const server = serverArray.find(server => server.name === id);
-    // if(server){
-    //     server.state = newState;
-    //     res.status(200).send('State updated successfully');
-    // } else {
-    //     res.status(404).send('Server not found');
-    // }
 });
 
 app.get('/internal/run-algorithm', function(request, response) {
