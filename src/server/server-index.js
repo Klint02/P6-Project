@@ -55,7 +55,7 @@ async function GiveCommand(key, command, rate = 0){
 }
 
 function ServerCommander(){
-    let distribution = calc_distribution(serverArray, 500, args[0], args[1], args[2])
+    let distribution = calc_distribution(serverArray, 50, args[0], args[1], args[2])
     distribution.forEach(element => {
         if (element.current_input > 0 || element.current_input < 0){
             GiveCommand(element.Key, "Charge", element.current_input)

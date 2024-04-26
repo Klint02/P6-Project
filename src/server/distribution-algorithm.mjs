@@ -71,12 +71,14 @@ export function calc_distribution(servers, current_kwh, lower_type, middle_type,
 function MaximumInput(server, distribution, current_kwh){
     for(let i = 0; i < server.length; i++) {
         let out = { "Key": server[i]["Key"], "current_input": 0 }
-        let tmp_current_kwh = current_kwh;
+        let posiblecharge = current_kwh;
         current_kwh -= parseInt(server[i]["MaxChargeRate"])
         if (current_kwh < 0) { 
-            out["current_input"] = tmp_current_kwh;
+            out["current_input"] = posiblecharge;
+            current_kwh = 0;
             distribution.push(out);
-        } else {
+        }
+        else {
             out["current_input"] = server[i]["MaxChargeRate"];
             distribution.push(out);
         }
