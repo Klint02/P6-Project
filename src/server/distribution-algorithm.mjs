@@ -28,7 +28,7 @@ export function calc_distribution(servers, current_kwh, lower_type, middle_type,
             res = MaximumInput(lower_bound, distribution, current_kwh)
             break
         case "smg":
-            res = smg(lower_bound, distribution, current_kwh)
+            res = ProcentInput(lower_bound, distribution, current_kwh)
             break
         case "sniper":
             res = sniper(lower_bound, distribution, current_kwh)
@@ -41,7 +41,7 @@ export function calc_distribution(servers, current_kwh, lower_type, middle_type,
             res = MaximumInput(middle_bound, distribution, current_kwh)
             break
         case "smg":
-            res = smg(middle_bound, distribution, current_kwh)
+            res = ProcentInput(middle_bound, distribution, current_kwh)
             break
         case "sniper":
             res = sniper(middle_bound, distribution, current_kwh)
@@ -54,7 +54,7 @@ export function calc_distribution(servers, current_kwh, lower_type, middle_type,
             res = MaximumInput(upper_bound, distribution, current_kwh)
             break
         case "smg":
-            res = smg(upper_bound, distribution, current_kwh)
+            res = ProcentInput(upper_bound, distribution, current_kwh)
             break
         case "sniper":
             res = sniper(upper_bound, distribution, current_kwh)
@@ -72,11 +72,10 @@ function MaximumInput(server, distribution, current_kwh){
     for(let i = 0; i < server.length; i++) {
         let out = { "Key": server[i]["Key"], "current_input": 0 }
         let tmp_current_kwh = current_kwh;
-        current_kwh -= server[i]["MaxChargeRate"]
+        current_kwh -= parseInt(server[i]["MaxChargeRate"])
         if (current_kwh < 0) { 
             out["current_input"] = tmp_current_kwh;
             distribution.push(out);
-            break;
         } else {
             out["current_input"] = server[i]["MaxChargeRate"];
             distribution.push(out);
@@ -84,14 +83,30 @@ function MaximumInput(server, distribution, current_kwh){
     }
     return [distribution, current_kwh]
 }
-function smg(server, distribution, current_kwh){
+function ProcentInput(server, distribution, current_kwh){
+    let totalcharge = 0;
+    for(let i = 0; i < server.length; i++) {
+        totalcharge += parseInt(server[i]["MaxChargeRate"])
+    }
+    let procent = current_kwh/totalcharge;
+    console.log(current_kwh, totalcharge, procent)
     for(let i = 0; i < server.length; i++) {
         let out = { "Key": server[i]["Key"], "current_input": 0 }
+        let posiblecharge = server[i]["MaxChargeRate"] * procent;
+        if (posiblecharge <= parseInt(server[i]["MaxChargeRate"])){
+            out["current_input"] = posiblecharge
+        }
+        else {
+            out["current_input"] = parseInt(server[i]["MaxChargeRate"])
+        }
         distribution.push(out);
     }
     return [distribution, current_kwh]
 }
 function sniper(server, distribution, current_kwh){
-
+    for(let i = 0; i < server.length; i++) {
+        let out = { "Key": server[i]["Key"], "current_input": 0 }
+        distribution.push(out);
+    }
     return [distribution, current_kwh]
 }
