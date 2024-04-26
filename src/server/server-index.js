@@ -57,7 +57,12 @@ async function GiveCommand(key, command, rate = 0){
 function ServerCommander(){
     let distribution = calc_distribution(serverArray, 500, args[0], args[1], args[2])
     distribution.forEach(element => {
-        
+        if (element.current_input > 0 || element.current_input < 0){
+            GiveCommand(element.Key, "Charge", element.current_input)
+        }
+        else if (element.current_input == 0){
+            GiveCommand(element.Key, "Stop")
+        }
     });
 }
 
@@ -92,14 +97,14 @@ app.post("/api/shake", function(req, res) {
       serverArray.push({
         "Key": NewKey,
         "Name": req.body["Name"],
-        "LastKnownPercentage": req.body["CurrentFill"],
+        "LastKnownPercentage": (req.body["CurrentFill"]/req.body["MaxCapacity"]),
         "State": req.body["Status"],
         "IP": req.body["IP"],
         "LowerBound": req.body["LBound"],
         "MiddleBound": req.body["MBound"],
         "MaxChargeRate": req.body["MaxChargeRate"],
         "MaxDischarge": req.body["MaxDischarge"],
-        "MaxCapacity": req.body["MaxCapacity"]
+        "Capacity": req.body["MaxCapacity"]
       })
       //console.log("pushed to array", serverArray);
     }

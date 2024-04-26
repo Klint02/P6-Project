@@ -160,7 +160,7 @@ async function ShakeHand() {
 }
 
 
-app.listen(8083, function () {
-    console.log("Started application on port %d", 8083)
+app.listen(args[1].slice(-4), function () {
+    console.log("Started application on port %d", args[1].slice(-4))
 });
 

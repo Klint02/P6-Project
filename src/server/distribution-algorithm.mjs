@@ -19,65 +19,66 @@ export function calc_distribution(servers, current_kwh, lower_type, middle_type,
             }
         }
     });
-    console.log("lower bound servers", lower_bound);
-    console.log("middle bound servers", middle_bound);
-    console.log("upper bound servers", upper_bound);
+    //console.log("lower bound servers", lower_bound);
+    //console.log("middle bound servers", middle_bound);
+    //console.log("upper bound servers", upper_bound);
     
     switch (lower_type){
         case "shotgun":
             res = MaximumInput(lower_bound, distribution, current_kwh)
             break
         case "smg":
-            smg(lower_bound)
+            res = smg(lower_bound, distribution, current_kwh)
             break
         case "sniper":
-            sniper(lower_bound)
+            res = sniper(lower_bound, distribution, current_kwh)
             break
     }
     distribution = res[0];
     current_kwh = res[1];
     switch (middle_type){
         case "shotgun":
-            MaximumInput(middle_bound)
+            res = MaximumInput(middle_bound, distribution, current_kwh)
             break
         case "smg":
-            smg(middle_bound)
+            res = smg(middle_bound, distribution, current_kwh)
             break
         case "sniper":
-            sniper(middle_bound)
+            res = sniper(middle_bound, distribution, current_kwh)
             break
     }
     distribution = res[0];
     current_kwh = res[1];
     switch (upper_type){
         case "shotgun":
-            MaximumInput(upper_bound)
+            res = MaximumInput(upper_bound, distribution, current_kwh)
             break
         case "smg":
-            smg(upper_bound)
+            res = smg(upper_bound, distribution, current_kwh)
             break
         case "sniper":
-            sniper(upper_bound)
+            res = sniper(upper_bound, distribution, current_kwh)
             break
     }
     distribution = res[0];
     current_kwh = res[1];
 
-    console.log(distribution);
+    console.log("distribution", distribution);
+    console.log("res kwh", current_kwh);
     return distribution
 }
 
 function MaximumInput(server, distribution, current_kwh){
     for(let i = 0; i < server.length; i++) {
-        let out = { "key": server[i]["Key"], "current_input": 0 }
+        let out = { "Key": server[i]["Key"], "current_input": 0 }
         let tmp_current_kwh = current_kwh;
-        current_kwh -= server[i]["MaxInput"]
+        current_kwh -= server[i]["MaxChargeRate"]
         if (current_kwh < 0) { 
             out["current_input"] = tmp_current_kwh;
             distribution.push(out);
             break;
         } else {
-            out["current_input"] = server[i]["MaxInput"];
+            out["current_input"] = server[i]["MaxChargeRate"];
             distribution.push(out);
         }
     }
@@ -85,8 +86,8 @@ function MaximumInput(server, distribution, current_kwh){
 }
 function smg(server, distribution, current_kwh){
     for(let i = 0; i < server.length; i++) {
-        let out = { "key": server[i]["Key"], "current_input": 0 }
-        
+        let out = { "Key": server[i]["Key"], "current_input": 0 }
+        distribution.push(out);
     }
     return [distribution, current_kwh]
 }
