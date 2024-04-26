@@ -120,19 +120,13 @@ app.post("/api/takecommand", function (req, res) {
     }
 })
 function charging() {
-
-    if (Math.round(data.CurrentFill) < MoreData.MaxCapacity) {
-        //returns how many kg of hydrogen is added to current fill.
-        data.CurrentFill += data.CurrentChargeRate / energyNeeded;
-
-
-    if (((data.CurrentFill / 100) * data.MaxCapacity) < data.MaxCapacity-1 ) {
+    if (((data.CurrentFill / 100) * data.MaxCapacity) < MoreData.MaxCapacity-1 ) {
         let num = data.CurrentChargeRate / energyNeeded;
         if (data.CurrentChargeRate > 0) {
             //returns how many kg of hydrogen is added to current fill.
             data.CurrentFill += (num / data.MaxCapacity) * 100;
         } else {
-            data.CurrentFill -= (num / data.MaxCapacity) * 100;
+            data.CurrentFill -= ((data.CurrentChargeRate/hydrogenEnergy) / data.MaxCapacity) * 100;
         }
 
         //stores how many kwh the hydrogen converts into.
@@ -148,7 +142,7 @@ function charging() {
     } else {
         console.log("Already full: " + data.CurrentFill.toFixed(2)+'%');
     }
-}}
+}
 
 
 async function ShakeHand() {
