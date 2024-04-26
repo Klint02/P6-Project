@@ -14,7 +14,7 @@ import { send_component } from "/app/shared/mjs/component_builder.mjs";
 let __dirname = "/app";
 var db_name = "p6";
 
-// node.js [Name] [IP:Port] [max charge rate] [min charge rate] [upper bound] [middle bound] [lower bound]
+// node.js [Name] [IP:Port] [charge capacity] [middle bound] [lower bound]
 var args = process.argv.slice(2);
 const data = {
     "Server-type": "Client",
@@ -27,10 +27,8 @@ const data = {
 
 const MoreData = {
     "MaxChargeRate": args[2],
-    "MinChargeRate": args[3],
-    "UBound": args[4],
-    "MBound": args[5],
-    "LBound": args[6],
+    "MBound": args[3],
+    "LBound": args[4],
     "ServerKey": null,
     "IP": "http://" + args[1]
 }

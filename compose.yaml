@@ -21,7 +21,7 @@ services:
       hydro_net:
         ipv4_address: 192.120.0.2
 
-    command: "node --watch --trace-warnings server-index.js"
+    command: "node --watch --trace-warnings server-index.js smg smg sniper"
     working_dir: /app
     volumes:
       - ./src/server:/app
@@ -35,12 +35,12 @@ services:
       node-init:
         condition: service_completed_successfully
 
-  node-client:
+  node-client1:
     image: "node:21-alpine"
     networks:
       hydro_net:
         ipv4_address: 192.120.0.3
-    command: "node --watch --trace-warnings client-index.js tester 192.120.0.3:8083 70 10 80 50 20"
+    command: "node --watch --trace-warnings client-index.js tester1 192.120.0.3:8083 500 70 20"
     working_dir: /app
     volumes:
       - ./src/client:/app
@@ -49,6 +49,25 @@ services:
       - 8083:8083
     expose:
       - 8083
+
+    depends_on:
+      node-init-2:
+        condition: service_completed_successfully
+
+  node-client2:
+    image: "node:21-alpine"
+    networks:
+      hydro_net:
+        ipv4_address: 192.120.0.4
+    command: "node --watch --trace-warnings client-index.js tester2 192.120.0.4:8084 300 70 20"
+    working_dir: /app
+    volumes:
+      - ./src/client:/app
+      - ./src/shared:/app/shared
+    ports:
+      - 8084:8084
+    expose:
+      - 8084
 
     depends_on:
       node-init-2:
