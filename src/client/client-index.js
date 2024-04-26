@@ -124,13 +124,13 @@ function charging() {
         let num = data.CurrentChargeRate / energyNeeded;
         if (data.CurrentChargeRate > 0) {
             //returns how many kg of hydrogen is added to current fill.
-            data.CurrentFill += (num / data.MaxCapacity) * 100;
+            data.CurrentFill += (num / MoreData.MaxCapacity) * 100;
         } else {
-            data.CurrentFill -= ((data.CurrentChargeRate/hydrogenEnergy) / data.MaxCapacity) * 100;
+            data.CurrentFill -= ((data.CurrentChargeRate/hydrogenEnergy) / MoreData.MaxCapacity) * 100;
         }
 
         //stores how many kwh the hydrogen converts into.
-        data.MaxDischarge = ((data.CurrentFill/100)*data.MaxCapacity) * hydrogenEnergy;
+        data.MaxDischarge = ((data.CurrentFill/100)*MoreData.MaxCapacity) * hydrogenEnergy;
         console.log("Max Discharge at the moment: " + (data.MaxDischarge).toFixed(2) + "kwh");
 
         //Prints how many procent the tank is fill.
