@@ -46,7 +46,11 @@ var log = new logger(con);
 
 
 var ShakingHand = setInterval(ShakeHand, 10000);
+<<<<<<< Updated upstream
 setInterval(charging, 15000);
+=======
+setInterval(charging, 10);
+>>>>>>> Stashed changes
 
 app.get("/", function (request, response) {
     response.sendFile(__dirname + "/sites/dashboard.html");
@@ -116,21 +120,36 @@ app.post("/api/takecommand", function (req, res) {
     }
 })
 function charging() {
+<<<<<<< Updated upstream
     if (Math.round(data.CurrentFill) < MoreData.MaxCapacity) {
         //returns how many kg of hydrogen is added to current fill.
         data.CurrentFill += data.CurrentChargeRate / energyNeeded;
 
+=======
+    if (((data.CurrentFill / 100) * data.MaxCapacity) < data.MaxCapacity-1 ) {
+        let num = data.CurrentChargeRate / energyNeeded;
+        if (data.CurrentChargeRate > 0) {
+            //returns how many kg of hydrogen is added to current fill.
+            data.CurrentFill += (num / data.MaxCapacity) * 100;
+        } else {
+            data.CurrentFill -= (num / data.MaxCapacity) * 100;
+        }
+>>>>>>> Stashed changes
         //stores how many kwh the hydrogen converts into.
-        data.MaxDischarge = data.CurrentFill * hydrogenEnergy;
+        data.MaxDischarge = ((data.CurrentFill/100)*data.MaxCapacity) * hydrogenEnergy;
         console.log("Max Discharge at the moment: " + (data.MaxDischarge).toFixed(2) + "kwh");
 
         //Prints how many procent the tank is fill.
+<<<<<<< Updated upstream
         console.log("Tank filled up: " + ((data.CurrentFill / MoreData.MaxCapacity) * 100).toFixed(2) + '%')
+=======
+        console.log("Tank filled up: " + data.CurrentFill.toFixed(2) + '%')
+>>>>>>> Stashed changes
     } else {
-        console.log("Already full: " + data.CurrentFill.toFixed(2));
+        console.log("Already full: " + data.CurrentFill.toFixed(2)+'%');
     }
-
 }
+
 
 async function ShakeHand() {
     if (data.Key == null) {
