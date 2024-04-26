@@ -13,8 +13,12 @@ const data = {
     "Status": "online",
     "Key": "257052945"
 }
-
+//Array of different "servers"
+let serverArray = [];
+// node.js [lower_distribution_type] [middle_distribution_type] [upper_distribution_type]
+var args = process.argv.slice(2);
 const Keys = [];
+setInterval(ServerCommander, 13000)
 
 function GetNewKey(){
     let Key = (Keys.length * 2)+3;//should be changed to a better key system
@@ -22,30 +26,6 @@ function GetNewKey(){
     Keys.push(Key);
     return Key;
 }
-
-app.get("/",function(request, res) {
-
-    const filename = '/sites/dashboard.html'
-    res.sendFile(__dirname + filename, function(err){
-        if(err){
-            console.log("Error sending file:", err)
-        }else{
-            console.log("Sent:", filename)
-        }
-    })
-})
-
-app.post("/fetch/component", function(request, response) {
-    response.send(send_component(request.body, __dirname));
-})
-
-app.post("/api/getdata", function(req, res) {
-    value = req;
-    console.log(value, "WOWOOWWO")
-    res.json(data);
-})
-
-
 async function GiveCommand(key, command, rate = 0){
     let FetchIP = (serverArray.find((element) => element.Key == key).IP + "/api/takecommand")
     let Body = JSON.stringify({
@@ -74,8 +54,34 @@ async function GiveCommand(key, command, rate = 0){
     //console.log("updated saved server information", serverArray[serverI])
 }
 
+function ServerCommander(){
+    let distribution = calc_distribution(serverArray, 500, args[0], args[1], args[2])
+    distribution.forEach(element => {
+        
+    });
+}
+
+app.get("/",function(request, res) {
+
+    const filename = '/sites/dashboard.html'
+    res.sendFile(__dirname + filename, function(err){
+        if(err){
+            console.log("Error sending file:", err)
+        }else{
+            console.log("Sent:", filename)
+        }
+    })
+})
+app.post("/fetch/component", function(request, response) {
+    response.send(send_component(request.body, __dirname));
+})
+app.post("/api/getdata", function(req, res) {
+    value = req;
+    console.log(value, "WOWOOWWO")
+    res.json(data);
+})
 app.post("/api/shake", function(req, res) {
-    console.log("Data from client", req.body);
+    //console.log("Data from client", req.body);
     if (req.body["Key"] == null){
         let NewKey = GetNewKey();
         res.json({
@@ -95,7 +101,7 @@ app.post("/api/shake", function(req, res) {
         "MaxDischarge": req.body["MaxDischarge"],
         "MaxCapacity": req.body["MaxCapacity"]
       })
-      console.log("pushed to array", serverArray);
+      //console.log("pushed to array", serverArray);
     }
     else if (Keys.includes(req.body["Key"])){
         res.json({
@@ -103,15 +109,13 @@ app.post("/api/shake", function(req, res) {
             "Key": data.Key
         });
         //console.log("data saved", serverArray);
-        GiveCommand(req.body["Key"], "Charge", 50);
     }
     else { //the client has key but it is not one of ours
         res.json({
-            "Error": "has key but not ours"
+            "Error": "wrong key"
         })
     }
 })
-
 // This is the endpoint to get the array of servers
 app.get('/api/servers', (req, res) =>{ // 
     res.json(serverArray);
@@ -121,26 +125,15 @@ app.post('/api/updateServers', (req, res) => {
     res.json("Server state updated successfully");
     console.log(req.body);
 });
-
-app.get('/internal/run-algorithm', function(request, response) {
-    calc_distribution(serverArray, 350);
-})
-
 app.get("/components/serverList", function(request, response) {
     response.send(send_component([__dirname + "/sites/components/serverList.html"]));
 });
-
 app.get("/internal/db_controls", function(request, response) {
     response.send(send_component([__dirname + "/shared/components/db_controls.html"]));
 })
-
 app.get('/internal/run-algorithm', function(request, response) {
-    calc_distribution(serverArray);
+    calc_distribution(serverArray, 9000, args[0], args[1], args[2]);
 })
-
-//Array of different "servers"
-let serverArray = [];
-
 app.listen(8082, function () {
     console.log("Started application on port %d", 8082)
 });
