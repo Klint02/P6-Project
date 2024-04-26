@@ -97,7 +97,9 @@ app.post("/api/shake", function(req, res) {
         "IP": req.body["IP"],
         "LowerBound": req.body["LBound"],
         "MiddleBound": req.body["MBound"],
-        "MaxInput": req.body["MaxChargeRate"]
+        "MaxChargeRate": req.body["MaxChargeRate"],
+        "MaxDischarge": req.body["MaxDischarge"],
+        "MaxCapacity": req.body["MaxCapacity"]
       })
       //console.log("pushed to array", serverArray);
     }
