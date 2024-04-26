@@ -22,8 +22,6 @@ const data = {
     "Status": "idle",
     "CurrentFill": 0,
     "CurrentChargeRate": 0,
-    //KG of hydrogen.
-    "MaxCapacity": 500,
     "MaxDischarge": 0,
     "Key": null
 }
@@ -35,6 +33,7 @@ const MoreData = {
     "MBound": args[5],
     "LBound": args[6],
     "ServerKey": null,
+    "MaxCapacity": 500, //KG of hydrogen.
     "IP": "http://" + args[1]
 }
 
@@ -49,7 +48,7 @@ var log = new logger(con);
 
 
 var ShakingHand = setInterval(ShakeHand, 10000);
-setInterval(charging, 100);
+setInterval(charging, 15000);
 
 app.get("/", function (request, response) {
     response.sendFile(__dirname + "/sites/dashboard.html");
@@ -119,7 +118,7 @@ app.post("/api/takecommand", function (req, res) {
     }
 })
 function charging() {
-    if (Math.round(data.CurrentFill) < data.MaxCapacity) {
+    if (Math.round(data.CurrentFill) < MoreData.MaxCapacity) {
         //returns how many kg of hydrogen is added to current fill.
         data.CurrentFill += data.CurrentChargeRate / energyNeeded;
 
@@ -128,7 +127,7 @@ function charging() {
         console.log("Max Discharge at the moment: " + (data.MaxDischarge).toFixed(2) + "kwh");
 
         //Prints how many procent the tank is fill.
-        console.log("Tank filled up: " + ((data.CurrentFill / data.MaxCapacity) * 100).toFixed(2) + '%')
+        console.log("Tank filled up: " + ((data.CurrentFill / MoreData.MaxCapacity) * 100).toFixed(2) + '%')
     } else {
         console.log("Already full: " + data.CurrentFill.toFixed(2));
     }
