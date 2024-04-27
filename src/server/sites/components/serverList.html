@@ -45,12 +45,9 @@
     }
 </style>
 
-<!--<button class="btn" onclick="btnForChangingStateOfServer()">hej</button>-->
-<nav class="nav">
-   <p>HEJ</p>
-   <p>TEST</p>
-   <p>GED</p>
-</nav>
+<div id="serverList">
+
+</div>
 
 
 <script>
@@ -61,9 +58,10 @@ async function loadServers() {
         const response = await fetch('api/servers');
         const servers = await response.json();
         let serverID = 0;
-
+        console.log(servers);
         // Get the list element
-        const list = document.getElementsByClassName('serverList')[0];
+        const list = document.getElementById('serverList');
+        console.log(list);
         // Clear the list
         list.innerHTML = '';
         let serverList = '';
@@ -72,7 +70,6 @@ async function loadServers() {
             // Create a new list item for each server
             const item = document.createElement('div');
             item.id = `server${serverID++}`;
-
             serverList += `<div state="${server.State}" class="server" id="${item.id}"> Server: <span class="status"> ${server.Name} </span> <button class ="btn" onclick="changeServerState('${server.Name}', '${item.id}' )"></button>
                 <br> Current fill: ${server.LastKnownPercentage}% <br> URL: ${server.IP} </div>`
         });
@@ -85,7 +82,7 @@ async function loadServers() {
 }
 
 function UpdateServerColor(){
-    var list = document.getElementsByClassName('serverList')[0].getElementsByTagName('div');
+    var list = document.getElementById('serverList').getElementsByTagName('div');
     console.log(list)
     let color = "#f700ff";
     for (i=0; i<list.length; i++){

@@ -1,0 +1,68 @@
+.background {
+    color: #011627; /* Pane */
+    color: #1b3a56; /* Background */
+    color: #0167e3; /* Banner 1 */
+    color: #013f88; /* Banner 2 */
+}
+
+html, body {
+    min-height: 100vh !important;
+    margin: 0;
+}
+
+body {
+    background: #1b3a56;
+}
+
+#content-body {
+    /*display:flex;*/ 
+    height: 98.4vh;
+    display: grid;
+    grid-template-columns: 4fr 1fr;
+    grid-template-rows: 3fr 1.5fr;
+    gap: 25px;
+    padding: 10px;
+}
+
+.pane {
+    background-color: #011627; /* Pane */
+    border-radius: 10px;
+}
+
+.pane-topbar {
+    background-color: #0167e3;
+    color: aliceblue;
+    height: 35px;
+    width: auto;
+    margin: 0;
+    border-radius: 10px 10px 0px 0px;
+    padding-left: 15px;
+
+}
+
+.frame {
+    padding: 10px;
+    border-radius: 10px;
+
+}
+
+#column-left-top {
+    grid-row-start: 1;
+    grid-row-end: 1;
+    grid-column-start: 1;
+    grid-column-end: 1;
+}
+
+#column-left-bottom {
+    grid-row-start: 2;
+    grid-row-end: 2;
+    grid-column-start: 1;
+    grid-column-end: 1;
+}
+
+#column-right {
+    grid-row-start: 1;
+    grid-row-end: 3;
+    grid-column-start: 2;
+    grid-column-end: 2;
+}

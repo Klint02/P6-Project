@@ -1,5 +1,9 @@
 <!DOCTYPE html>
 <html>
+
+<head>
+    <link rel="stylesheet" href="/shared/styles/styles.css">
+  </head>
 <style>
     
     .serverList {
@@ -9,37 +13,31 @@
         height:100%;
         
     }
-    .component_holder{
-        border: 1px solid #555;
-        border-radius: 5px;
-        margin: 4px;
-        padding: 10px;
-    }
-    body {background: linear-gradient(90deg, #A9F1DF, #FFBBBB);}
+
 
 </style>
 
 <body>
-
-    <div id="row" style="display:flex">
-        <div class ="component_holder" id="column-left" style="width: 80%;">
-            <div  style="display: flex; height: 600px;">
-                <h1>Random ass graf</h1>
-            </div>
-        <div id="table-scroll">
-            <p id="Test0"></p>
+    <div id="content-body">
+        <div id="column-left-top" class="pane">
+            <h2 class="pane-topbar">
+                Dashboards
+            </h2>
+            <div id="column-left-top-frame" class="frame"></div>
         </div>
+        <div id="column-left-bottom" class="pane">
+            <h2 class="pane-topbar">
+                Energy data
+            </h2>
+            <div id="column-left-bottom-frame" class="frame"></div>
         </div>
-        
-            
-
-
-
-        <div class="component_holder" id="column-right" style="width:20%;">    
-                <ul class="serverList"></ul>
+        <div id="column-right" class="pane">
+            <h2 class="pane-topbar">
+                Servers
+            </h2>
+            <div id="column-right-frame" class="frame"></div>
         </div>
     </div>
-
 
 </body>
 
@@ -101,24 +99,25 @@
     }
 
     document.addEventListener("DOMContentLoaded", async function() {
-            let components = [
+        
+        let components = [
                 {
                     "type": "non-shared",
                     "name": "client_frame.html",
-                    "placement": document.getElementById("column-left"),
+                    "placement": document.getElementById("column-left-top-frame"),
                     "tags": [{"serverURL": "\"192.120.0.3:8083\"" }],
                     "serverURL": "192.120.0.3:8083"
                 },
                 {
                     "type": "non-shared",
                     "name": "serverList.html",
-                    "placement": document.getElementById("column-right"),
+                    "placement": document.getElementById("column-right-frame"),
                     "tags": [],
                     "serverURL": ""
-                }
+                },
+                
             ]
             add_components_to_DOM(components);
-  
         //add_component_to_DOM(document.getElementById("column2"), "/internal/db_controls");
         //add_component_to_DOM(document.getElementById("column-left"), "/components/test");
         //add_component_to_DOM(document.getElementById("column-right"), "/components/serverList");

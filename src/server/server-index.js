@@ -8,6 +8,9 @@ import { calc_distribution } from './distribution-algorithm.mjs';
 
 let value = 0;
 let __dirname = "/app";
+
+app.use('/shared', express.static(__dirname + '/shared'));
+
 const data = {
     "Server-type": "Central",
     "Status": "online",
@@ -124,14 +127,6 @@ app.post('/api/updateServers', (req, res) => {
 
 app.get('/internal/run-algorithm', function(request, response) {
     calc_distribution(serverArray, 350);
-})
-
-app.get("/components/serverList", function(request, response) {
-    response.send(send_component([__dirname + "/sites/components/serverList.html"]));
-});
-
-app.get("/internal/db_controls", function(request, response) {
-    response.send(send_component([__dirname + "/shared/components/db_controls.html"]));
 })
 
 app.get('/internal/run-algorithm', function(request, response) {
