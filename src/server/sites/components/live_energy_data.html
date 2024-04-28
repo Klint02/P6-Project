@@ -1,34 +1,25 @@
 <style>
-    h1 {color: blue;}
 
-    body {background: linear-gradient(90deg, #A9F1DF, #FFBBBB);}
-
-    table {
-        border-collapse: collapse;
-        margin: 10px;
-        font-family: Arial;
-        font-size: 16px;
-        text-align: left;
-    }
-
-    td,tr,th{
-    padding:10px;
-}
-#table-scroll{
-  height:390;
-  overflow:auto;  
-  margin-bottom:20px;
-  white-space:nowrap;
-
+#data-table-div{
+    overflow: scroll;  
+    width: 100%;
 }
 
+.energy-table {
+    border: 1px;
+    width: 100%;
+    color: aliceblue;
+    border-color: aliceblue;
+
+}
 </style>
 
 
 
-<!-- <div id="table-scroll">
-    <p id="Test0"></p>
-</div> -->
+<div id="data-table-div" style="">
+
+</div>
+<canvas id="energy-graph" style="width: 300; height: 300; display: none;" onclick="getheight()"></canvas>
 
 <script>
     //Fetcher data fra energinet api og ligger det over i variablen 'data'.
@@ -36,7 +27,7 @@
         var data = await fetch('https://api.energidataservice.dk/dataset/PowerSystemRightNow')
             .then((response) => response.json()).then((data => {
                 console.log(data)
-                let text = "<table border='1'>"
+                let text = "<table class=\"energy-table\">"
                 text += "<tr>";
                 for (let item in data.records[0]) {
 
@@ -61,12 +52,25 @@
                     text += "</tr>";
                 }
                 text += "</table>"
-                document.getElementById(`Test0`).innerHTML = text;
+                document.getElementById(`data-table-div`).innerHTML = text;
             }))
     }
 
 
     fetchingAndShit(); 
+
+    const canvas = document.getElementById("energy-graph");
+    const ctx = canvas.getContext("2d");
+    let energy_pane_size = document.getElementById("column-left-bottom").getBoundingClientRect()
+    let energy_topbar_size = document.getElementById("energy-topbar").getBoundingClientRect()
+    canvas.height = energy_pane_size.height - energy_topbar_size.height - 25;
+    canvas.width = energy_pane_size.width - 20;
+    ctx.fillStyle = "green";
+    ctx.fillRect(10, 10, 150, 100);
+
+    function getheight() {
+        console.log(document.getElementById("column-left-bottom-frame").offsetHeight);
+    }
     
    
 </script>

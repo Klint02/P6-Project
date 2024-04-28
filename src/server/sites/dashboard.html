@@ -3,19 +3,7 @@
 
 <head>
     <link rel="stylesheet" href="/shared/styles/styles.css">
-  </head>
-<style>
-    
-    .serverList {
-        list-style-type: none;
-        margin: 4px;
-        padding: 0;
-        height:100%;
-        
-    }
-
-
-</style>
+</head>
 
 <body>
     <div id="content-body">
@@ -26,8 +14,16 @@
             <div id="column-left-top-frame" class="frame"></div>
         </div>
         <div id="column-left-bottom" class="pane">
-            <h2 class="pane-topbar">
+            <h2 id="energy-topbar" class="pane-topbar">
                 Energy data
+
+                <span>
+                    <!-- Rounded switch -->
+                    <label class="switch">
+                        <input type="checkbox" id="graph_checkbox">
+                        <span class="slider round"></span>
+                    </label>
+                </span>
             </h2>
             <div id="column-left-bottom-frame" class="frame"></div>
         </div>
@@ -35,7 +31,11 @@
             <h2 class="pane-topbar">
                 Servers
             </h2>
-            <div id="column-right-frame" class="frame"></div>
+            <div id="column-right-frame" class="frame">
+                <canvas>
+
+                </canvas>
+            </div>
         </div>
     </div>
 
@@ -44,6 +44,20 @@
 </html>
 
 <script>
+    graph_checkbox = document.getElementById('graph_checkbox');
+
+    graph_checkbox.addEventListener('change', function() {
+        if (this.checked) {
+            document.getElementById("energy-graph").style.display="block";
+            document.getElementById("data-table-div").style.display="none"
+            console.log("checked");
+        } else {
+            document.getElementById("energy-graph").style.display="none"
+            document.getElementById("data-table-div").style.display="block";
+            console.log("not checked");
+        }
+    });
+
     //TODO: change from relative paths to absolute, do this dynamically
     async function fetch_component(url, components) {
         const response = await fetch(url, {
@@ -110,8 +124,15 @@
                 },
                 {
                     "type": "non-shared",
-                    "name": "serverList.html",
+                    "name": "server_list.html",
                     "placement": document.getElementById("column-right-frame"),
+                    "tags": [],
+                    "serverURL": ""
+                },
+                {
+                    "type": "non-shared",
+                    "name": "live_energy_data.html",
+                    "placement": document.getElementById("column-left-bottom-frame"),
                     "tags": [],
                     "serverURL": ""
                 },
