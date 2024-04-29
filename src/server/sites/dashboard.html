@@ -113,6 +113,14 @@ graph_checkbox = document.getElementById('graph_checkbox');
             
         });
     }
+
+    let server_controls_component = [{
+                    "type": "non-shared",
+                    "name": "controls.html",
+                    "placement": document.getElementById("column-left-top-frame"),
+                    "tags": [],
+                    "serverURL": ""
+                }]
     document.addEventListener("DOMContentLoaded", async function() {
             let components = [
                 {
@@ -129,12 +137,10 @@ graph_checkbox = document.getElementById('graph_checkbox');
                     "tags": [],
                     "serverURL": ""
                 },
+                server_controls_component[0]
+
                 
             ]
             add_components_to_DOM(components);
-  
-        //add_component_to_DOM(document.getElementById("column2"), "/internal/db_controls");
-        //add_component_to_DOM(document.getElementById("column-left"), "/components/test");
-        //add_component_to_DOM(document.getElementById("column-right"), "/components/serverList");
     })
 </script>
