@@ -1,7 +1,6 @@
-export function calc_distribution(servers, current_kwh, lower_type, middle_type, upper_type) {
+export function calc_distribution(servers, current_kwh, lower_type, upper_type) {
     let full = [];
     let upper_bound = [];
-    let middle_bound = [];
     let lower_bound = [];
     let distribution = [];
     let res = [];
@@ -9,8 +8,6 @@ export function calc_distribution(servers, current_kwh, lower_type, middle_type,
         if (server["State"] != "not init") {
             if (server["LastKnownPercentage"] < server["LowerBound"]) {
                 lower_bound.push(server);
-            } else if (server["LastKnownPercentage"] < server["MiddleBound"]) {
-                middle_bound.push(server);
             } else if (server["LastKnownPercentage"] < 100){
                 upper_bound.push(server);
             }
@@ -20,7 +17,6 @@ export function calc_distribution(servers, current_kwh, lower_type, middle_type,
         }
     });
     //console.log("lower bound servers", lower_bound);
-    //console.log("middle bound servers", middle_bound);
     //console.log("upper bound servers", upper_bound);
     
     switch (lower_type){
@@ -32,19 +28,6 @@ export function calc_distribution(servers, current_kwh, lower_type, middle_type,
             break
         case "sniper":
             res = sniper(lower_bound, distribution, current_kwh)
-            break
-    }
-    distribution = res[0];
-    current_kwh = res[1];
-    switch (middle_type){
-        case "shotgun":
-            res = MaximumInput(middle_bound, distribution, current_kwh)
-            break
-        case "smg":
-            res = ProcentInput(middle_bound, distribution, current_kwh)
-            break
-        case "sniper":
-            res = sniper(middle_bound, distribution, current_kwh)
             break
     }
     distribution = res[0];

@@ -6,17 +6,18 @@ app.use(express.json());
 import { send_component } from "/app/shared/mjs/component_builder.mjs";
 import { calc_distribution } from './distribution-algorithm.mjs';
 
-let value = 0;
+var args = process.argv.slice(2);
 let __dirname = "/app";
-const data = {
+let data = {
     "Server-type": "Central",
     "Status": "online",
-    "Key": "257052945"
+    "Key": "257052945",
+    "lower_type": args[0],
+    "higher_type": args[1]
 }
 //Array of different "servers"
 let serverArray = [];
 // node.js [lower_distribution_type] [middle_distribution_type] [upper_distribution_type]
-var args = process.argv.slice(2);
 const Keys = [];
 setInterval(ServerCommander, 13000)
 
@@ -55,10 +56,13 @@ async function GiveCommand(key, command, rate = 0){
 }
 
 function ServerCommander(){
-    let distribution = calc_distribution(serverArray, 50, args[0], args[1], args[2])
+    let current_kwh = 500;
+    //TODO somone: get kwh from energi.net
+    //TODO somone: check if data is new or old
+    let distribution = calc_distribution(serverArray, current_kwh, lower_type, higher_type)
     distribution.forEach(element => {
         if (element.current_input > 0 || element.current_input < 0){
-            GiveCommand(element.Key, "Charge", element.current_input)
+            GiveCommand(element.Key, "Charge", element.current_input)            
         }
         else if (element.current_input == 0){
             GiveCommand(element.Key, "Stop")
