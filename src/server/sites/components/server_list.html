@@ -1,118 +1,82 @@
-<style>
-    .status {
-        color: #f700ff;
-    }
-    .btn {
-        background-color: #f700ff;
-        border: none;
-        max-width: 5px;
-        max-height: 5px;
-        color: white;
-        padding-top: 10px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 16px;
-        margin: 4px 2px;
-        cursor: pointer;
-        border-radius: 50%;
-    }
-    select {
-        padding: 2%;
-        margin: 2%;
-        font-size: 16px;
-        border-radius: 5px;
-        border: 1px solid #ccc;
-        background-color: #f8f8f8;
-        color: #555;
-        font-family: Arial;
-    }
-    .nav {
-        display: flex;
-        justify-content: space-around;
-        background-color: #f8f8f8;
-        padding: 2%;
-        margin: 2%;
-        border-radius: 5px;
-        border: 1px solid #ccc;
-    }
-    .server {
-        background-color: #555555;
-        border: 1px solid black;        
-        border-radius: 5px;
-        margin-top: 2px;
-        margin-bottom: 2px;
-    }
-</style>
-
 <div id="serverList">
 
 </div>
 
 
 <script>
+    let server_list_component_requests = [];
+    let servers;
+    let selected_server;
     // Function to load the array of servers from the server
 async function loadServers() {
-    
     try {
         const response = await fetch('api/servers');
-        const servers = await response.json();
-        let serverID = 0;
-        console.log(servers);
-        // Get the list element
+        servers = await response.json();
+        
         const list = document.getElementById('serverList');
-        console.log(list);
-        // Clear the list
-        list.innerHTML = '';
         let serverList = '';
-        // Loop through the servers
-        servers.forEach(server => {
+        servers.forEach((server, index) => {
+            let class_modifier = ""; 
             // Create a new list item for each server
-            const item = document.createElement('div');
-            item.id = `server${serverID++}`;
-            serverList += `<div state="${server.State}" class="server" id="${item.id}"> Server: <span class="status"> ${server.Name} </span> <button class ="btn" onclick="changeServerState('${server.Name}', '${item.id}' )"></button>
-                <br> Current fill: ${server.LastKnownPercentage}% <br> URL: ${server.IP} </div>`
+            if (server.IP == selected_server) {
+                class_modifier = "-selected"
+            }
+            server_list_component_requests.push([{
+                    "type": "non-shared",
+                    "name": "client_frame.html",
+                    "placement": document.getElementById("column-left-top-frame"),
+                    "tags": [{"serverURL": `"${server.IP}"`}, {"client_name": `${server.Name}` }],
+                    "serverURL": `${server.IP}`
+                }]);
+            serverList += `<div class="pane-border${class_modifier} pane-servers" style="">
+                                <div class="pane-servers-topbar">
+                                    <div> ${server.Name} </div>
+                                    <button id="${server.IP}-button" class="pane-servers-status ${server.State}" onclick="changeServerState('${server.Name}','${server.IP}-button')"></button> 
+                                </div>
+                                <div class="pane-servers-body" onclick='add_components_to_DOM(server_list_component_requests[${index}]), selected_server = "${server.IP}", loadServers()'>
+                                    status: ${server.State}
+                                    <br> 
+                                    Current fill: ${server.LastKnownPercentage}% 
+                                    <br> 
+                                    URL: ${server.IP}
+                                </div>
+                            </div>`
+            /*
+            serverList += `<div state="${server.State}" class="server" id="${item.id}"> 
+                Server: <span class="status"> ${server.Name} </span> 
+                    <button class ="btn" onclick="changeServerState('${server.Name}', '${item.id}' )"></button>
+                <br> 
+                Current fill: ${server.LastKnownPercentage}% 
+                <br> 
+                URL: ${server.IP} 
+            </div>`
+            */
         });
 
         list.innerHTML = serverList;
-        UpdateServerColor();
     } catch (error) {
         console.log('Error fetching servers', error);
     }
 }
 
-function UpdateServerColor(){
-    var list = document.getElementById('serverList').getElementsByTagName('div');
-    console.log(list)
-    let color = "#f700ff";
-    for (i=0; i<list.length; i++){
-        switch(list[i].attributes.state.value){
-            case "running":
-                color = "#04AA6D"
-                break
-            case "not_init ":
-                color = "red"
-                break
-            case "idle":
-                color = "yellow"
-                break
-
-        }
-        list[i].getElementsByTagName('span')[0].style.color = color;
-        list[i].getElementsByTagName('button')[0].style.backgroundColor = color;
-    }
-    
-}
-
-async function changeServerState(serverName,elementID){ 
-    console.log("ElementID", elementID); 
+async function changeServerState(serverName, elementID){ 
     const element = document.getElementById(elementID); 
+    let server_state;
+    servers.forEach(server =>{
+        if (server.Name == serverName) {
+            if (server.State != "not_init") {
+                server_state = "not_init";
+            } else {
+                server_state = "idle";
+            }
+        }
+    });
 
     const data = { 
         "Name": serverName, 
-        "state": element.attributes.state.value
+        "State": server_state
     }; 
-    console.log(data); 
+    
     const response = await fetch('/api/updateServers', { 
         method: 'POST', 
         headers: { 
@@ -120,7 +84,9 @@ async function changeServerState(serverName,elementID){
         }, 
         body: JSON.stringify(data)
     });
-   btnForChangingStateOfServer();
+    if (response) {
+        loadServers();
+    }
 }   
 
 // Function to change the state of the server using the button

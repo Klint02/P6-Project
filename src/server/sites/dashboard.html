@@ -6,12 +6,14 @@
 </head>
 
 <body>
-    <div id="content-body">
+<div id="content-body">
         <div id="column-left-top" class="pane">
-            <h2 class="pane-topbar">
+            <h2 class="pane-topbar" onclick='document.getElementById("column-left-top-frame").textContent = ""'>
                 Dashboards
             </h2>
-            <div id="column-left-top-frame" class="frame"></div>
+            <div id="column-left-top-frame" class="frame" >
+                
+            </div>
         </div>
         <div id="column-left-bottom" class="pane">
             <h2 id="energy-topbar" class="pane-topbar">
@@ -27,8 +29,8 @@
             </h2>
             <div id="column-left-bottom-frame" class="frame"></div>
         </div>
-        <div id="column-right" class="pane">
-            <h2 class="pane-topbar">
+        <div id="column-right" class="pane">    
+                <h2 class="pane-topbar">
                 Servers
             </h2>
             <div id="column-right-frame" class="frame">
@@ -44,7 +46,7 @@
 </html>
 
 <script>
-    graph_checkbox = document.getElementById('graph_checkbox');
+graph_checkbox = document.getElementById('graph_checkbox');
 
     graph_checkbox.addEventListener('change', function() {
         if (this.checked) {
@@ -88,7 +90,7 @@
         let components_fetched = await fetch_component(url, components);
         components_fetched.forEach((component, index) => {
             if (index == 0) {
-                components[index]["placement"].innerHTML = "";
+                components[index]["placement"].textContent = "";
             }
             components[index]["placement"].insertAdjacentHTML( 'beforeend', component["html"]);
             let script = document.createElement('script');
@@ -111,17 +113,8 @@
             
         });
     }
-
     document.addEventListener("DOMContentLoaded", async function() {
-        
-        let components = [
-                {
-                    "type": "non-shared",
-                    "name": "client_frame.html",
-                    "placement": document.getElementById("column-left-top-frame"),
-                    "tags": [{"serverURL": "\"192.120.0.3:8083\"" }],
-                    "serverURL": "192.120.0.3:8083"
-                },
+            let components = [
                 {
                     "type": "non-shared",
                     "name": "server_list.html",
@@ -139,6 +132,7 @@
                 
             ]
             add_components_to_DOM(components);
+  
         //add_component_to_DOM(document.getElementById("column2"), "/internal/db_controls");
         //add_component_to_DOM(document.getElementById("column-left"), "/components/test");
         //add_component_to_DOM(document.getElementById("column-right"), "/components/serverList");

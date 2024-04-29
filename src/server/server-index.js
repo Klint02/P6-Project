@@ -50,7 +50,7 @@ app.post("/api/getdata", function(req, res) {
 
 
 async function GiveCommand(key, command, rate = 0){
-    let FetchIP = (serverArray.find((element) => element.Key == key).IP + "/api/takecommand")
+    let FetchIP = "http://" + (serverArray.find((element) => element.Key == key).IP + "/api/takecommand")
     let Body = JSON.stringify({
         "Key": data.Key,
         "Command": command
@@ -121,8 +121,13 @@ app.get('/api/servers', (req, res) =>{ //
 });
  // endpoint to update the state of a server
 app.post('/api/updateServers', (req, res) => {
+    serverArray.forEach(server =>{
+        if (server.Name == req.body.Name) {
+            server.State = req.body.State;
+        }
+    });
+
     res.json("Server state updated successfully");
-    console.log(req.body);
 });
 
 app.get('/internal/run-algorithm', function(request, response) {
