@@ -22,8 +22,15 @@
 <canvas id="energy-graph" style="width: 300; height: 300; display: none;" onclick="getheight()"></canvas>
 
 <script>
+
+    //failsafe incase reload occurs with graph selected
+    if (graph_checkbox.checked) {
+        document.getElementById("energy-graph").style.display="block"
+        document.getElementById("data-table-div").style.display="none";
+    }
+
     //Fetcher data fra energinet api og ligger det over i variablen 'data'.
-   async function fetchingAndShit() {
+    async function fetchingAndShit() {
         var data = await fetch('https://api.energidataservice.dk/dataset/PowerSystemRightNow')
             .then((response) => response.json()).then((data => {
                 console.log(data)
@@ -61,15 +68,49 @@
 
     const canvas = document.getElementById("energy-graph");
     const ctx = canvas.getContext("2d");
-    let energy_pane_size = document.getElementById("column-left-bottom").getBoundingClientRect()
-    let energy_topbar_size = document.getElementById("energy-topbar").getBoundingClientRect()
-    canvas.height = energy_pane_size.height - energy_topbar_size.height - 25;
-    canvas.width = energy_pane_size.width - 20;
-    ctx.fillStyle = "green";
-    ctx.fillRect(10, 10, 150, 100);
+
+
+    setInterval(draw_canvas, 100, ctx, canvas);
+
+
+    function draw_canvas(ctx, canvas) {
+        let energy_pane_size = document.getElementById("column-left-bottom").getBoundingClientRect()
+        let energy_topbar_size = document.getElementById("energy-topbar").getBoundingClientRect()
+        canvas.height = energy_pane_size.height - energy_topbar_size.height - 25;
+        canvas.width = energy_pane_size.width - 20;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Set a start-point
+        for (i = 25; i < 76; i = i + 25) {
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height * (i/100));
+
+                    // Set an end-point
+            ctx.lineTo(canvas.width, canvas.height * (i/100));
+
+            // Stroke it (Do the Drawing)
+            ctx.strokeStyle = `rgb(255,255,255)`;
+            ctx.stroke();
+        }
+        
+    }
+
+    function getMousePosition(canvas, event) {
+            let rect = canvas.getBoundingClientRect();
+            let x = event.clientX - rect.left;
+            let y = event.clientY - rect.top;
+            console.log("Coordinate x: " + x,
+                "Coordinate y: " + y);
+        }
+ 
+        canvas.addEventListener("mousemove", function (e) {
+            getMousePosition(canvas, e);
+        }); 
 
     function getheight() {
-        console.log(document.getElementById("column-left-bottom-frame").offsetHeight);
+        //console.log(document.getElementById("column-left-bottom-frame").offsetHeight);
+        console.log(canvas.height);
     }
     
    
