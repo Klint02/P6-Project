@@ -67,10 +67,15 @@ export default class logger {
     log(type, msg) {
         var sql = "INSERT INTO logs (timestamp, type, message) VALUES (?, ?, ?)" ;
         const timestamp = new Date(Date.now()).toISOString().slice(0, 19).replace('T', ' ');
-        this.db.query(sql, [timestamp, type, msg], function (err) {
-            if (err) throw err;
-
-        });
+        try {
+            this.db.query(sql, [timestamp, type, msg], function (err) {
+                if (err) console.log(err);
+            });
+        } catch (error) {
+            console.log("[ERROR] Failed to insert log into database ")
+            console.log(error)
+        }
+        
     }
 
     async generic_SQL(statement, values) {

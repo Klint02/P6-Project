@@ -58,7 +58,6 @@ services:
 
   node-client2:
     image: "node:21-alpine"
-    restart: unless-stopped
     networks:
       hydro_net:
         ipv4_address: 192.120.0.4

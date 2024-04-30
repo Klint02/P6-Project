@@ -48,11 +48,6 @@ var log = new logger(con);
 
 var ShakingHand = setInterval(ShakeHand, 10000);
 
-setInterval(charging, 15000);
-
-setInterval(charging, 10);
-
-
 app.get("/", function (request, response) {
     response.sendFile(__dirname + "/sites/dashboard.html");
 })
@@ -90,6 +85,7 @@ app.post("/api/takecommand", function (req, res) {
             case "Charge":
                 data.CurrentChargeRate = req.body["Rate"];
                 data.Status = "running";
+                charging()
                 break
             case "Stop":
                 data.CurrentChargeRate = 0;
@@ -112,9 +108,11 @@ app.post("/api/takecommand", function (req, res) {
                 console.log("dont yeet")
                 break
         }
+        log.log("INFO", `Server ${data.Name} that has status ${data.Status} got input of  ${data.CurrentChargeRate}`)
         res.json(data);
     }
     else {
+        log.log("ERROR", data.Name )
         res.json({
             "Status": data.Status
         });
@@ -144,8 +142,6 @@ function charging() {
         console.log("Already full: " + data.CurrentFill.toFixed(2)+'%');
     }
 }
-
-
 
 async function ShakeHand() {
     if (data.Key == null) {
