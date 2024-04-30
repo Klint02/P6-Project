@@ -145,6 +145,7 @@ function charging() {
 }
 
 
+
 async function ShakeHand() {
     if (data.Key == null) {
         const response = await fetch("http://192.120.0.2:8082/api/shake", {
