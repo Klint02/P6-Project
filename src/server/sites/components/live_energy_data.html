@@ -1,0 +1,117 @@
+<style>
+
+#data-table-div{
+    overflow: scroll;  
+    width: 100%;
+}
+
+.energy-table {
+    border: 1px;
+    width: 100%;
+    color: aliceblue;
+    border-color: aliceblue;
+
+}
+</style>
+
+
+
+<div id="data-table-div" style="">
+
+</div>
+<canvas id="energy-graph" style="width: 300; height: 300; display: none;" onclick="getheight()"></canvas>
+
+<script>
+
+    //failsafe incase reload occurs with graph selected
+    if (graph_checkbox.checked) {
+        document.getElementById("energy-graph").style.display="block"
+        document.getElementById("data-table-div").style.display="none";
+    }
+
+    //Fetcher data fra energinet api og ligger det over i variablen 'data'.
+    async function fetchingAndShit() {
+        var data = await fetch('https://api.energidataservice.dk/dataset/PowerSystemRightNow')
+            .then((response) => response.json()).then((data => {
+                console.log(data)
+                let text = "<table class=\"energy-table\">"
+                text += "<tr>";
+                for (let item in data.records[0]) {
+
+                    if (data.records[0][item] != null) {
+                        if (item.substring(0, 10) != "Exchange_D" && item.substring(0, 10) != "Exchange_B") {
+                            text += `<th>${item}</th>`;
+
+                        }
+                    }
+                }
+                text += "</tr>";
+                for (let i = 0; i < data.records.length; i++) {
+                    text += "<tr>";
+                    for (let item in data.records[i]) {
+                        if (data.records[i][item] != null) {
+                            if (item.substring(0, 10) != "Exchange_D" && item.substring(0, 10) != "Exchange_B") {
+
+                                text += "<td>" + data.records[i][item] + "</td>";
+                            }
+                        }
+                    }
+                    text += "</tr>";
+                }
+                text += "</table>"
+                document.getElementById(`data-table-div`).innerHTML = text;
+            }))
+    }
+
+
+    fetchingAndShit(); 
+
+    const canvas = document.getElementById("energy-graph");
+    const ctx = canvas.getContext("2d");
+
+
+    setInterval(draw_canvas, 100, ctx, canvas);
+
+
+    function draw_canvas(ctx, canvas) {
+        let energy_pane_size = document.getElementById("column-left-bottom").getBoundingClientRect()
+        let energy_topbar_size = document.getElementById("energy-topbar").getBoundingClientRect()
+        canvas.height = energy_pane_size.height - energy_topbar_size.height - 25;
+        canvas.width = energy_pane_size.width - 20;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Set a start-point
+        for (i = 25; i < 76; i = i + 25) {
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height * (i/100));
+
+                    // Set an end-point
+            ctx.lineTo(canvas.width, canvas.height * (i/100));
+
+            // Stroke it (Do the Drawing)
+            ctx.strokeStyle = `rgb(255,255,255)`;
+            ctx.stroke();
+        }
+        
+    }
+
+    function getMousePosition(canvas, event) {
+            let rect = canvas.getBoundingClientRect();
+            let x = event.clientX - rect.left;
+            let y = event.clientY - rect.top;
+            console.log("Coordinate x: " + x,
+                "Coordinate y: " + y);
+        }
+ 
+        canvas.addEventListener("mousemove", function (e) {
+            getMousePosition(canvas, e);
+        }); 
+
+    function getheight() {
+        //console.log(document.getElementById("column-left-bottom-frame").offsetHeight);
+        console.log(canvas.height);
+    }
+    
+   
+</script>
