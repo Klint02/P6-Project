@@ -59,7 +59,7 @@ function ServerCommander(){
     let current_kwh = 500;
     //TODO somone: get kwh from energi.net
     //TODO somone: check if data is new or old
-    let distribution = calc_distribution(serverArray, current_kwh, lower_type, higher_type)
+    let distribution = calc_distribution(serverArray, current_kwh, data.lower_type, data.higher_type)
     distribution.forEach(element => {
         if (element.current_input > 0 || element.current_input < 0){
             GiveCommand(element.Key, "Charge", element.current_input)            
