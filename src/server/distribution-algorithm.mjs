@@ -14,6 +14,9 @@ export function calc_distribution(servers, current_kwh, lower_type, upper_type) 
             else {
                 full_server.push(server);
             }
+            else {
+                full.push(server);
+            }
         }
     });
     //console.log("lower bound servers", lower_server);
@@ -60,8 +63,7 @@ function MaximumInput(server, distribution, current_kwh){
             out["current_input"] = posiblecharge;
             current_kwh = 0;
             distribution.push(out);
-        }
-        else {
+        } else {
             out["current_input"] = server[i]["MaxChargeRate"];
             distribution.push(out);
         }
@@ -86,6 +88,7 @@ function ProcentInput(server, distribution, current_kwh){
             out["current_input"] = parseInt(server[i]["MaxChargeRate"])
         }
         distribution.push(out);
+
     }
     return [distribution, current_kwh]
 }
@@ -94,5 +97,6 @@ function sniper(server, distribution, current_kwh){
         let out = { "Key": server[i]["Key"], "current_input": 0 }
         distribution.push(out);
     }
+
     return [distribution, current_kwh]
 }

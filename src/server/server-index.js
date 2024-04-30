@@ -7,6 +7,9 @@ import { send_component } from "/app/shared/mjs/component_builder.mjs";
 import { calc_distribution } from './distribution-algorithm.mjs';
 
 var args = process.argv.slice(2);
+let energyRightNow = [];
+let temp = {};
+let value = 0;
 let __dirname = "/app";
 
 app.use('/shared', express.static(__dirname + '/shared'));
@@ -19,12 +22,10 @@ let data = {
 }
 //Array of different "servers"
 let serverArray = [];
-// node.js [lower_distribution_type] [middle_distribution_type] [upper_distribution_type]
-const Keys = [];
 setInterval(ServerCommander, 13000)
 
-function GetNewKey(){
-    let Key = (Keys.length * 2)+3;//should be changed to a better key system
+function GetNewKey() {
+    let Key = (Keys.length * 2) + 3;//should be changed to a better key system
     //let Key = key.toString;
     Keys.push(Key);
     return Key;
@@ -35,7 +36,7 @@ async function GiveCommand(key, command, rate = 0){
         "Key": data.Key,
         "Command": command
     })
-    if (rate != 0){
+    if (rate != 0) {
         Body = JSON.stringify({
             "Key": data.Key,
             "Command": command,
@@ -72,49 +73,77 @@ function ServerCommander(){
     });
 }
 
-app.get("/",function(request, res) {
+async function getData() {
+    let newdata = await fetch('https://api.energidataservice.dk/dataset/PowerSystemRightNow?limit=1')
+        .then((response) => response.json()).then((newdata => {
+            if (energyRightNow.length == 0 || newdata.records[0]['Minutes1UTC'] != temp[0]) {
+                temp={}
+                for (var item in newdata.records[0]) {
+
+                    switch (item) {
+                        case 'Minutes1UTC':
+                        case 'Minutes1DK':
+                        case 'ProductionGe100MW':
+                        case 'ProductionLt100MW':
+                        case 'SolarPower':
+                        case 'OffshoreWindPower':
+                        case 'OnshoreWindPower':
+                        case 'Exchange_Sum':
+                            temp[item]=newdata.records[0][item]
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                energyRightNow.unshift(temp)
+                console.log(energyRightNow)
+            } 
+        }))
+}
+
+app.get("/", function (request, res) {
 
     const filename = '/sites/dashboard.html'
-    res.sendFile(__dirname + filename, function(err){
-        if(err){
+    res.sendFile(__dirname + filename, function (err) {
+        if (err) {
             console.log("Error sending file:", err)
-        }else{
+        } else {
             console.log("Sent:", filename)
         }
     })
 })
-app.post("/fetch/component", function(request, response) {
+
+app.post("/fetch/component", function (request, response) {
     response.send(send_component(request.body, __dirname));
 })
-app.post("/api/getdata", function(req, res) {
+app.post("/api/getdata", function (req, res) {
     value = req;
-    console.log(value, "WOWOOWWO")
     res.json(data);
 })
-app.post("/api/shake", function(req, res) {
+app.post("/api/shake", function (req, res) {
     //console.log("Data from client", req.body);
-    if (req.body["Key"] == null){
+    if (req.body["Key"] == null) {
         let NewKey = GetNewKey();
         res.json({
             "Status": data.Status,
             "NewKey": NewKey,
             "ServerKey": data.Key
-      });
-      serverArray.push({
-        "Key": NewKey,
-        "Name": req.body["Name"],
-        "LastKnownPercentage": (req.body["CurrentFill"]/req.body["MaxCapacity"]),
-        "State": req.body["Status"],
-        "IP": req.body["IP"],
-        "LowerBound": req.body["LBound"],
-        "MiddleBound": req.body["MBound"],
-        "MaxChargeRate": req.body["MaxChargeRate"],
-        "MaxDischarge": req.body["MaxDischarge"],
-        "Capacity": req.body["MaxCapacity"]
-      })
-      //console.log("pushed to array", serverArray);
+        });
+      
+        serverArray.push({
+            "Key": NewKey,
+            "Name": req.body["Name"],
+            "LastKnownPercentage": req.body["CurrentFill"],
+            "State": req.body["Status"],
+            "IP": req.body["IP"],
+            "LowerBound": req.body["LBound"],
+            "MiddleBound": req.body["MBound"],
+            "MaxChargeRate": req.body["MaxChargeRate"],
+            "MaxDischarge": req.body["MaxDischarge"],
+            "MaxCapacity": req.body["MaxCapacity"]
+        })
     }
-    else if (Keys.includes(req.body["Key"])){
+    else if (Keys.includes(req.body["Key"])) {
         res.json({
             "Status": data.Status,
             "Key": data.Key
@@ -128,10 +157,10 @@ app.post("/api/shake", function(req, res) {
     }
 })
 // This is the endpoint to get the array of servers
-app.get('/api/servers', (req, res) =>{ // 
+app.get('/api/servers', (req, res) => { // 
     res.json(serverArray);
 });
- // endpoint to update the state of a server
+// endpoint to update the state of a server
 app.post('/api/updateServers', (req, res) => {
     serverArray.forEach(server =>{
         if (server.Name == req.body.Name) {
@@ -142,10 +171,7 @@ app.post('/api/updateServers', (req, res) => {
     res.json("Server state updated successfully");
 });
 
-app.get('/internal/run-algorithm', function(request, response) {
-    calc_distribution(serverArray, 350);
-})
-
 app.listen(8082, function () {
     console.log("Started application on port %d", 8082)
 });
+
