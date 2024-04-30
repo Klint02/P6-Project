@@ -1,51 +1,65 @@
 <!DOCTYPE html>
 <html>
-<style>
-    
-    .serverList {
-        list-style-type: none;
-        margin: 4px;
-        padding: 0;
-        height:100%;
-        
-    }
-    .component_holder{
-        border: 1px solid #555;
-        border-radius: 5px;
-        margin: 4px;
-        padding: 10px;
-    }
-    body {background: linear-gradient(90deg, #A9F1DF, #FFBBBB);}
 
-</style>
+<head>
+    <link rel="stylesheet" href="/shared/styles/styles.css">
+</head>
 
 <body>
-
-    <div id="row" style="display:flex">
-        <div class ="component_holder" id="column-left" style="width: 80%;">
-            <div  style="display: flex; height: 600px;">
-                <h1>Random ass graf</h1>
+<div id="content-body">
+        <div id="column-left-top" class="pane">
+            <h2 class="pane-topbar" onclick='document.getElementById("column-left-top-frame").textContent = ""'>
+                Dashboards
+            </h2>
+            <div id="column-left-top-frame" class="frame" >
+                
             </div>
-        <div id="table-scroll">
-            <p id="Test0"></p>
         </div>
+        <div id="column-left-bottom" class="pane">
+            <h2 id="energy-topbar" class="pane-topbar">
+                Energy data
+
+                <span>
+                    <!-- Rounded switch -->
+                    <label class="switch">
+                        <input type="checkbox" id="graph_checkbox">
+                        <span class="slider round"></span>
+                    </label>
+                </span>
+            </h2>
+            <div id="column-left-bottom-frame" class="frame"></div>
         </div>
-        
-            
+        <div id="column-right" class="pane">    
+                <h2 class="pane-topbar">
+                Servers
+            </h2>
+            <div id="column-right-frame" class="frame">
+                <canvas>
 
-
-
-        <div class="component_holder" id="column-right" style="width:20%;">    
-                <ul class="serverList"></ul>
+                </canvas>
+            </div>
         </div>
     </div>
-
 
 </body>
 
 </html>
 
 <script>
+graph_checkbox = document.getElementById('graph_checkbox');
+
+    graph_checkbox.addEventListener('change', function() {
+        if (this.checked) {
+            document.getElementById("energy-graph").style.display="block";
+            document.getElementById("data-table-div").style.display="none"
+            console.log("checked");
+        } else {
+            document.getElementById("energy-graph").style.display="none"
+            document.getElementById("data-table-div").style.display="block";
+            console.log("not checked");
+        }
+    });
+
     //TODO: change from relative paths to absolute, do this dynamically
     async function fetch_component(url, components) {
         const response = await fetch(url, {
@@ -76,7 +90,7 @@
         let components_fetched = await fetch_component(url, components);
         components_fetched.forEach((component, index) => {
             if (index == 0) {
-                components[index]["placement"].innerHTML = "";
+                components[index]["placement"].textContent = "";
             }
             components[index]["placement"].insertAdjacentHTML( 'beforeend', component["html"]);
             let script = document.createElement('script');
@@ -100,27 +114,33 @@
         });
     }
 
+    let server_controls_component = [{
+                    "type": "non-shared",
+                    "name": "controls.html",
+                    "placement": document.getElementById("column-left-top-frame"),
+                    "tags": [],
+                    "serverURL": ""
+                }]
     document.addEventListener("DOMContentLoaded", async function() {
             let components = [
                 {
                     "type": "non-shared",
-                    "name": "client_frame.html",
-                    "placement": document.getElementById("column-left"),
-                    "tags": [{"serverURL": "\"192.120.0.3:8083\"" }],
-                    "serverURL": "192.120.0.3:8083"
+                    "name": "server_list.html",
+                    "placement": document.getElementById("column-right-frame"),
+                    "tags": [],
+                    "serverURL": ""
                 },
                 {
                     "type": "non-shared",
-                    "name": "serverList.html",
-                    "placement": document.getElementById("column-right"),
+                    "name": "live_energy_data.html",
+                    "placement": document.getElementById("column-left-bottom-frame"),
                     "tags": [],
                     "serverURL": ""
-                }
+                },
+                server_controls_component[0]
+
+                
             ]
             add_components_to_DOM(components);
-  
-        //add_component_to_DOM(document.getElementById("column2"), "/internal/db_controls");
-        //add_component_to_DOM(document.getElementById("column-left"), "/components/test");
-        //add_component_to_DOM(document.getElementById("column-right"), "/components/serverList");
     })
 </script>

@@ -8,6 +8,8 @@ import { calc_distribution } from './distribution-algorithm.mjs';
 
 var args = process.argv.slice(2);
 let __dirname = "/app";
+
+app.use('/shared', express.static(__dirname + '/shared'));
 let data = {
     "Server-type": "Central",
     "Status": "online",
@@ -28,7 +30,7 @@ function GetNewKey(){
     return Key;
 }
 async function GiveCommand(key, command, rate = 0){
-    let FetchIP = (serverArray.find((element) => element.Key == key).IP + "/api/takecommand")
+    let FetchIP = "http://" + (serverArray.find((element) => element.Key == key).IP + "/api/takecommand")
     let Body = JSON.stringify({
         "Key": data.Key,
         "Command": command
@@ -131,18 +133,19 @@ app.get('/api/servers', (req, res) =>{ //
 });
  // endpoint to update the state of a server
 app.post('/api/updateServers', (req, res) => {
+    serverArray.forEach(server =>{
+        if (server.Name == req.body.Name) {
+            server.State = req.body.State;
+        }
+    });
+
     res.json("Server state updated successfully");
-    console.log(req.body);
 });
-app.get("/components/serverList", function(request, response) {
-    response.send(send_component([__dirname + "/sites/components/serverList.html"]));
-});
-app.get("/internal/db_controls", function(request, response) {
-    response.send(send_component([__dirname + "/shared/components/db_controls.html"]));
-})
+
 app.get('/internal/run-algorithm', function(request, response) {
-    calc_distribution(serverArray, 9000, args[0], args[1], args[2]);
+    calc_distribution(serverArray, 350);
 })
+
 app.listen(8082, function () {
     console.log("Started application on port %d", 8082)
 });
