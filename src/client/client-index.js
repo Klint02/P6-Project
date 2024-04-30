@@ -32,7 +32,8 @@ const MoreData = {
     "LBound": args[4],
     "ServerKey": null,
     "MaxCapacity": 500, //KG of hydrogen.
-    "IP": "http://" + args[1]
+    "IP": args[1],
+    "Port": args[1].split(":")[1]
 }
 
 var con = mysql.createConnection({
@@ -174,7 +175,7 @@ async function ShakeHand() {
 }
 
 
-app.listen(8083, function () {
-    console.log("Started application on port %d", 8083)
+app.listen(MoreData.Port, function () {
+    console.log("Started application on port %d", MoreData.Port)
 });
 

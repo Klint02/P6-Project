@@ -17,6 +17,7 @@ services:
 
   node-server:
     image: "node:21-alpine"
+    restart: unless-stopped
     networks:
       hydro_net:
         ipv4_address: 192.120.0.2
@@ -37,10 +38,11 @@ services:
 
   node-client1:
     image: "node:21-alpine"
+    restart: unless-stopped
     networks:
       hydro_net:
         ipv4_address: 192.120.0.3
-    command: "node --watch --trace-warnings client-index.js tester1 192.120.0.3:8083 500 70 20"
+    command: "node --watch --trace-warnings client-index.js Esbjerg 192.120.0.3:8083 500 70 20"
     working_dir: /app
     volumes:
       - ./src/client:/app
@@ -56,10 +58,11 @@ services:
 
   node-client2:
     image: "node:21-alpine"
+    restart: unless-stopped
     networks:
       hydro_net:
         ipv4_address: 192.120.0.4
-    command: "node --watch --trace-warnings client-index.js tester2 192.120.0.4:8084 300 70 20"
+    command: "node --watch --trace-warnings client-index.js Aalborg 192.120.0.4:8084 300 70 20"
     working_dir: /app
     volumes:
       - ./src/client:/app
