@@ -14,9 +14,6 @@ export function calc_distribution(servers, current_kwh, lower_type, upper_type) 
             else {
                 full_server.push(server);
             }
-            else {
-                full.push(server);
-            }
         }
     });
     //console.log("lower bound servers", lower_server);

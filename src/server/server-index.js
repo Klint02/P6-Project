@@ -11,6 +11,7 @@ let energyRightNow = [];
 let temp = {};
 let value = 0;
 let __dirname = "/app";
+let Keys = [];
 
 app.use('/shared', express.static(__dirname + '/shared'));
 let data = {
