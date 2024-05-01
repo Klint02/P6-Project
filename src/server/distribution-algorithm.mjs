@@ -42,35 +42,26 @@ export function calc_distribution(servers, current_kwh, lower_type, upper_type) 
 
 function serverdistribute(servers, type, distribution, current_kwh){
     switch (type){
-        case "shotgun":
+        case "max":
             return(MaximumInput(servers, distribution, current_kwh))
-        case "smg":
+        case "proc":
             return(ProcentInput(servers, distribution, current_kwh))
-        case "sniper":
-            return(sniper(servers, distribution, current_kwh))
+        case "empty":
+            return(empty(servers, distribution, current_kwh))
     }
 }
 
 function MaximumInput(server, distribution, current_kwh){
     for(let i = 0; i < server.length; i++) {
         let out = { "Key": server[i]["Key"], "current_input": 0 }
-        let posiblecharge = current_kwh;
-        current_kwh -= parseInt(server[i]["MaxChargeRate"])
-        if (current_kwh < 0) { 
-            out["current_input"] = posiblecharge;
-            current_kwh = 0;
-            distribution.push(out);
-        } else {
-            out["current_input"] = server[i]["MaxChargeRate"];
-            distribution.push(out);
-        }
+        
     }
     return [distribution, current_kwh]
 }
 function ProcentInput(server, distribution, current_kwh){
     let totalcharge = 0;
     for(let i = 0; i < server.length; i++) {
-        totalcharge += parseInt(server[i]["MaxChargeRate"])
+        totalcharge += server[i]["MaxChargeRate"]
     }
     let procent = current_kwh/totalcharge;
     if (procent >= 1){procent = 1}
@@ -89,7 +80,7 @@ function ProcentInput(server, distribution, current_kwh){
     }
     return [distribution, current_kwh]
 }
-function sniper(server, distribution, current_kwh){
+function empty(server, distribution, current_kwh){
     for(let i = 0; i < server.length; i++) {
         let out = { "Key": server[i]["Key"], "current_input": 0 }
         distribution.push(out);

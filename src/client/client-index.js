@@ -10,11 +10,11 @@ app.use(cors({
 import mysql from 'mysql';
 import logger from "./logger.mjs";
 import { send_component } from "/app/shared/mjs/component_builder.mjs";
-let energyNeeded = 53;
+const energyNeeded = 53;
 const hydrogenEnergy = 39.4;
 let __dirname = "/app";
 var db_name = "p6";
-// node.js [Name] [IP:Port] [charge capacity] [middle bound] [lower bound]
+// node.js [Name] [IP:Port] [charge rate] [discharge rate] [hydrogen capacity] [lower bound]
 var args = process.argv.slice(2);
 const data = {
     "Server-type": "Client",
@@ -27,11 +27,11 @@ const data = {
 }
 
 const MoreData = {
-    "MaxChargeRate": args[2],
-    "MBound": args[3],
-    "LBound": args[4],
+    "MaxChargeRate": parseInt(args[2]),
+    "MaxDischargeRate": parseInt(args[3]),
+    "LBound": parseInt(args[5]),
     "ServerKey": null,
-    "MaxCapacity": 500, //KG of hydrogen.
+    "MaxCapacity": parseInt(args[4]), //KG of hydrogen.
     "IP": args[1],
     "Port": args[1].split(":")[1]
 }
@@ -79,7 +79,7 @@ app.get("/api/tempdata", function (request, res) {
 })
 
 app.post("/api/takecommand", function (req, res) {
-    console.log("Command from server", req.body);
+    //console.log("Command from server", req.body);
     if (req.body["Key"] === MoreData.ServerKey) {//needs a key specific to the server
         switch (req.body["Command"]) {
             case "Charge":
@@ -104,37 +104,27 @@ app.post("/api/takecommand", function (req, res) {
                     var ShakingHand = setInterval(ShakeHand, 10000)
                 }
                 break
-            case "Yeet":
-                console.log("dont yeet")
-                break
         }
-        log.log("INFO", `Server ${data.Name} that has status ${data.Status} got input of  ${data.CurrentChargeRate}`)
+        log.log("INFO", `Server ${data.Name} that has status ${data.Status} got input of ${data.CurrentChargeRate} and has a fill of ${data.CurrentFill}`)
         res.json(data);
     }
     else {
-        log.log("ERROR", data.Name )
-        res.json({
-            "Status": data.Status
-        });
+        log.log("ERROR", `Something tried to command server ${data.Name} but it did not have the right key`)
     }
 })
 function charging() {
-    if (((data.CurrentFill / 100) * data.MaxCapacity) < MoreData.MaxCapacity-1 ) {
-        let num = data.CurrentChargeRate / energyNeeded;
+    if (data.CurrentFill < 100) {
         if (data.CurrentChargeRate > 0) {
-            //returns how many kg of hydrogen is added to current fill.
-            data.CurrentFill += (num / MoreData.MaxCapacity) * 100;
+            data.CurrentFill += ((data.CurrentChargeRate/energyNeeded) / MoreData.MaxCapacity) * 100;
+            if (data.CurrentFill > 100){data.CurrentFill = 100}
         } else {
             data.CurrentFill -= ((data.CurrentChargeRate/hydrogenEnergy) / MoreData.MaxCapacity) * 100;
+            if (data.CurrentFill < 0){data.CurrentFill = 0}
         }
 
-        //stores how many kwh the hydrogen converts into.
+        //stores how many kwh the stored hydrogen converts into.
         data.MaxDischarge = ((data.CurrentFill/100)*MoreData.MaxCapacity) * hydrogenEnergy;
         console.log("Max Discharge at the moment: " + (data.MaxDischarge).toFixed(2) + "kwh");
-
-        //Prints how many procent the tank is fill.
-
-        console.log("Tank filled up: " + ((data.CurrentFill / MoreData.MaxCapacity) * 100).toFixed(2) + '%')
 
         console.log("Tank filled up: " + data.CurrentFill.toFixed(2) + '%')
 

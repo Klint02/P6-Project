@@ -6,6 +6,7 @@ app.use(express.json());
 import { send_component } from "/app/shared/mjs/component_builder.mjs";
 import { calc_distribution } from './distribution-algorithm.mjs';
 
+//node.js [lower_type] [higher_type]
 var args = process.argv.slice(2);
 let energyRightNow = [];
 let temp = {};
