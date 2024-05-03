@@ -1,4 +1,5 @@
 export function calc_distribution(servers, current_kwh, lower_type, upper_type) {
+    let empty_server = [];
     let full_server = [];
     let upper_server = [];
     let lower_server = [];
@@ -6,9 +7,23 @@ export function calc_distribution(servers, current_kwh, lower_type, upper_type) 
     let res = [];
     servers.forEach(server => {
         if (server["State"] != "not init") {
-            if (server["LastKnownPercentage"] < server["LowerBound"]) {
+            if (server["LastKnownPercentage"] == 0) {
+                empty_server.push(server);
+            } else if (server["LastKnownPercentage"] < server["LowerBound"]) {
+                if (current_kwh < 0) {
+                    let tempproc = (39.4 * (server["MaxCapacity"] * server["LastKnownPercentage"]) / server["MaxDischargeRate"]);
+                    if (tempproc < 100){
+                        server["MaxDischargeRate"] = (server["MaxDischargeRate"] * (tempproc/100))
+                    }
+                }
                 lower_server.push(server);
             } else if (server["LastKnownPercentage"] < 100){
+                if (current_kwh > 0) {
+                    let tempproc = (53 * (server["MaxCapacity"] * (100 - server["LastKnownPercentage"])) / server["MaxChargeRate"]);
+                    if (tempproc < 100){
+                        server["MaxChargeRate"] = (server["MaxChargeRate"] * (tempproc/100))
+                    }
+                }
                 upper_server.push(server);
             }
             else {
@@ -21,13 +36,13 @@ export function calc_distribution(servers, current_kwh, lower_type, upper_type) 
     //console.log("upper bound servers", full_server);
 
     if (current_kwh >= 0){
-        res = serverdistribute(lower_server, lower_type, distribution, current_kwh)
+        res = serverdistribute(empty_server, lower_type, distribution, current_kwh)
+        res = serverdistribute(lower_server, upper_type, res[0], res[1])
         res = serverdistribute(upper_server, upper_type, res[0], res[1])
         distribution = res[0];
         current_kwh = res[1];
     }
     else {
-        current_kwh = 0 //TODO gram fix negative kwh
         res = serverdistribute(full_server, upper_type, distribution, current_kwh)
         res = serverdistribute(upper_server, upper_type, res[0], res[1])
         res = serverdistribute(lower_server, lower_type, res[0], res[1])
@@ -42,47 +57,118 @@ export function calc_distribution(servers, current_kwh, lower_type, upper_type) 
 
 function serverdistribute(servers, type, distribution, current_kwh){
     switch (type){
-        case "max":
+        case "full":
             return(MaximumInput(servers, distribution, current_kwh))
         case "proc":
             return(ProcentInput(servers, distribution, current_kwh))
+        case "max":
+            return(MaximumPriority(servers, distribution, current_kwh))
+        case "min":
+            return(MinimumPriority(servers, distribution, current_kwh))
         case "empty":
             return(empty(servers, distribution, current_kwh))
     }
 }
 
-function MaximumInput(server, distribution, current_kwh){
-    for(let i = 0; i < server.length; i++) {
-        let out = { "Key": server[i]["Key"], "current_input": 0 }
-        
+function MaximumInput(servers, distribution, current_kwh){
+    if (current_kwh >= 0) {
+        for(let i = 0; i < servers.length; i++) {
+            let out = { "Key": servers[i]["Key"], "current_input": 0 }
+            let posiblecharge = current_kwh;
+            current_kwh -= servers[i]["MaxChargeRate"]
+            if (current_kwh < 0) { 
+                out["current_input"] = posiblecharge;
+                current_kwh = 0;
+                distribution.push(out);
+            } else {
+                out["current_input"] = servers[i]["MaxChargeRate"];
+                distribution.push(out);
+            }
+        }
+        return [distribution, current_kwh]
     }
-    return [distribution, current_kwh]
+    else {
+        for(let i = 0; i < servers.length; i++) {
+            let out = { "Key": servers[i]["Key"], "current_input": 0 }
+            let posiblecharge = current_kwh;
+            current_kwh += servers[i]["MaxDischargeRate"]
+            if (current_kwh > 0) { 
+                out["current_input"] = posiblecharge;
+                current_kwh = 0;
+                distribution.push(out);
+            } else {
+                out["current_input"] = -servers[i]["MaxDischargeRate"];
+                distribution.push(out);
+            }
+        }
+        return [distribution, current_kwh]
+    }
 }
-function ProcentInput(server, distribution, current_kwh){
+function ProcentInput(servers, distribution, current_kwh){
     let totalcharge = 0;
-    for(let i = 0; i < server.length; i++) {
-        totalcharge += server[i]["MaxChargeRate"]
-    }
-    let procent = current_kwh/totalcharge;
-    if (procent >= 1){procent = 1}
-    console.log(current_kwh, totalcharge, procent)
-    for(let i = 0; i < server.length; i++) {
-        let out = { "Key": server[i]["Key"], "current_input": 0 }
-        let posiblecharge = server[i]["MaxChargeRate"] * procent;
-        if (posiblecharge <= parseInt(server[i]["MaxChargeRate"])){
-            out["current_input"] = posiblecharge
+    if (current_kwh >= 0) {
+        for(let i = 0; i < servers.length; i++) {
+            totalcharge += servers[i]["MaxChargeRate"]
         }
-        else {
-            out["current_input"] = parseInt(server[i]["MaxChargeRate"])
-        }
-        distribution.push(out);
+        let procent = current_kwh/totalcharge;
+        if (procent >= 1){procent = 1}
+        for(let i = 0; i < servers.length; i++) {
+            let out = { "Key": servers[i]["Key"], "current_input": 0 }
+            let posiblecharge = servers[i]["MaxChargeRate"] * procent;
+            if (posiblecharge <= servers[i]["MaxChargeRate"]){
+                out["current_input"] = posiblecharge
+            }
+            else {
+                out["current_input"] = servers[i]["MaxChargeRate"]
+            }
+            distribution.push(out);
 
+        }
+        return [distribution, current_kwh]
     }
+    else {
+        for(let i = 0; i < servers.length; i++) {
+            totalcharge += servers[i]["MaxDischargeRate"]
+        }
+        let procent = current_kwh/totalcharge;
+        if (procent >= 1){procent = 1}
+        for(let i = 0; i < servers.length; i++) {
+            let out = { "Key": servers[i]["Key"], "current_input": 0 }
+            let posiblecharge = servers[i]["MaxDischargeRate"] * procent;
+            if (posiblecharge <= servers[i]["MaxDischargeRate"]){
+                out["current_input"] = posiblecharge
+            }
+            else {
+                out["current_input"] = -servers[i]["MaxDischargeRate"]
+            }
+            distribution.push(out);
+
+        }
+        return [distribution, current_kwh]
+    }
+}
+
+function MaximumPriority(servers, distribution, current_kwh){
+    for(let i = 0; i < servers.length; i++) {
+        let out = { "Key": servers[i]["Key"], "current_input": 0 }
+        distribution.push(out);
+    }
+
     return [distribution, current_kwh]
 }
-function empty(server, distribution, current_kwh){
-    for(let i = 0; i < server.length; i++) {
-        let out = { "Key": server[i]["Key"], "current_input": 0 }
+
+function MinimumPriority(servers, distribution, current_kwh){
+    for(let i = 0; i < servers.length; i++) {
+        let out = { "Key": servers[i]["Key"], "current_input": 0 }
+        distribution.push(out);
+    }
+
+    return [distribution, current_kwh]
+}
+
+function empty(servers, distribution, current_kwh){
+    for(let i = 0; i < servers.length; i++) {
+        let out = { "Key": servers[i]["Key"], "current_input": 0 }
         distribution.push(out);
     }
 

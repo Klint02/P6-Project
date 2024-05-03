@@ -24,7 +24,7 @@ let data = {
 }
 //Array of different "servers"
 let serverArray = [];
-setInterval(ServerCommander, 13000)
+setInterval(ServerCommander, 5000)
 
 function GetNewKey() {
     let Key = (Keys.length * 2) + 3;//should be changed to a better key system
@@ -61,18 +61,22 @@ async function GiveCommand(key, command, rate = 0){
 }
 
 function ServerCommander(){
-    let current_kwh = 500;
-    //TODO somone: get kwh from energi.net
-    //TODO somone: check if data is new or old
-    let distribution = calc_distribution(serverArray, current_kwh, data.lower_type, data.higher_type)
-    distribution.forEach(element => {
-        if (element.current_input > 0 || element.current_input < 0){
-            GiveCommand(element.Key, "Charge", element.current_input)            
-        }
-        else if (element.current_input == 0){
-            GiveCommand(element.Key, "Stop")
-        }
-    });
+    let current_kwh = -600;
+    //TODO: somone: get kwh from energi.net
+    //TODO: somone: check if data is new or old
+    if (serverArray.length > 0){
+        let distribution = calc_distribution(serverArray, current_kwh, data.lower_type, data.higher_type)
+        distribution.forEach(element => {
+            if ((element.current_input > 0 )||( element.current_input < 0)){
+                GiveCommand(element.Key, "Charge", element.current_input)            
+            }
+            else if (element.current_input == 0){
+                GiveCommand(element.Key, "Stop")
+            }
+        });
+    } else {
+        console.log("ERROR", "no known servers")
+    }
 }
 
 async function getData() {
@@ -139,9 +143,9 @@ app.post("/api/shake", function (req, res) {
             "State": req.body["Status"],
             "IP": req.body["IP"],
             "LowerBound": req.body["LBound"],
-            "MiddleBound": req.body["MBound"],
             "MaxChargeRate": req.body["MaxChargeRate"],
             "MaxDischarge": req.body["MaxDischarge"],
+            "MaxDischargeRate": req.body["MaxDischargeRate"],
             "MaxCapacity": req.body["MaxCapacity"]
         })
     }

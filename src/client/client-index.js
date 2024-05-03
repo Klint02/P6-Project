@@ -20,7 +20,7 @@ const data = {
     "Server-type": "Client",
     "Name": args[0],
     "Status": "idle",
-    "CurrentFill": 0,
+    "CurrentFill": 50,
     "CurrentChargeRate": 0,
     "MaxDischarge": 0,
     "Key": null
@@ -79,7 +79,7 @@ app.get("/api/tempdata", function (request, res) {
 })
 
 app.post("/api/takecommand", function (req, res) {
-    //console.log("Command from server", req.body);
+    console.log("Command from server", req.body);
     if (req.body["Key"] === MoreData.ServerKey) {//needs a key specific to the server
         switch (req.body["Command"]) {
             case "Charge":
@@ -113,23 +113,24 @@ app.post("/api/takecommand", function (req, res) {
     }
 })
 function charging() {
-    if (data.CurrentFill < 100) {
-        if (data.CurrentChargeRate > 0) {
-            data.CurrentFill += ((data.CurrentChargeRate/energyNeeded) / MoreData.MaxCapacity) * 100;
-            if (data.CurrentFill > 100){data.CurrentFill = 100}
-        } else {
-            data.CurrentFill -= ((data.CurrentChargeRate/hydrogenEnergy) / MoreData.MaxCapacity) * 100;
-            if (data.CurrentFill < 0){data.CurrentFill = 0}
-        }
-
-        //stores how many kwh the stored hydrogen converts into.
-        data.MaxDischarge = ((data.CurrentFill/100)*MoreData.MaxCapacity) * hydrogenEnergy;
-        console.log("Max Discharge at the moment: " + (data.MaxDischarge).toFixed(2) + "kwh");
-
-        console.log("Tank filled up: " + data.CurrentFill.toFixed(2) + '%')
-
+    if (data.CurrentChargeRate > 0) {
+        data.CurrentFill += ((data.CurrentChargeRate/energyNeeded) / MoreData.MaxCapacity) * 100;
+        //if (data.CurrentFill > 100){data.CurrentFill = 100} //this is here for safty
     } else {
-        console.log("Already full: " + data.CurrentFill.toFixed(2)+'%');
+        data.CurrentFill += ((data.CurrentChargeRate/hydrogenEnergy) / MoreData.MaxCapacity) * 100;
+        if (data.CurrentFill < 0){data.CurrentFill = 0}
+    }
+
+    //stores how many kwh the stored hydrogen converts into.
+    data.MaxDischarge = ((data.CurrentFill/100)*MoreData.MaxCapacity) * hydrogenEnergy;
+    //console.log("Max Discharge at the moment: " + (data.MaxDischarge).toFixed(2) + "kwh");
+
+    if (data.CurrentFill == 100){
+        console.log("client Tank is full")
+    } else if (data.CurrentFill == 0) {
+        console.log("client Tank is empty")
+    } else {
+        console.log("Tank filled up: " + data.CurrentFill.toFixed(2) + '%')
     }
 }
 
@@ -156,7 +157,7 @@ async function ShakeHand() {
             }
         });
         const movies = await response.json();
-        console.log("data from server", movies);
+        //console.log("data from server", movies);
     }
 }
 
