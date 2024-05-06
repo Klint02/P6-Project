@@ -122,9 +122,7 @@ function ProcentInput(servers, distribution, current_kwh){
                 out["current_input"] = servers[i]["MaxChargeRate"]
             }
             distribution.push(out);
-
         }
-        return [distribution, current_kwh]
     }
     else {
         for(let i = 0; i < servers.length; i++) {
@@ -142,27 +140,38 @@ function ProcentInput(servers, distribution, current_kwh){
                 out["current_input"] = -servers[i]["MaxDischargeRate"]
             }
             distribution.push(out);
-
         }
-        return [distribution, current_kwh]
     }
+    return [distribution, current_kwh]
 }
 
 function MaximumPriority(servers, distribution, current_kwh){
-    for(let i = 0; i < servers.length; i++) {
-        let out = { "Key": servers[i]["Key"], "current_input": 0 }
-        distribution.push(out);
+    if (current_kwh >= 0) {
+        for(let i = 0; i < servers.length; i++) {
+            let out = { "Key": servers[i]["Key"], "current_input": 0 }
+            distribution.push(out);
+        }
+    } else {
+        for(let i = 0; i < servers.length; i++) {
+            let out = { "Key": servers[i]["Key"], "current_input": 0 }
+            distribution.push(out);
+        }
     }
-
     return [distribution, current_kwh]
 }
 
 function MinimumPriority(servers, distribution, current_kwh){
-    for(let i = 0; i < servers.length; i++) {
-        let out = { "Key": servers[i]["Key"], "current_input": 0 }
-        distribution.push(out);
+    if (current_kwh >= 0) {
+        for(let i = 0; i < servers.length; i++) {
+            let out = { "Key": servers[i]["Key"], "current_input": 0 }
+            distribution.push(out);
+        }
+    } else {
+        for(let i = 0; i < servers.length; i++) {
+            let out = { "Key": servers[i]["Key"], "current_input": 0 }
+            distribution.push(out);
+        }
     }
-
     return [distribution, current_kwh]
 }
 
@@ -171,6 +180,5 @@ function empty(servers, distribution, current_kwh){
         let out = { "Key": servers[i]["Key"], "current_input": 0 }
         distribution.push(out);
     }
-
     return [distribution, current_kwh]
 }
