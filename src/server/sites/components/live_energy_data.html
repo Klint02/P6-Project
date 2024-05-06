@@ -165,7 +165,7 @@
             }
         }
     
-        function getMousePosition(canvas, event) {
+        function get_mouse_position(canvas, event) {
                 let rect = canvas.getBoundingClientRect();
                 let x = event.clientX - rect.left;
                 let y = event.clientY - rect.top;
@@ -174,7 +174,7 @@
             }
      
             canvas.addEventListener("mousemove", function (e) {
-                getMousePosition(canvas, e);
+                get_mouse_position(canvas, e);
             }); 
     
         function getheight() {

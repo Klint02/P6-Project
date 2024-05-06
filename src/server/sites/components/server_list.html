@@ -12,7 +12,7 @@ async function loadServers() {
     try {
         const response = await fetch('api/servers');
         servers = await response.json();
-        
+
         const list = document.getElementById('serverList');
         let serverList = '';
         servers.forEach((server, index) => {
@@ -36,20 +36,23 @@ async function loadServers() {
                                     <div> ${server.Name} </div>
                                     <button id="${server.IP}-button" class="pane-servers-status ${server.State}" onclick="changeServerState('${server.Name}','${server.IP}-button')"></button> 
                                 </div>
-                                <div class="pane-servers-body" onclick='${component_modifier}, loadServers()'>
-                                    status: ${server.State}
-                                    <br> 
-                                    Current fill: ${server.LastKnownPercentage}% 
-                                    <br> 
-                                    URL: ${server.IP}
+                                <div id="pane-servers-body-${index}" class="pane-servers-body" onclick='${component_modifier}, loadServers()'>
+                                    <div>
+                                        URL: ${server.IP}
+                                    </div>
+                                    <div>
+                                        <canvas id="server-canvas-${index}" ></canvas>
+                                    </div>
                                 </div>
                             </div>`
         });
-
+        
         list.innerHTML = serverList;
     } catch (error) {
         console.log('Error fetching servers', error);
     }
+    
+    setInterval(update_server_canvases, 100, servers);
 }
 
 async function changeServerState(serverName, elementID){ 
@@ -83,6 +86,58 @@ async function changeServerState(serverName, elementID){
 }
 
 loadServers()
+
+function update_server_canvases(servers) {
+    for (let i = 0; i < servers.length; i++) {
+        let canvas_size = document.getElementById(`pane-servers-body-${i}`).getBoundingClientRect().width / 4;
+        const canvas = document.getElementById(`server-canvas-${i}`);
+        const ctx = canvas.getContext("2d");
+
+        //TODO (nkc): Remove this line when "LastKnownPercentage" actually get updated
+        servers[i].LastKnownPercentage = 67;
+        
+        canvas.height = canvas_size;
+        canvas.width = canvas_size;
+
+        let fill_percentage = 2 * (servers[i].LastKnownPercentage / 100);
+        let lower_bound_fill_percentage = 2 * (servers[i].LowerBound / 100);
+        fill_percentage < lower_bound_fill_percentage ? lower_bound_fill_percentage = fill_percentage : ""; 
+
+        // Draw the outer circle
+        ctx.beginPath();
+        ctx.moveTo(canvas_size/2,canvas_size/2);
+        ctx.arc(canvas_size/2, canvas_size/2, 50, 1.5 * Math.PI, fill_percentage * Math.PI - 0.5 * Math.PI);
+        ctx.fillStyle = 'blue';
+        ctx.fill();
+
+        // Draw the outer circle
+        ctx.beginPath();
+        ctx.moveTo(canvas_size/2,canvas_size/2);
+        ctx.arc(canvas_size/2, canvas_size/2, 50, 1.5 * Math.PI, lower_bound_fill_percentage * Math.PI - 0.5 * Math.PI);
+        ctx.fillStyle = 'red';
+        ctx.fill();
+
+      
+        // Set the globalCompositeOperation to 'destination-out' to make the inner circle transparent
+        ctx.globalCompositeOperation = 'destination-out';
+
+        // Draw the inner circle (will make the covered area transparent)
+        ctx.beginPath();
+        ctx.arc(canvas_size/2, canvas_size/2, 35, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.stroke();
+
+        var approx_font_height=parseInt(ctx.font);
+        ctx.textAlign = "center"; 
+        ctx.globalCompositeOperation = 'source-over';
+
+        let color = `rgb(255,255,255)`
+        ctx.font = "16px Arial";
+        ctx.fillStyle = color;
+        ctx.fillText(`${servers[i].LastKnownPercentage}%`, canvas_size/2, canvas_size/2+approx_font_height);
+
+    }
+}
 
 
 </script>
