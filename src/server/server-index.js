@@ -8,10 +8,11 @@ import { calc_distribution } from './distribution-algorithm.mjs';
 
 var args = process.argv.slice(2);
 let energyRightNow = [];
-let temp = {};
+let temp={}
+let sendArray=[]
 let value = 0;
 let __dirname = "/app";
-
+let Keys=[]
 app.use('/shared', express.static(__dirname + '/shared'));
 let data = {
     "Server-type": "Central",
@@ -73,12 +74,13 @@ function ServerCommander(){
     });
 }
 
-async function getData() {
-    let newdata = await fetch('https://api.energidataservice.dk/dataset/PowerSystemRightNow?limit=1')
+async function getData(startdate,enddate) {
+    let newdata = await fetch(`https://api.energidataservice.dk/dataset/PowerSystemRightNow?offset=0&start=${startdate}&end=${enddate}&sort=Minutes1UTC%20DESC`)
         .then((response) => response.json()).then((newdata => {
-            if (energyRightNow.length == 0 || newdata.records[0]['Minutes1UTC'] != temp[0]) {
+            energyRightNow=[]
+           for(let i=0;i<newdata.records.length;i++){
                 temp={}
-                for (var item in newdata.records[0]) {
+                for (var item in newdata.records[i]) {
 
                     switch (item) {
                         case 'Minutes1UTC':
@@ -89,20 +91,26 @@ async function getData() {
                         case 'OffshoreWindPower':
                         case 'OnshoreWindPower':
                         case 'Exchange_Sum':
-                            temp[item]=newdata.records[0][item]
+                            temp[item]=newdata.records[i][item]
                             break;
                         default:
                             break;
                     }
                 }
-                energyRightNow.unshift(temp)
-                console.log(energyRightNow)
-            } 
+                energyRightNow.push(temp)
+            }
+                
+            console.log(energyRightNow);
+           
         }))
 }
+// app.get("/", function(req,res){
+//     res.sendFile(__dirname +'/sites/components/controls.html')
+// })
+
+
 
 app.get("/", function (request, res) {
-
     const filename = '/sites/dashboard.html'
     res.sendFile(__dirname + filename, function (err) {
         if (err) {
@@ -112,6 +120,8 @@ app.get("/", function (request, res) {
         }
     })
 })
+
+
 
 app.post("/fetch/component", function (request, response) {
     response.send(send_component(request.body, __dirname));
@@ -162,6 +172,7 @@ app.get('/api/servers', (req, res) => { //
 });
 // endpoint to update the state of a server
 app.post('/api/updateServers', (req, res) => {
+    console.log(req.body);
     serverArray.forEach(server =>{
         if (server.Name == req.body.Name) {
             server.State = req.body.State;
@@ -169,6 +180,11 @@ app.post('/api/updateServers', (req, res) => {
     });
 
     res.json("Server state updated successfully");
+});
+   
+app.post('/abc', (req, res) => {
+    getData(req.body.firstDate,req.body.secondDate);
+    res.json("It fucking works!");
 });
 
 app.listen(8082, function () {
