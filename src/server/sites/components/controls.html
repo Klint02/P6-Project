@@ -11,27 +11,19 @@
 <script>
 
 async function test(start, end) {
-    console.log('start: '+start)
-    console.log('slut: '+end)
+    //console.log('start: '+start)
+    //console.log('slut: '+end)
     const data = {
         firstDate: start,
         secondDate: end
     };
 
-
-    console.log(JSON.stringify(data));
     const response = await fetch('/abc', {
         method: 'POST',
         headers: {
             "Content-type": "application/json"
         },
         body: JSON.stringify(data)
-    });
-    if(response){
-        console.log('virker')
-        response.ok
-    }
-    
-  
+    });  
 }
 </script>
