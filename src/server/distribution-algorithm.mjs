@@ -146,33 +146,51 @@ function ProcentInput(servers, distribution, current_kwh){
 }
 
 function MaximumPriority(servers, distribution, current_kwh){
+    let sortedservers = [];
     if (current_kwh >= 0) {
         for(let i = 0; i < servers.length; i++) {
-            let out = { "Key": servers[i]["Key"], "current_input": 0 }
-            distribution.push(out);
+            for(let i2 = 0; i2 <= sortedservers.length; i2++) {
+                if (servers[i]["LastKnownPercentage"] > sortedservers[i2]["LastKnownPercentage"]) {
+                    sortedservers.splice(i2, 0, servers[i])
+                    break
+                }
+            }
         }
     } else {
         for(let i = 0; i < servers.length; i++) {
-            let out = { "Key": servers[i]["Key"], "current_input": 0 }
-            distribution.push(out);
+            for(let i2 = 0; i2 <= sortedservers.length; i2++) {
+                if (servers[i]["LastKnownPercentage"] < sortedservers[i2]["LastKnownPercentage"]) {
+                    sortedservers.splice(i2, 0, servers[i])
+                    break
+                }
+            }
         }
     }
-    return [distribution, current_kwh]
+    return (MaximumInput(servers, distribution, current_kwh))
 }
 
 function MinimumPriority(servers, distribution, current_kwh){
+    let sortedservers = [];
     if (current_kwh >= 0) {
         for(let i = 0; i < servers.length; i++) {
-            let out = { "Key": servers[i]["Key"], "current_input": 0 }
-            distribution.push(out);
+            for(let i2 = 0; i2 <= sortedservers.length; i2++) {
+                if (servers[i]["LastKnownPercentage"] < sortedservers[i2]["LastKnownPercentage"]) {
+                    sortedservers.splice(i2, 0, servers[i])
+                    break
+                }
+            }
         }
     } else {
         for(let i = 0; i < servers.length; i++) {
-            let out = { "Key": servers[i]["Key"], "current_input": 0 }
-            distribution.push(out);
+            for(let i2 = 0; i2 <= sortedservers.length; i2++) {
+                if (servers[i]["LastKnownPercentage"] > sortedservers[i2]["LastKnownPercentage"]) {
+                    sortedservers.splice(i2, 0, servers[i])
+                    break
+                }
+            }
         }
     }
-    return [distribution, current_kwh]
+    return (MaximumInput(servers, distribution, current_kwh))
 }
 
 function empty(servers, distribution, current_kwh){
