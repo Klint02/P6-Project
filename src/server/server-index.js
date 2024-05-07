@@ -117,6 +117,11 @@ app.get("/", function (request, res) {
 app.post("/fetch/component", function (request, response) {
     response.send(send_component(request.body, __dirname));
 })
+
+app.post("/internal/algorithm_update", function (request, response) {
+    console.log(request.body);
+})
+
 app.post("/api/getdata", function (req, res) {
     value = req;
     res.json(data);
