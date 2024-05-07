@@ -6,11 +6,14 @@ app.use(express.json());
 import { send_component } from "/app/shared/mjs/component_builder.mjs";
 import { calc_distribution } from './distribution-algorithm.mjs';
 
+//node.js [lower_type] [higher_type]
 var args = process.argv.slice(2);
 let energyRightNow = [];
-let temp = {};
+let temp={}
+let sendArray=[]
 let value = 0;
 let __dirname = "/app";
+
 let Keys = [];
 
 app.use('/shared', express.static(__dirname + '/shared'));
@@ -23,7 +26,7 @@ let data = {
 }
 //Array of different "servers"
 let serverArray = [];
-setInterval(ServerCommander, 13000)
+setInterval(ServerCommander, 5000)
 
 function GetNewKey() {
     let Key = (Keys.length * 2) + 3;//should be changed to a better key system
@@ -60,26 +63,31 @@ async function GiveCommand(key, command, rate = 0){
 }
 
 function ServerCommander(){
-    let current_kwh = 500;
-    //TODO somone: get kwh from energi.net
-    //TODO somone: check if data is new or old
-    let distribution = calc_distribution(serverArray, current_kwh, data.lower_type, data.higher_type)
-    distribution.forEach(element => {
-        if (element.current_input > 0 || element.current_input < 0){
-            GiveCommand(element.Key, "Charge", element.current_input)            
-        }
-        else if (element.current_input == 0){
-            GiveCommand(element.Key, "Stop")
-        }
-    });
+    let current_kwh = -600;
+    //TODO: somone: get kwh from energi.net
+    //TODO: somone: check if data is new or old
+    if (serverArray.length > 0){
+        let distribution = calc_distribution(serverArray, current_kwh, data.lower_type, data.higher_type)
+        distribution.forEach(element => {
+            if ((element.current_input > 0 )||( element.current_input < 0)){
+                GiveCommand(element.Key, "Charge", element.current_input)            
+            }
+            else if (element.current_input == 0){
+                GiveCommand(element.Key, "Stop")
+            }
+        });
+    } else {
+        console.log("ERROR", "no known servers")
+    }
 }
 
-async function getData() {
-    let newdata = await fetch('https://api.energidataservice.dk/dataset/PowerSystemRightNow?limit=1')
+async function getData(startdate,enddate) {
+    let newdata = await fetch(`https://api.energidataservice.dk/dataset/PowerSystemRightNow?offset=0&start=${startdate}&end=${enddate}&sort=Minutes1UTC%20DESC`)
         .then((response) => response.json()).then((newdata => {
-            if (energyRightNow.length == 0 || newdata.records[0]['Minutes1UTC'] != temp[0]) {
+            energyRightNow=[]
+           for(let i=0;i<newdata.records.length;i++){
                 temp={}
-                for (var item in newdata.records[0]) {
+                for (var item in newdata.records[i]) {
 
                     switch (item) {
                         case 'Minutes1UTC':
@@ -90,20 +98,26 @@ async function getData() {
                         case 'OffshoreWindPower':
                         case 'OnshoreWindPower':
                         case 'Exchange_Sum':
-                            temp[item]=newdata.records[0][item]
+                            temp[item]=newdata.records[i][item]
                             break;
                         default:
                             break;
                     }
                 }
-                energyRightNow.unshift(temp)
-                console.log(energyRightNow)
-            } 
+                energyRightNow.push(temp)
+            }
+                
+            console.log(energyRightNow);
+           
         }))
 }
+// app.get("/", function(req,res){
+//     res.sendFile(__dirname +'/sites/components/controls.html')
+// })
+
+
 
 app.get("/", function (request, res) {
-
     const filename = '/sites/dashboard.html'
     res.sendFile(__dirname + filename, function (err) {
         if (err) {
@@ -113,6 +127,8 @@ app.get("/", function (request, res) {
         }
     })
 })
+
+
 
 app.post("/fetch/component", function (request, response) {
     response.send(send_component(request.body, __dirname));
@@ -143,9 +159,9 @@ app.post("/api/shake", function (req, res) {
             "State": req.body["Status"],
             "IP": req.body["IP"],
             "LowerBound": req.body["LBound"],
-            "MiddleBound": req.body["MBound"],
             "MaxChargeRate": req.body["MaxChargeRate"],
             "MaxDischarge": req.body["MaxDischarge"],
+            "MaxDischargeRate": req.body["MaxDischargeRate"],
             "MaxCapacity": req.body["MaxCapacity"]
         })
     }
@@ -168,6 +184,7 @@ app.get('/api/servers', (req, res) => { //
 });
 // endpoint to update the state of a server
 app.post('/api/updateServers', (req, res) => {
+    console.log(req.body);
     serverArray.forEach(server =>{
         if (server.Name == req.body.Name) {
             server.State = req.body.State;
@@ -175,6 +192,11 @@ app.post('/api/updateServers', (req, res) => {
     });
 
     res.json("Server state updated successfully");
+});
+   
+app.post('/abc', (req, res) => {
+    getData(req.body.firstDate,req.body.secondDate);
+    res.json("It fucking works!");
 });
 
 app.listen(8082, function () {

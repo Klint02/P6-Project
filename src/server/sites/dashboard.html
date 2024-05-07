@@ -6,13 +6,13 @@
 </head>
 
 <body>
-<div id="content-body">
+    <div id="content-body">
         <div id="column-left-top" class="pane">
             <h2 class="pane-topbar" onclick='document.getElementById("column-left-top-frame").textContent = ""'>
                 Dashboards
             </h2>
-            <div id="column-left-top-frame" class="frame" >
-                
+            <div id="column-left-top-frame" class="frame">
+
             </div>
         </div>
         <div id="column-left-bottom" class="pane">
@@ -29,8 +29,8 @@
             </h2>
             <div id="column-left-bottom-frame" class="frame"></div>
         </div>
-        <div id="column-right" class="pane">    
-                <h2 class="pane-topbar">
+        <div id="column-right" class="pane">
+            <h2 class="pane-topbar">
                 Servers
             </h2>
             <div id="column-right-frame" class="frame">
@@ -46,16 +46,16 @@
 </html>
 
 <script>
-graph_checkbox = document.getElementById('graph_checkbox');
+    graph_checkbox = document.getElementById('graph_checkbox');
 
-    graph_checkbox.addEventListener('change', function() {
+    graph_checkbox.addEventListener('change', function () {
         if (this.checked) {
-            document.getElementById("energy-graph").style.display="block";
-            document.getElementById("data-table-div").style.display="none"
+            document.getElementById("energy-graph").style.display = "block";
+            document.getElementById("data-table-div").style.display = "none"
             console.log("checked");
         } else {
-            document.getElementById("energy-graph").style.display="none"
-            document.getElementById("data-table-div").style.display="block";
+            document.getElementById("energy-graph").style.display = "none"
+            document.getElementById("data-table-div").style.display = "block";
             console.log("not checked");
         }
     });
@@ -92,12 +92,12 @@ graph_checkbox = document.getElementById('graph_checkbox');
             if (index == 0) {
                 components[index]["placement"].textContent = "";
             }
-            components[index]["placement"].insertAdjacentHTML( 'beforeend', component["html"]);
+            components[index]["placement"].insertAdjacentHTML('beforeend', component["html"]);
             let script = document.createElement('script');
             script.textContent = component["js"];
-            components[index]["placement"].appendChild(script);           
-            
-        });      
+            components[index]["placement"].appendChild(script);
+
+        });
 
     }
 
@@ -110,37 +110,37 @@ graph_checkbox = document.getElementById('graph_checkbox');
             } else {
                 add_components_from_server(`/fetch/component`, element);
             }
-            
+
         });
     }
 
     let server_controls_component = [{
-                    "type": "non-shared",
-                    "name": "controls.html",
-                    "placement": document.getElementById("column-left-top-frame"),
-                    "tags": [],
-                    "serverURL": ""
-                }]
-    document.addEventListener("DOMContentLoaded", async function() {
-            let components = [
-                {
-                    "type": "non-shared",
-                    "name": "server_list.html",
-                    "placement": document.getElementById("column-right-frame"),
-                    "tags": [],
-                    "serverURL": ""
-                },
-                {
-                    "type": "non-shared",
-                    "name": "live_energy_data.html",
-                    "placement": document.getElementById("column-left-bottom-frame"),
-                    "tags": [],
-                    "serverURL": ""
-                },
-                server_controls_component[0]
+        "type": "non-shared",
+        "name": "controls.html",
+        "placement": document.getElementById("column-left-top-frame"),
+        "tags": [],
+        "serverURL": ""
+    }]
+    document.addEventListener("DOMContentLoaded", async function () {
+        let components = [
+            {
+                "type": "non-shared",
+                "name": "server_list.html",
+                "placement": document.getElementById("column-right-frame"),
+                "tags": [],
+                "serverURL": ""
+            },
+            {
+                "type": "non-shared",
+                "name": "live_energy_data.html",
+                "placement": document.getElementById("column-left-bottom-frame"),
+                "tags": [],
+                "serverURL": ""
+            },
+            server_controls_component[0]
 
-                
-            ]
-            add_components_to_DOM(components);
+
+        ]
+        add_components_to_DOM(components);
     })
 </script>
