@@ -49,7 +49,6 @@ export function calc_distribution(servers, current_kwh, lower_type, upper_type) 
         distribution = res[0];
         current_kwh = res[1];
     }
-
     console.log("distribution", distribution);
     console.log("res kwh", current_kwh);
     return distribution
@@ -104,6 +103,7 @@ function MaximumInput(servers, distribution, current_kwh){
         return [distribution, current_kwh]
     }
 }
+
 function ProcentInput(servers, distribution, current_kwh){
     let totalcharge = 0;
     if (current_kwh >= 0) {
@@ -166,7 +166,7 @@ function MaximumPriority(servers, distribution, current_kwh){
             }
         }
     }
-    return (MaximumInput(servers, distribution, current_kwh))
+    return (MaximumInput(sortedservers, distribution, current_kwh))
 }
 
 function MinimumPriority(servers, distribution, current_kwh){
@@ -190,7 +190,7 @@ function MinimumPriority(servers, distribution, current_kwh){
             }
         }
     }
-    return (MaximumInput(servers, distribution, current_kwh))
+    return (MaximumInput(sortedservers, distribution, current_kwh))
 }
 
 function empty(servers, distribution, current_kwh){

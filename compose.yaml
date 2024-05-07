@@ -42,7 +42,7 @@ services:
     networks:
       hydro_net:
         ipv4_address: 192.120.0.3
-    command: "node --watch --trace-warnings client-index.js Esbjerg 192.120.0.3:8083 500 1000 600 30"
+    command: "node --watch --trace-warnings client-index.js Esbjerg 192.120.0.3:8083 5000 10000 6000 30"
     working_dir: /app
     volumes:
       - ./src/client:/app
@@ -61,7 +61,7 @@ services:
     networks:
       hydro_net:
         ipv4_address: 192.120.0.4
-    command: "node --watch --trace-warnings client-index.js Aalborg 192.120.0.4:8084 300 500 400 20"
+    command: "node --watch --trace-warnings client-index.js Aalborg 192.120.0.4:8084 3000 5000 4000 20"
     working_dir: /app
     volumes:
       - ./src/client:/app
