@@ -53,7 +53,6 @@ export function calc_distribution(servers, current_kwh, lower_type, upper_type) 
     console.log("res kwh", current_kwh);
     return distribution
 }
-
 function serverdistribute(servers, type, distribution, current_kwh){
     switch (type){
         case "full":
@@ -155,6 +154,7 @@ function MaximumPriority(servers, distribution, current_kwh){
                     break
                 }
             }
+
         }
     } else {
         for(let i = 0; i < servers.length; i++) {
@@ -196,6 +196,7 @@ function MinimumPriority(servers, distribution, current_kwh){
 function empty(servers, distribution, current_kwh){
     for(let i = 0; i < servers.length; i++) {
         let out = { "Key": servers[i]["Key"], "current_input": 0 }
+
         distribution.push(out);
     }
     return [distribution, current_kwh]

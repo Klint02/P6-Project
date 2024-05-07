@@ -1,4 +1,29 @@
 <h1>SERVER DASHBOARD IS NOT IMPLEMENTED YET</h1>
 
+<label for="startdate">Start dato: </label>
+<input type="datetime-local" id="startdate" /><br>
+<label for="enddate">Slut dato: </label>
+<input type="datetime-local" id="enddate" />
+<br>
+<button onclick="test(document.getElementById('startdate').value, document.getElementById('enddate').value)">Show
+    data</button>
+
 <script>
+
+async function test(start, end) {
+    //console.log('start: '+start)
+    //console.log('slut: '+end)
+    const data = {
+        firstDate: start,
+        secondDate: end
+    };
+
+    const response = await fetch('/abc', {
+        method: 'POST',
+        headers: {
+            "Content-type": "application/json"
+        },
+        body: JSON.stringify(data)
+    });  
+}
 </script>
