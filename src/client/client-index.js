@@ -20,7 +20,7 @@ const data = {
     "Server-type": "Client",
     "Name": args[0],
     "Status": "idle",
-    "CurrentFill": 50,
+    "CurrentFill": 0,
     "CurrentChargeRate": 0,
     "MaxDischarge": 0,
     "Key": null

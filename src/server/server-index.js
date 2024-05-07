@@ -67,7 +67,9 @@ function ServerCommander(){
     //TODO: somone: get kwh from energi.net
     //TODO: somone: check if data is new or old
     if (serverArray.length > 0){
-        let distribution = calc_distribution(serverArray, current_kwh, data.lower_type, data.higher_type)
+        let res = calc_distribution(serverArray, current_kwh, data.lower_type, data.higher_type)
+        let distribution = res.distribution
+        console.log("unfilfilled kwh", res.current_kwh)
         distribution.forEach(element => {
             if ((element.current_input > 0 )||( element.current_input < 0)){
                 GiveCommand(element.Key, "Charge", element.current_input)            
