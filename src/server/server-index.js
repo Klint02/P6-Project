@@ -9,9 +9,8 @@ import { calc_distribution } from './distribution-algorithm.mjs';
 //node.js [lower_type] [higher_type]
 var args = process.argv.slice(2);
 let energyRightNow = [];
+let energyRightNowBuffer = [];
 let temp={}
-let sendArray=[]
-let value = 0;
 let __dirname = "/app";
 
 let Keys = [];
@@ -22,11 +21,12 @@ let data = {
     "Status": "online",
     "Key": "257052945",
     "lower_type": args[0],
-    "higher_type": args[1]
+    "higher_type": args[1],
+    "distribution_functions": {"full": 0, "proc": 1, "max": 2, "min": 3, "empty": 4}
 }
 //Array of different "servers"
 let serverArray = [];
-setInterval(ServerCommander, 5000)
+//setInterval(ServerCommander, 5000)
 
 function GetNewKey() {
     let Key = (Keys.length * 2) + 3;//should be changed to a better key system
@@ -54,23 +54,21 @@ async function GiveCommand(key, command, rate = 0){
             "Content-type": "application/json; charset=UTF-8"
         }
     });
-    const movies = await response.json()
-    let serverI = serverArray.findIndex((element) => element.Key == movies.Key)
+    const servers = await response.json()
+    let serverI = serverArray.findIndex((element) => element.Key == servers.Key)
     serverArray[serverI].LastKnownPercentage = movies.CurrentFill
     serverArray[serverI].State = movies.Status
-    //console.log(movies)
-    //console.log("updated saved server information", serverArray[serverI])
 }
 
-function ServerCommander(){
-    let current_kwh = -600;
+async function ServerCommander(current_mwh){
+    let current_kwh = -1 * current_mwh;
     //TODO: somone: get kwh from energi.net
     //TODO: somone: check if data is new or old
     if (serverArray.length > 0){
         let distribution = calc_distribution(serverArray, current_kwh, data.lower_type, data.higher_type)
         distribution.forEach(element => {
             if ((element.current_input > 0 )||( element.current_input < 0)){
-                GiveCommand(element.Key, "Charge", element.current_input)            
+                GiveCommand(element.Key, "Charge", element.current_input)
             }
             else if (element.current_input == 0){
                 GiveCommand(element.Key, "Stop")
@@ -82,39 +80,33 @@ function ServerCommander(){
 }
 
 async function getData(startdate,enddate) {
-    let newdata = await fetch(`https://api.energidataservice.dk/dataset/PowerSystemRightNow?offset=0&start=${startdate}&end=${enddate}&sort=Minutes1UTC%20DESC`)
-        .then((response) => response.json()).then((newdata => {
-            energyRightNow=[]
-           for(let i=0;i<newdata.records.length;i++){
-                temp={}
-                for (var item in newdata.records[i]) {
-
-                    switch (item) {
-                        case 'Minutes1UTC':
-                        case 'Minutes1DK':
-                        case 'ProductionGe100MW':
-                        case 'ProductionLt100MW':
-                        case 'SolarPower':
-                        case 'OffshoreWindPower':
-                        case 'OnshoreWindPower':
-                        case 'Exchange_Sum':
-                            temp[item]=newdata.records[i][item]
-                            break;
-                        default:
-                            break;
-                    }
-                }
-                energyRightNow.push(temp)
-            }
-                
-            console.log(energyRightNow);
-           
-        }))
+    energyRightNowBuffer = [];
+    const energinet_url = `https://api.energidataservice.dk/dataset/PowerSystemRightNow?offset=0&start=${startdate}&end=${enddate}&sort=Minutes1UTC%20ASC`
+    const energinet_data_promise = new Promise(resolve => fetch(energinet_url).then((response) => resolve(response.json())));
+    console.log("fetching energinet data");
+    const energinet_data = await energinet_data_promise;
+    console.log("fetched energinet data");
+    energinet_data.records.forEach(record => {
+        energyRightNowBuffer.push({
+            "Minutes1UTC": record.Minutes1UTC,
+            "Minutes1DK": record.Minutes1DK,
+            "ProductionGe100MW": record.ProductionGe100MW,
+            "ProductionLt100MW": record.ProductionLt100MW,
+            "SolarPower": record.SolarPower,
+            "OffshoreWindPower": record.OffshoreWindPower,
+            "OnshoreWindPower": record.OnshoreWindPower,
+            "Exchange_Sum": record.Exchange_Sum
+        })
+    })
 }
-// app.get("/", function(req,res){
-//     res.sendFile(__dirname +'/sites/components/controls.html')
-// })
 
+async function start_simulation (req) {
+    await getData(req.body.firstDate,req.body.secondDate);
+    for (let i = 0; i < energyRightNowBuffer.length; i++) {
+        energyRightNow.unshift(energyRightNowBuffer[i]);
+        await ServerCommander(energyRightNowBuffer[i].Exchange_Sum);
+    }
+}
 
 
 app.get("/", function (request, res) {
@@ -136,12 +128,15 @@ app.post("/fetch/component", function (request, response) {
 
 app.post("/internal/algorithm_update", function (request, response) {
     console.log(request.body);
+    data[request.body.type] = request.body.algorithm_mode;
+    console.log(data);
+    response.sendStatus(200);
 })
 
-app.post("/api/getdata", function (req, res) {
-    value = req;
-    res.json(data);
+app.get("/internal/algorithm_functions", function (request, response) {
+    response.json(data);
 })
+
 app.post("/api/shake", function (req, res) {
     //console.log("Data from client", req.body);
     if (req.body["Key"] == null) {
@@ -194,10 +189,15 @@ app.post('/api/updateServers', (req, res) => {
     res.json("Server state updated successfully");
 });
    
-app.post('/abc', (req, res) => {
-    getData(req.body.firstDate,req.body.secondDate);
+app.post('/internal/simulate', (req, res) => {
+    energyRightNow = [];
+    start_simulation(req);
     res.json("It fucking works!");
 });
+
+app.get('/api/energyRightNow', (req, res) => {
+    res.json(energyRightNow);
+})
 
 app.listen(8082, function () {
     console.log("Started application on port %d", 8082)

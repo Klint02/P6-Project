@@ -217,7 +217,7 @@ table, th, td {
     border:1px solid black;
 }
 
-.radio-select-body {
+.range-select-body {
     display: flex;
 }
 
@@ -229,4 +229,8 @@ table, th, td {
     -o-transform: scale(1, -1);
     -ms-transform: scale(1, -1);
     transform: scale(1, -1);
+}
+
+fieldset {
+    border-radius: 10px;
 }
