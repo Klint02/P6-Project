@@ -70,9 +70,7 @@ async function GiveCommand(key, command, rate = 0){
 }
 
 async function ServerCommander(current_mwh){
-    let current_kwh = -1 * current_mwh;
-    //TODO: somone: get kwh from energi.net
-    //TODO: somone: check if data is new or old
+    let current_kwh = -1 * (current_mwh * 1000);
     if (serverArray.length > 0){
         let res = calc_distribution(serverArray, current_kwh, data.lower_type, data.higher_type)
         let distribution = res.distribution
