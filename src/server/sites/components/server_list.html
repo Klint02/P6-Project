@@ -93,9 +93,6 @@ function update_server_canvases(servers) {
         const canvas = document.getElementById(`server-canvas-${i}`);
         const ctx = canvas.getContext("2d");
 
-        //TODO (nkc): Remove this line when "LastKnownPercentage" actually get updated
-        servers[i].LastKnownPercentage = 67;
-        
         canvas.height = canvas_size;
         canvas.width = canvas_size;
 
@@ -106,14 +103,14 @@ function update_server_canvases(servers) {
         // Draw the outer circle
         ctx.beginPath();
         ctx.moveTo(canvas_size/2,canvas_size/2);
-        ctx.arc(canvas_size/2, canvas_size/2, 50, 1.5 * Math.PI, fill_percentage * Math.PI - 0.5 * Math.PI);
+        ctx.arc(canvas_size/2, canvas_size/2, canvas_size/2.2, 1.5 * Math.PI, fill_percentage * Math.PI - 0.5 * Math.PI);
         ctx.fillStyle = 'blue';
         ctx.fill();
 
         // Draw the outer circle
         ctx.beginPath();
         ctx.moveTo(canvas_size/2,canvas_size/2);
-        ctx.arc(canvas_size/2, canvas_size/2, 50, 1.5 * Math.PI, lower_bound_fill_percentage * Math.PI - 0.5 * Math.PI);
+        ctx.arc(canvas_size/2, canvas_size/2, canvas_size/2.2, 1.5 * Math.PI, lower_bound_fill_percentage * Math.PI - 0.5 * Math.PI);
         ctx.fillStyle = 'red';
         ctx.fill();
 
@@ -123,7 +120,7 @@ function update_server_canvases(servers) {
 
         // Draw the inner circle (will make the covered area transparent)
         ctx.beginPath();
-        ctx.arc(canvas_size/2, canvas_size/2, 35, 0, 2 * Math.PI);
+        ctx.arc(canvas_size/2, canvas_size/2, canvas_size/3.5, 0, 2 * Math.PI);
         ctx.fill();
         ctx.stroke();
 
@@ -134,7 +131,7 @@ function update_server_canvases(servers) {
         let color = `rgb(255,255,255)`
         ctx.font = "16px Arial";
         ctx.fillStyle = color;
-        ctx.fillText(`${servers[i].LastKnownPercentage}%`, canvas_size/2, canvas_size/2+approx_font_height);
+        ctx.fillText(`${Math.trunc(servers[i].LastKnownPercentage)}%`, canvas_size/2, canvas_size/2+(approx_font_height/2));
 
     }
 }
