@@ -7,7 +7,7 @@ export default class logger {
 
     migrate_db(db_name) {
         const tables = [
-            "CREATE TABLE logs (timestamp TIMESTAMP, type VARCHAR(10), message TEXT)"
+            "CREATE TABLE logs (timestamp TIMESTAMP, type VARCHAR(10), name VARCHAR(20), message TEXT)"
         ]
         console.log("[LOG] migrating DB");
         let db = this.db;
@@ -64,11 +64,11 @@ export default class logger {
         )
     }
 
-    log(type, msg) {
-        var sql = "INSERT INTO logs (timestamp, type, message) VALUES (?, ?, ?)" ;
+    log(type, name, msg) {
+        var sql = "INSERT INTO logs (timestamp, type, name, message) VALUES (?, ?, ?, ?)" ;
         const timestamp = new Date(Date.now()).toISOString().slice(0, 19).replace('T', ' ');
         try {
-            this.db.query(sql, [timestamp, type, msg], function (err) {
+            this.db.query(sql, [timestamp, type, name, msg], function (err) {
                 if (err) console.log(err);
             });
         } catch (error) {

@@ -3,6 +3,8 @@ const app = express();
 import bodyParser from 'body-parser';
 app.use(bodyParser.json());
 app.use(express.json());
+import mysql from 'mysql';
+import logger from "/app/shared/mjs/logger.mjs";
 import { send_component } from "/app/shared/mjs/component_builder.mjs";
 import { calc_distribution } from './distribution-algorithm.mjs';
 
@@ -12,7 +14,14 @@ let energyRightNow = [];
 let energyRightNowBuffer = [];
 let temp={}
 let __dirname = "/app";
-
+var db_name = "p6";
+var con = mysql.createConnection({
+    host: "192.120.0.99",
+    user: "root",
+    password: "1234",
+    database: db_name
+});
+var log = new logger(con);
 let Keys = [];
 
 app.use('/shared', express.static(__dirname + '/shared'));
@@ -65,7 +74,9 @@ async function ServerCommander(current_mwh){
     //TODO: somone: get kwh from energi.net
     //TODO: somone: check if data is new or old
     if (serverArray.length > 0){
-        let distribution = calc_distribution(serverArray, current_kwh, data.lower_type, data.higher_type)
+        let res = calc_distribution(serverArray, current_kwh, data.lower_type, data.higher_type)
+        let distribution = res.distribution
+        log.log("INFO", `${data['Server-type']}`, `failed to distribute ${res.current_kwh}:kwh`)
         distribution.forEach(element => {
             if ((element.current_input > 0 )||( element.current_input < 0)){
                 GiveCommand(element.Key, "Charge", element.current_input)
@@ -75,7 +86,7 @@ async function ServerCommander(current_mwh){
             }
         });
     } else {
-        console.log("ERROR", "no known servers")
+        log.log("INFO", `${data['Server-type']}`,"no known servers")
     }
 }
 

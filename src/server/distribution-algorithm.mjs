@@ -49,9 +49,10 @@ export function calc_distribution(servers, current_kwh, lower_type, upper_type) 
         distribution = res[0];
         current_kwh = res[1];
     }
-    console.log("distribution", distribution);
-    console.log("res kwh", current_kwh);
-    return distribution
+    return {
+        "distribution": distribution,
+        "current_kwh": current_kwh
+    }
 }
 function serverdistribute(servers, type, distribution, current_kwh){
     switch (type){

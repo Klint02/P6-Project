@@ -8,7 +8,7 @@ app.use(cors({
 
 }));
 import mysql from 'mysql';
-import logger from "./logger.mjs";
+import logger from "/app/shared/mjs/logger.mjs";
 import { send_component } from "/app/shared/mjs/component_builder.mjs";
 const energyNeeded = 53;
 const hydrogenEnergy = 39.4;
@@ -20,7 +20,7 @@ const data = {
     "Server-type": "Client",
     "Name": args[0],
     "Status": "idle",
-    "CurrentFill": 50,
+    "CurrentFill": 1,
     "CurrentChargeRate": 0,
     "MaxDischarge": 0,
     "Key": null
@@ -71,7 +71,7 @@ app.get("/internal/db_controls/migrate", function (request, response) {
 })
 
 app.post("/internal/db_controls/log", function (request, response) {
-    log.log(request.body["type"], request.body["message"]);
+    log.log(request.body["type"], data.Name, request.body["message"]);
 })
 
 app.get("/api/tempdata", function (request, res) {
@@ -105,17 +105,16 @@ app.post("/api/takecommand", function (req, res) {
                 }
                 break
         }
-        log.log("INFO", `Server ${data.Name} that has status ${data.Status} got input of ${data.CurrentChargeRate} and has a fill of ${data.CurrentFill}`)
+        log.log("INFO", data.Name, `Server ${data.Name} that has status ${data.Status} got input of ${data.CurrentChargeRate} and has a fill of ${data.CurrentFill}`)
         res.json(data);
     }
     else {
-        log.log("ERROR", `Something tried to command server ${data.Name} but it did not have the right key`)
+        log.log("ERROR", data.Name, `Something tried to command server ${data.Name} but it did not have the right key`)
     }
 })
 function charging() {
     if (data.CurrentChargeRate > 0) {
         data.CurrentFill += ((data.CurrentChargeRate/energyNeeded) / MoreData.MaxCapacity) * 100;
-        //if (data.CurrentFill > 100){data.CurrentFill = 100} //this is here for safty
     } else {
         data.CurrentFill += ((data.CurrentChargeRate/hydrogenEnergy) / MoreData.MaxCapacity) * 100;
         if (data.CurrentFill < 0){data.CurrentFill = 0}
