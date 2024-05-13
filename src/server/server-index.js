@@ -56,8 +56,8 @@ async function GiveCommand(key, command, rate = 0){
     });
     const servers = await response.json()
     let serverI = serverArray.findIndex((element) => element.Key == servers.Key)
-    serverArray[serverI].LastKnownPercentage = movies.CurrentFill
-    serverArray[serverI].State = movies.Status
+    serverArray[serverI].LastKnownPercentage = servers.CurrentFill
+    serverArray[serverI].State = servers.Status
 }
 
 async function ServerCommander(current_mwh){
