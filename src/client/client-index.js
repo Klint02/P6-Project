@@ -20,7 +20,7 @@ const data = {
     "Server-type": "Client",
     "Name": args[0],
     "Status": "idle",
-    "CurrentFill": 1,
+    "CurrentFill": 50,
     "CurrentChargeRate": 0,
     "MaxDischarge": 0,
     "Key": null
@@ -71,7 +71,7 @@ app.get("/internal/db_controls/migrate", function (request, response) {
 })
 
 app.post("/internal/db_controls/log", function (request, response) {
-    log.log(request.body["type"], data.Name, request.body["message"]);
+    //log.log(request.body["type"], data.Name, request.body["message"]);
 })
 
 app.get("/api/tempdata", function (request, res) {
@@ -105,11 +105,11 @@ app.post("/api/takecommand", function (req, res) {
                 }
                 break
         }
-        log.log("INFO", data.Name, `Server ${data.Name} that has status ${data.Status} got input of ${data.CurrentChargeRate} and has a fill of ${data.CurrentFill}`)
+        //log.log("INFO", data.Name, `Server ${data.Name} that has status ${data.Status} got input of ${data.CurrentChargeRate} and has a fill of ${data.CurrentFill}`)
         res.json(data);
     }
     else {
-        log.log("ERROR", data.Name, `Something tried to command server ${data.Name} but it did not have the right key`)
+        //log.log("ERROR", data.Name, `Something tried to command server ${data.Name} but it did not have the right key`)
     }
 })
 function charging() {

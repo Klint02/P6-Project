@@ -76,7 +76,7 @@ async function ServerCommander(current_mwh){
     if (serverArray.length > 0){
         let res = calc_distribution(serverArray, current_kwh, data.lower_type, data.higher_type)
         let distribution = res.distribution
-        log.log("INFO", `${data['Server-type']}`, `failed to distribute ${res.current_kwh}:kwh`)
+        //log.log("INFO", `${data['Server-type']}`, `failed to distribute ${res.current_kwh}:kwh`)
         distribution.forEach(element => {
             if ((element.current_input > 0 )||( element.current_input < 0)){
                 GiveCommand(element.Key, "Charge", element.current_input)
@@ -86,7 +86,7 @@ async function ServerCommander(current_mwh){
             }
         });
     } else {
-        log.log("INFO", `${data['Server-type']}`,"no known servers")
+        //log.log("INFO", `${data['Server-type']}`,"no known servers")
     }
 }
 
@@ -114,11 +114,15 @@ async function getData(startdate,enddate) {
 async function start_simulation (req) {
     await getData(req.body.firstDate,req.body.secondDate);
     for (let i = 0; i < energyRightNowBuffer.length; i++) {
+        if ((i%10) == 0){await new Promise(r => setTimeout(r, 2000))}
         energyRightNow.unshift(energyRightNowBuffer[i]);
         await ServerCommander(energyRightNowBuffer[i].Exchange_Sum);
     }
 }
 
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 app.get("/", function (request, res) {
     const filename = '/sites/dashboard.html'
@@ -199,7 +203,7 @@ app.post('/api/updateServers', (req, res) => {
 
     res.json("Server state updated successfully");
 });
-   
+  
 app.post('/internal/simulate', (req, res) => {
     energyRightNow = [];
     start_simulation(req);
