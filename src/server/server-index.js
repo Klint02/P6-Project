@@ -31,7 +31,9 @@ let data = {
     "Key": "257052945",
     "lower_type": args[0],
     "higher_type": args[1],
-    "distribution_functions": {"full": 0, "proc": 1, "max": 2, "min": 3, "empty": 4}
+    "distribution_functions": {"full": 0, "proc": 1, "max": 2, "min": 3, "empty": 4},
+    "underflow": 0,
+    "overflow": 0
 }
 //Array of different "servers"
 let serverArray = [];
@@ -67,32 +69,38 @@ async function GiveCommand(key, command, rate = 0){
     let serverI = serverArray.findIndex((element) => element.Key == servers.Key)
     serverArray[serverI].LastKnownPercentage = servers.CurrentFill
     serverArray[serverI].State = servers.Status
+    return(1)
 }
 
-async function ServerCommander(current_mwh){
-    let current_kwh = -1 * current_mwh;
-    //TODO: somone: get kwh from energi.net
-    //TODO: somone: check if data is new or old
+async function ServerCommander(current_mw){
+    let current_kwh = -1 * (current_mw * 1000)/60;
     if (serverArray.length > 0){
         let res = calc_distribution(serverArray, current_kwh, data.lower_type, data.higher_type)
         let distribution = res.distribution
-        log.log("INFO", `${data['Server-type']}`, `failed to distribute ${res.current_kwh}:kwh`)
-        distribution.forEach(element => {
-            if ((element.current_input > 0 )||( element.current_input < 0)){
-                GiveCommand(element.Key, "Charge", element.current_input)
+        if (res.current_kwh < 0) {
+            console.log("underflow", res.current_kwh)
+            data.underflow += res.current_kwh
+        }else {
+            console.log("overflow", res.current_kwh)
+            data.overflow += res.current_kwh
+        }
+        //log.log("INFO", `${data['Server-type']}`, `failed to distribute ${res.current_kwh}:kwh`)
+        for (let i = 0; i < distribution.length; i++){
+            if ((distribution[i].current_input > 0 )||( distribution[i].current_input < 0)){
+                await GiveCommand(distribution[i].Key, "Charge", distribution[i].current_input)
             }
-            else if (element.current_input == 0){
-                GiveCommand(element.Key, "Stop")
+            else if (distribution[i].current_input == 0){
+                await GiveCommand(distribution[i].Key, "Stop")
             }
-        });
+        };
     } else {
-        log.log("INFO", `${data['Server-type']}`,"no known servers")
+        //log.log("INFO", `${data['Server-type']}`,"no known servers")
     }
 }
 
 async function getData(startdate,enddate) {
     energyRightNowBuffer = [];
-    const energinet_url = `https://api.energidataservice.dk/dataset/PowerSystemRightNow?offset=0&start=${startdate}&end=${enddate}&sort=Minutes1UTC%20ASC`
+    const energinet_url = `https://api.energidataservice.dk/dataset/PowerSystemRightNow?offset=0&start=${startdate}&end=${enddate}&sort=Minutes1UTC%20ASC&columns=Minutes1UTC,Minutes1DK,ProductionGe100MW,ProductionLt100MW,SolarPower,OffshoreWindPower,OnshoreWindPower,Exchange_Sum`
     const energinet_data_promise = new Promise(resolve => fetch(energinet_url).then((response) => resolve(response.json())));
     console.log("fetching energinet data");
     const energinet_data = await energinet_data_promise;
@@ -109,6 +117,7 @@ async function getData(startdate,enddate) {
             "Exchange_Sum": record.Exchange_Sum
         })
     })
+    console.log("amount of data", energyRightNowBuffer.length)
 }
 
 async function start_simulation (req) {
@@ -117,8 +126,13 @@ async function start_simulation (req) {
         energyRightNow.unshift(energyRightNowBuffer[i]);
         await ServerCommander(energyRightNowBuffer[i].Exchange_Sum);
     }
+    console.log("underflow:", data.underflow, "overflow:", data.overflow)
+    console.log("Simulation complete")
 }
 
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 app.get("/", function (request, res) {
     const filename = '/sites/dashboard.html'
@@ -199,7 +213,7 @@ app.post('/api/updateServers', (req, res) => {
 
     res.json("Server state updated successfully");
 });
-   
+  
 app.post('/internal/simulate', (req, res) => {
     energyRightNow = [];
     start_simulation(req);
@@ -207,7 +221,7 @@ app.post('/internal/simulate', (req, res) => {
 });
 
 app.get('/api/energyRightNow', (req, res) => {
-    res.json(energyRightNow);
+    energyRightNow.length <= 120 ? res.json(energyRightNow) : res.json(energyRightNow.slice(0,120));
 })
 
 app.listen(8082, function () {

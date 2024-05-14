@@ -5,6 +5,7 @@ export function calc_distribution(servers, current_kwh, lower_type, upper_type) 
     let lower_server = [];
     let distribution = [];
     let res = [];
+    let unchanged = current_kwh;
     servers.forEach(server => {
         if (server["State"] != "not init") {
             if (server["LastKnownPercentage"] == 0) {
@@ -48,6 +49,10 @@ export function calc_distribution(servers, current_kwh, lower_type, upper_type) 
         res = serverdistribute(lower_server, lower_type, res[0], res[1])
         distribution = res[0];
         current_kwh = res[1];
+    }
+    if (1e-11 > current_kwh && current_kwh> -1e-11){current_kwh = 0} //if a charge of this small size does not matter then this is ok
+    if ((current_kwh - unchanged) == 0){
+        console.log("no clients to distribute to")
     }
     return {
         "distribution": distribution,
@@ -116,31 +121,41 @@ function ProcentInput(servers, distribution, current_kwh){
             let out = { "Key": servers[i]["Key"], "current_input": 0 }
             let posiblecharge = servers[i]["MaxChargeRate"] * procent;
             if (posiblecharge <= servers[i]["MaxChargeRate"]){
+                console.log("posiblecharge",posiblecharge)
                 out["current_input"] = posiblecharge
+                current_kwh -= posiblecharge
             }
             else {
+                console.log("MaxChargeRate",servers[i]["MaxChargeRate"])
                 out["current_input"] = servers[i]["MaxChargeRate"]
+                current_kwh -= servers[i]["MaxChargeRate"]
             }
             distribution.push(out);
         }
+        if (current_kwh < 0){current_kwh = 0}
     }
     else {
         for(let i = 0; i < servers.length; i++) {
             totalcharge += servers[i]["MaxDischargeRate"]
         }
         let procent = current_kwh/totalcharge;
-        if (procent >= 1){procent = 1}
+        if (procent <= -1){procent = -1}
         for(let i = 0; i < servers.length; i++) {
             let out = { "Key": servers[i]["Key"], "current_input": 0 }
             let posiblecharge = servers[i]["MaxDischargeRate"] * procent;
             if (posiblecharge <= servers[i]["MaxDischargeRate"]){
+                console.log("posiblecharge",posiblecharge)
                 out["current_input"] = posiblecharge
+                current_kwh -= posiblecharge
             }
             else {
+                console.log("MaxDischargeRate",-servers[i]["MaxDischargeRate"])
                 out["current_input"] = -servers[i]["MaxDischargeRate"]
+                current_kwh += servers[i]["MaxDischargeRate"]
             }
             distribution.push(out);
         }
+        if (current_kwh > 0){current_kwh = 0}
     }
     return [distribution, current_kwh]
 }
