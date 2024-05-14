@@ -31,7 +31,9 @@ let data = {
     "Key": "257052945",
     "lower_type": args[0],
     "higher_type": args[1],
-    "distribution_functions": {"full": 0, "proc": 1, "max": 2, "min": 3, "empty": 4}
+    "distribution_functions": {"full": 0, "proc": 1, "max": 2, "min": 3, "empty": 4},
+    "underflow": 0,
+    "overflow": 0
 }
 //Array of different "servers"
 let serverArray = [];
@@ -67,24 +69,32 @@ async function GiveCommand(key, command, rate = 0){
     let serverI = serverArray.findIndex((element) => element.Key == servers.Key)
     serverArray[serverI].LastKnownPercentage = servers.CurrentFill
     serverArray[serverI].State = servers.Status
+    return(1)
 }
 
-async function ServerCommander(current_mwh){
-    let current_kwh = -1 * current_mwh;
+async function ServerCommander(current_mw){
+    let current_kwh = -1 * (current_mw * 1000)/60;
     //TODO: somone: get kwh from energi.net
     //TODO: somone: check if data is new or old
     if (serverArray.length > 0){
         let res = calc_distribution(serverArray, current_kwh, data.lower_type, data.higher_type)
         let distribution = res.distribution
+        if (res.current_kwh < 0) {
+            console.log("underflow", res.current_kwh)
+            data.underflow += res.current_kwh
+        }else {
+            console.log("overflow", res.current_kwh)
+            data.overflow += res.current_kwh
+        }
         //log.log("INFO", `${data['Server-type']}`, `failed to distribute ${res.current_kwh}:kwh`)
-        distribution.forEach(element => {
-            if ((element.current_input > 0 )||( element.current_input < 0)){
-                GiveCommand(element.Key, "Charge", element.current_input)
+        for (let i = 0; i < distribution.length; i++){
+            if ((distribution[i].current_input > 0 )||( distribution[i].current_input < 0)){
+                await GiveCommand(distribution[i].Key, "Charge", distribution[i].current_input)
             }
-            else if (element.current_input == 0){
-                GiveCommand(element.Key, "Stop")
+            else if (distribution[i].current_input == 0){
+                await GiveCommand(distribution[i].Key, "Stop")
             }
-        });
+        };
     } else {
         //log.log("INFO", `${data['Server-type']}`,"no known servers")
     }
@@ -109,15 +119,17 @@ async function getData(startdate,enddate) {
             "Exchange_Sum": record.Exchange_Sum
         })
     })
+    console.log("amount of data", energyRightNowBuffer.length)
 }
 
 async function start_simulation (req) {
     await getData(req.body.firstDate,req.body.secondDate);
     for (let i = 0; i < energyRightNowBuffer.length; i++) {
-        if ((i%10) == 0){await new Promise(r => setTimeout(r, 2000))}
         energyRightNow.unshift(energyRightNowBuffer[i]);
         await ServerCommander(energyRightNowBuffer[i].Exchange_Sum);
     }
+    console.log("underflow:", data.underflow, "overflow:", data.overflow)
+    console.log("Simulation complete")
 }
 
 function sleep(ms) {
