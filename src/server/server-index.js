@@ -74,8 +74,6 @@ async function GiveCommand(key, command, rate = 0){
 
 async function ServerCommander(current_mw){
     let current_kwh = -1 * (current_mw * 1000)/60;
-    //TODO: somone: get kwh from energi.net
-    //TODO: somone: check if data is new or old
     if (serverArray.length > 0){
         let res = calc_distribution(serverArray, current_kwh, data.lower_type, data.higher_type)
         let distribution = res.distribution
@@ -102,7 +100,7 @@ async function ServerCommander(current_mw){
 
 async function getData(startdate,enddate) {
     energyRightNowBuffer = [];
-    const energinet_url = `https://api.energidataservice.dk/dataset/PowerSystemRightNow?offset=0&start=${startdate}&end=${enddate}&sort=Minutes1UTC%20ASC`
+    const energinet_url = `https://api.energidataservice.dk/dataset/PowerSystemRightNow?offset=0&start=${startdate}&end=${enddate}&sort=Minutes1UTC%20ASC&columns=Minutes1UTC,Minutes1DK,ProductionGe100MW,ProductionLt100MW,SolarPower,OffshoreWindPower,OnshoreWindPower,Exchange_Sum`
     const energinet_data_promise = new Promise(resolve => fetch(energinet_url).then((response) => resolve(response.json())));
     console.log("fetching energinet data");
     const energinet_data = await energinet_data_promise;
@@ -223,7 +221,7 @@ app.post('/internal/simulate', (req, res) => {
 });
 
 app.get('/api/energyRightNow', (req, res) => {
-    res.json(energyRightNow);
+    energyRightNow.length <= 120 ? res.json(energyRightNow) : res.json(energyRightNow.slice(0,120));
 })
 
 app.listen(8082, function () {
