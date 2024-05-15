@@ -32,8 +32,8 @@ let data = {
     "lower_type": args[0],
     "higher_type": args[1],
     "distribution_functions": {"full": 0, "proc": 1, "max": 2, "min": 3, "empty": 4},
-    "underflow": 0,
-    "overflow": 0
+    "sim_period": {},
+    "months": {}
 }
 //Array of different "servers"
 let serverArray = [];
@@ -72,18 +72,26 @@ async function GiveCommand(key, command, rate = 0){
     return(1)
 }
 
-async function ServerCommander(current_mw){
+async function ServerCommander(current_mw, timestamp) {
     let current_kwh = -1 * (current_mw * 1000)/60;
+    let data_field_name = timestamp.split("-")[0] + "-" + timestamp.split("-")[1];
+    if (!data.months.hasOwnProperty(data_field_name)) {
+        data.months[data_field_name] = { "underflow": 0, "overflow": 0, "flowout": 0, "flowin": 0};
+    }
     if (serverArray.length > 0){
         let res = calc_distribution(serverArray, current_kwh, data.lower_type, data.higher_type)
         let distribution = res.distribution
+        //console.log("res ", res.current_kwh, "current_kwh", current_kwh, "old_kwh", old_current_kwh, "current_mw", current_mw);
         if (res.current_kwh < 0) {
             console.log("underflow", res.current_kwh)
-            data.underflow += res.current_kwh
+            data.months[data_field_name].underflow += res.current_kwh;
         }else {
             console.log("overflow", res.current_kwh)
-            data.overflow += res.current_kwh
+            data.months[data_field_name].overflow += res.current_kwh;
         }
+
+        current_kwh > 0 ? data.months[data_field_name].flowin += current_kwh : data.months[data_field_name].flowout += current_kwh;
+
         //log.log("INFO", `${data['Server-type']}`, `failed to distribute ${res.current_kwh}:kwh`)
         for (let i = 0; i < distribution.length; i++){
             if ((distribution[i].current_input > 0 )||( distribution[i].current_input < 0)){
@@ -102,6 +110,7 @@ async function getData(startdate,enddate) {
     energyRightNowBuffer = [];
     const energinet_url = `https://api.energidataservice.dk/dataset/PowerSystemRightNow?offset=0&start=${startdate}&end=${enddate}&sort=Minutes1UTC%20ASC&columns=Minutes1UTC,Minutes1DK,ProductionGe100MW,ProductionLt100MW,SolarPower,OffshoreWindPower,OnshoreWindPower,Exchange_Sum`
     const energinet_data_promise = new Promise(resolve => fetch(energinet_url).then((response) => resolve(response.json())));
+    data.sim_period = {"start": startdate, "end": enddate}
     console.log("fetching energinet data");
     const energinet_data = await energinet_data_promise;
     console.log("fetched energinet data");
@@ -124,10 +133,10 @@ async function start_simulation (req) {
     await getData(req.body.firstDate,req.body.secondDate);
     for (let i = 0; i < energyRightNowBuffer.length; i++) {
         energyRightNow.unshift(energyRightNowBuffer[i]);
-        await ServerCommander(energyRightNowBuffer[i].Exchange_Sum);
+        await ServerCommander(energyRightNowBuffer[i].Exchange_Sum, energyRightNowBuffer[i].Minutes1DK);
     }
-    console.log("underflow:", data.underflow, "overflow:", data.overflow)
     console.log("Simulation complete")
+    console.log(data);
 }
 
 function sleep(ms) {
