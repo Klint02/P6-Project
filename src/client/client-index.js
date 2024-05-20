@@ -20,7 +20,7 @@ const data = {
     "Server-type": "Client",
     "Name": args[0],
     "Status": "idle",
-    "CurrentFill": 50,
+    "CurrentFill": 0,
     "CurrentChargeRate": 0,
     "MaxDischarge": 0,
     "Key": null
@@ -79,7 +79,7 @@ app.get("/api/tempdata", function (request, res) {
 })
 
 app.post("/api/takecommand", function (req, res) {
-    console.log("Command from server", req.body);
+    //console.log("Command from server", req.body);
     if (req.body["Key"] === MoreData.ServerKey) {//needs a key specific to the server
         switch (req.body["Command"]) {
             case "Charge":
@@ -124,13 +124,13 @@ function charging() {
     data.MaxDischarge = ((data.CurrentFill/100)*MoreData.MaxCapacity) * hydrogenEnergy;
     //console.log("Max Discharge at the moment: " + (data.MaxDischarge).toFixed(2) + "kwh");
 
-    if (data.CurrentFill == 100){
+    /*if (data.CurrentFill == 100){
         console.log("client Tank is full")
     } else if (data.CurrentFill == 0) {
         console.log("client Tank is empty")
     } else {
         console.log("Tank filled up: " + data.CurrentFill.toFixed(2) + '%')
-    }
+    }*/
 }
 
 async function ShakeHand() {

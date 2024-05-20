@@ -1,0 +1,85 @@
+{
+  "Server-type": "Central",
+  "client1fill": "44",
+  "client2fill": "47",
+  "Status": "online",
+  "Key": "257052945",
+  "lower_type": "full",
+  "higher_type": "proc",
+  "distribution_functions": { "full": 0, "proc": 1, "max": 2, "min": 3, "empty": 4 },
+  "sim_period": { "start": "2022-01-01T00:00", "end": "2023-01-01T00:00" },
+  "months": {
+    "2022-01": {
+      "underflow": 0,
+      "overflow": 0,
+      "flowout": -120442663.26149976,
+      "flowin": 487790820.24437237
+    },
+    "2022-02": {
+      "underflow": 0,
+      "overflow": 0,
+      "flowout": -72387797.17590052,
+      "flowin": 575595505.2988471
+    },
+    "2022-03": {
+      "underflow": 0,
+      "overflow": 0,
+      "flowout": -329624203.70055014,
+      "flowin": 253828305.603
+    },
+    "2022-04": {
+      "underflow": 0,
+      "overflow": 0,
+      "flowout": -425429253.3048517,
+      "flowin": 294499573.9539002
+    },
+    "2022-05": {
+      "underflow": 0,
+      "overflow": 0,
+      "flowout": -483013740.64318275,
+      "flowin": 217718214.09071553
+    },
+    "2022-06": {
+      "underflow": 0,
+      "overflow": 0,
+      "flowout": -841574534.7998829,
+      "flowin": 52738107.65375013
+    },
+    "2022-07": {
+      "underflow": 0,
+      "overflow": 0,
+      "flowout": -331619288.4493494,
+      "flowin": 279946554.7218011
+    },
+    "2022-08": {
+      "underflow": 0,
+      "overflow": 0,
+      "flowout": -1009989663.0201252,
+      "flowin": 54009850.350300096
+    },
+    "2022-09": {
+      "underflow": 0,
+      "overflow": 0,
+      "flowout": -498922985.7825803,
+      "flowin": 301493891.4648147
+    },
+    "2022-10": {
+      "underflow": 0,
+      "overflow": 0,
+      "flowout": -512702593.69679767,
+      "flowin": 275264078.41365004
+    },
+    "2022-11": {
+      "underflow": 0,
+      "overflow": 0,
+      "flowout": -208309427.01826635,
+      "flowin": 375633479.00233424
+    },
+    "2022-12": {
+      "underflow": 0,
+      "overflow": 0,
+      "flowout": -309436224.4660683,
+      "flowin": 425673412.78766775
+    }
+  }
+}

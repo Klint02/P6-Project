@@ -1,0 +1,85 @@
+{
+   "Server-type": "Central",
+   "client1fill": "38",
+   "client2fill": "42",
+   "Status": "online",
+   "Key": "257052945",
+   "lower_type": "full",
+   "higher_type": "proc",
+   "distribution_functions": { "full": 0, "proc": 1, "max": 2, "min": 3, "empty": 4 },
+   "sim_period": { "start": "2021-01-01T00:00", "end": "2022-01-01T00:00" },
+   "months": {
+     "2021-01": {
+       "underflow": 0,
+       "overflow": 0,
+       "flowout": -462810283.27773166,
+       "flowin": 115187472.56826688
+     },
+     "2021-02": {
+       "underflow": 0,
+       "overflow": 0,
+       "flowout": -327089299.90173435,
+       "flowin": 297198520.4599649
+     },
+     "2021-03": {
+       "underflow": 0,
+       "overflow": 0,
+       "flowout": -448423581.72348166,
+       "flowin": 232065175.52919984
+     },
+     "2021-04": {
+       "underflow": 0,
+       "overflow": 0,
+       "flowout": -368061019.1843348,
+       "flowin": 217797522.39406523
+     },
+     "2021-05": {
+       "underflow": 0,
+       "overflow": 0,
+       "flowout": -796035130.5361694,
+       "flowin": 60867270.5149499
+     },
+     "2021-06": {
+       "underflow": 0,
+       "overflow": 0,
+       "flowout": -961528466.8680533,
+       "flowin": 69950945.64453317
+     },
+     "2021-07": {
+       "underflow": 0,
+       "overflow": 0,
+       "flowout": -978394957.8720129,
+       "flowin": 66507325.514633335
+     },
+     "2021-08": {
+       "underflow": 0,
+       "overflow": 0,
+       "flowout": -783116455.627031,
+       "flowin": 172912611.69120067
+     },
+     "2021-09": {
+       "underflow": 0,
+       "overflow": 0,
+       "flowout": -718129842.792926,
+       "flowin": 81353246.71096656
+     },
+     "2021-10": {
+       "underflow": 0,
+       "overflow": 0,
+       "flowout": -343001644.1297825,
+       "flowin": 159840293.7775161
+     },
+     "2021-11": {
+       "underflow": 0,
+       "overflow": 0,
+       "flowout": -298383409.27131754,
+       "flowin": 152867788.1270502
+     },
+     "2021-12": {
+       "underflow": 0,
+       "overflow": 0,
+       "flowout": -321526726.3586166,
+       "flowin": 320867557.8485
+     }
+   }
+ }

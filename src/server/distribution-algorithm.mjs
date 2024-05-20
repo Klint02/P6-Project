@@ -121,7 +121,7 @@ function ProcentInput(servers, distribution, current_kwh){
             let out = { "Key": servers[i]["Key"], "current_input": 0 }
             let posiblecharge = servers[i]["MaxChargeRate"] * procent;
             if (posiblecharge <= servers[i]["MaxChargeRate"]){
-                console.log("posiblecharge",posiblecharge)
+                //console.log("posiblecharge",posiblecharge)
                 out["current_input"] = posiblecharge
                 current_kwh -= posiblecharge
             }
@@ -144,7 +144,7 @@ function ProcentInput(servers, distribution, current_kwh){
             let out = { "Key": servers[i]["Key"], "current_input": 0 }
             let posiblecharge = servers[i]["MaxDischargeRate"] * procent;
             if (posiblecharge <= servers[i]["MaxDischargeRate"]){
-                console.log("posiblecharge",posiblecharge)
+                //console.log("posiblecharge",posiblecharge)
                 out["current_input"] = posiblecharge
                 current_kwh -= posiblecharge
             }

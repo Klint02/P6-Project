@@ -83,10 +83,10 @@ async function ServerCommander(current_mw, timestamp) {
         let distribution = res.distribution
         //console.log("res ", res.current_kwh, "current_kwh", current_kwh, "old_kwh", old_current_kwh, "current_mw", current_mw);
         if (res.current_kwh < 0) {
-            console.log("underflow", res.current_kwh)
+            //console.log("underflow", res.current_kwh)
             data.months[data_field_name].underflow += res.current_kwh;
         }else {
-            console.log("overflow", res.current_kwh)
+            //console.log("overflow", res.current_kwh)
             data.months[data_field_name].overflow += res.current_kwh;
         }
 
