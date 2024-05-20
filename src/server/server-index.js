@@ -76,7 +76,7 @@ async function ServerCommander(current_mw, timestamp) {
     let current_kwh = -1 * (current_mw * 1000)/60;
     let data_field_name = timestamp.split("-")[0] + "-" + timestamp.split("-")[1];
     if (!data.months.hasOwnProperty(data_field_name)) {
-        data.months[data_field_name] = { "underflow": 0, "overflow": 0, "flowout": 0, "flowin": 0};
+        data.months[data_field_name] = { "underflow": 0, "overflow": 0, "flowout": 0, "flowin": 0, "peakin": 0, "peakout": 0};
     }
     if (serverArray.length > 0){
         let res = calc_distribution(serverArray, current_kwh, data.lower_type, data.higher_type)
@@ -91,6 +91,12 @@ async function ServerCommander(current_mw, timestamp) {
         }
 
         current_kwh > 0 ? data.months[data_field_name].flowin += current_kwh : data.months[data_field_name].flowout += current_kwh;
+
+        if (current_kwh > data.months[data_field_name].peakin) {
+            data.months[data_field_name].peakin = current_kwh;
+        } else if (current_kwh < data.months[data_field_name].peakout) {
+            data.months[data_field_name].peakout = current_kwh;
+        }
 
         //log.log("INFO", `${data['Server-type']}`, `failed to distribute ${res.current_kwh}:kwh`)
         for (let i = 0; i < distribution.length; i++){
