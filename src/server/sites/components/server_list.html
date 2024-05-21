@@ -52,7 +52,7 @@ async function loadServers() {
         console.log('Error fetching servers', error);
     }
     
-    setInterval(update_server_canvases, 100, servers);
+    update_server_canvases(servers);
 }
 
 async function changeServerState(serverName, elementID){ 
@@ -85,7 +85,7 @@ async function changeServerState(serverName, elementID){
     }
 }
 
-loadServers()
+setInterval(loadServers, 400);
 
 function update_server_canvases(servers) {
     for (let i = 0; i < servers.length; i++) {

@@ -147,7 +147,6 @@
                 }
                 let y = canvas_middle + -(live_energy_data[i].Exchange_Sum/energy_data_max) * (canvas_middle - 20);
                 let color = 0;
-                console.log(x,y);
                 live_energy_data[i].Exchange_Sum < 0 ? color = `rgb(153, 255, 0)` : color = `rgb(255, 153, 0)` 
                 //Line draw
                 ctx.beginPath();

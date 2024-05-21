@@ -10,8 +10,7 @@ app.use(cors({
 import mysql from 'mysql';
 import logger from "/app/shared/mjs/logger.mjs";
 import { send_component } from "/app/shared/mjs/component_builder.mjs";
-const energyNeeded = 53;
-const hydrogenEnergy = 39.4;
+const energyNeeded = 0.59878;
 let __dirname = "/app";
 var db_name = "p6";
 // node.js [Name] [IP:Port] [charge rate] [discharge rate] [hydrogen capacity] [lower bound]
@@ -105,7 +104,7 @@ app.post("/api/takecommand", function (req, res) {
                 }
                 break
         }
-        //log.log("INFO", data.Name, `Server ${data.Name} that has status ${data.Status} got input of ${data.CurrentChargeRate} and has a fill of ${data.CurrentFill}`)
+        console.log("INFO", data.Name, `Server ${data.Name} that has status ${data.Status} got input of ${data.CurrentChargeRate} and has a fill of ${data.CurrentFill}`)
         res.json(data);
     }
     else {
@@ -114,14 +113,15 @@ app.post("/api/takecommand", function (req, res) {
 })
 function charging() {
     if (data.CurrentChargeRate > 0) {
-        data.CurrentFill += ((data.CurrentChargeRate/energyNeeded) / MoreData.MaxCapacity) * 100;
+        data.CurrentFill += ((data.CurrentChargeRate*energyNeeded) / MoreData.MaxCapacity) * 100;
+        if (data.CurrentFill > 100){data.CurrentFill = 100}
     } else {
-        data.CurrentFill += ((data.CurrentChargeRate/hydrogenEnergy) / MoreData.MaxCapacity) * 100;
+        data.CurrentFill += (data.CurrentChargeRate / MoreData.MaxCapacity) * 100;
         if (data.CurrentFill < 0){data.CurrentFill = 0}
     }
 
     //stores how many kwh the stored hydrogen converts into.
-    data.MaxDischarge = ((data.CurrentFill/100)*MoreData.MaxCapacity) * hydrogenEnergy;
+    data.MaxDischarge = ((data.CurrentFill/100)*MoreData.MaxCapacity);
     //console.log("Max Discharge at the moment: " + (data.MaxDischarge).toFixed(2) + "kwh");
 
     /*if (data.CurrentFill == 100){

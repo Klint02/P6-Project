@@ -67,38 +67,39 @@ async function GiveCommand(key, command, rate = 0){
     });
     const servers = await response.json()
     let serverI = serverArray.findIndex((element) => element.Key == servers.Key)
+    serverArray[serverI].MaxDischarge = servers.MaxDischarge
     serverArray[serverI].LastKnownPercentage = servers.CurrentFill
     serverArray[serverI].State = servers.Status
     return(1)
 }
 
 async function ServerCommander(current_mw, timestamp) {
-    let current_kwh = -1 * (current_mw * 1000)/60;
+    let current_mwh = -1 * current_mw/60;
     let data_field_name = timestamp.split("-")[0] + "-" + timestamp.split("-")[1];
     if (!data.months.hasOwnProperty(data_field_name)) {
         data.months[data_field_name] = { "underflow": 0, "overflow": 0, "flowout": 0, "flowin": 0, "peakin": 0, "peakout": 0};
     }
     if (serverArray.length > 0){
-        let res = calc_distribution(serverArray, current_kwh, data.lower_type, data.higher_type)
+        let res = calc_distribution(serverArray, current_mwh, data.lower_type, data.higher_type)
         let distribution = res.distribution
-        //console.log("res ", res.current_kwh, "current_kwh", current_kwh, "old_kwh", old_current_kwh, "current_mw", current_mw);
-        if (res.current_kwh < 0) {
-            //console.log("underflow", res.current_kwh)
-            data.months[data_field_name].underflow += res.current_kwh;
+        //console.log("res ", res.current_mwh, "current_mwh", current_mwh, "old_kwh", old_current_kwh, "current_mw", current_mw);
+        if (res.current_mwh < 0) {
+            //console.log("underflow", res.current_mwh)
+            data.months[data_field_name].underflow += res.current_mwh;
         }else {
-            //console.log("overflow", res.current_kwh)
-            data.months[data_field_name].overflow += res.current_kwh;
+            //console.log("overflow", res.current_mwh)
+            data.months[data_field_name].overflow += res.current_mwh;
         }
 
-        current_kwh > 0 ? data.months[data_field_name].flowin += current_kwh : data.months[data_field_name].flowout += current_kwh;
+        current_mwh > 0 ? data.months[data_field_name].flowin += current_mwh : data.months[data_field_name].flowout += current_mwh;
 
-        if (current_kwh > data.months[data_field_name].peakin) {
-            data.months[data_field_name].peakin = current_kwh;
-        } else if (current_kwh < data.months[data_field_name].peakout) {
-            data.months[data_field_name].peakout = current_kwh;
+        if (current_mwh > data.months[data_field_name].peakin) {
+            data.months[data_field_name].peakin = current_mwh;
+        } else if (current_mwh < data.months[data_field_name].peakout) {
+            data.months[data_field_name].peakout = current_mwh;
         }
 
-        //log.log("INFO", `${data['Server-type']}`, `failed to distribute ${res.current_kwh}:kwh`)
+        //log.log("INFO", `${data['Server-type']}`, `failed to distribute ${res.current_mwh}:kwh`)
         for (let i = 0; i < distribution.length; i++){
             if ((distribution[i].current_input > 0 )||( distribution[i].current_input < 0)){
                 await GiveCommand(distribution[i].Key, "Charge", distribution[i].current_input)
@@ -136,6 +137,7 @@ async function getData(startdate,enddate) {
 }
 
 async function start_simulation (req) {
+    data.months = {};
     await getData(req.body.firstDate,req.body.secondDate);
     for (let i = 0; i < energyRightNowBuffer.length; i++) {
         energyRightNow.unshift(energyRightNowBuffer[i]);
