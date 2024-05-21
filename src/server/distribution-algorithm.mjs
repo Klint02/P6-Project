@@ -46,9 +46,9 @@ export function calc_distribution(servers, current_mwh, lower_type, upper_type) 
         current_mwh = res[1];
     }
     if (1e-11 > current_mwh && current_mwh> -1e-11){current_mwh = 0} //if a charge of this small size does not matter then this is ok
-    //if ((current_mwh - unchanged) == 0){
-    //    console.log("no clients to distribute to", current_mwh)
-    //}
+    if ((current_mwh - unchanged) == 0){
+        console.log("no clients to distribute to", current_mwh)
+    }
     //console.log(distribution,current_mwh)
     return {
         "distribution": distribution,

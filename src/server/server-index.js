@@ -46,6 +46,7 @@ function GetNewKey() {
     return Key;
 }
 async function GiveCommand(key, command, rate = 0){
+    if (rate == 0 && serverArray.find((element) => element.Key == key).State == "idle"){return(1)}
     let FetchIP = "http://" + (serverArray.find((element) => element.Key == key).IP + "/api/takecommand")
     let Body = JSON.stringify({
         "Key": data.Key,
@@ -101,11 +102,16 @@ async function ServerCommander(current_mw, timestamp) {
 
         //log.log("INFO", `${data['Server-type']}`, `failed to distribute ${res.current_mwh}:kwh`)
         for (let i = 0; i < distribution.length; i++){
-            if ((distribution[i].current_input > 0 )||( distribution[i].current_input < 0)){
-                await GiveCommand(distribution[i].Key, "Charge", distribution[i].current_input)
-            }
-            else if (distribution[i].current_input == 0){
-                await GiveCommand(distribution[i].Key, "Stop")
+            try {
+
+                if ((distribution[i].current_input > 0 )||( distribution[i].current_input < 0)){
+                    await GiveCommand(distribution[i].Key, "Charge", distribution[i].current_input)
+                }
+                else if (distribution[i].current_input == 0){
+                    await GiveCommand(distribution[i].Key, "Stop")
+                }
+            } catch {
+                console.log("Request failed");
             }
         };
     } else {
