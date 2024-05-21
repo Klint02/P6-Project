@@ -49,7 +49,7 @@ export function calc_distribution(servers, current_mwh, lower_type, upper_type) 
     if ((current_mwh - unchanged) == 0){
         console.log("no clients to distribute to", current_mwh)
     }
-    console.log(distribution,current_mwh)
+    //console.log(distribution,current_mwh)
     return {
         "distribution": distribution,
         "current_mwh": current_mwh

@@ -93,10 +93,10 @@ async function ServerCommander(current_mw, timestamp) {
 
         current_mwh > 0 ? data.months[data_field_name].flowin += current_mwh : data.months[data_field_name].flowout += current_mwh;
 
-        if (current_mwh > data.months[data_field_name].peakin) {
-            data.months[data_field_name].peakin = current_mwh;
-        } else if (current_mwh < data.months[data_field_name].peakout) {
-            data.months[data_field_name].peakout = current_mwh;
+        if (current_mw > data.months[data_field_name].peakin) {
+            data.months[data_field_name].peakin = current_mw;
+        } else if (current_mw < data.months[data_field_name].peakout) {
+            data.months[data_field_name].peakout = current_mw;
         }
 
         //log.log("INFO", `${data['Server-type']}`, `failed to distribute ${res.current_mwh}:kwh`)

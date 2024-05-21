@@ -104,7 +104,7 @@ app.post("/api/takecommand", function (req, res) {
                 }
                 break
         }
-        console.log("INFO", data.Name, `Server ${data.Name} that has status ${data.Status} got input of ${data.CurrentChargeRate} and has a fill of ${data.CurrentFill}`)
+        //log.log("INFO", data.Name, `Server ${data.Name} that has status ${data.Status} got input of ${data.CurrentChargeRate} and has a fill of ${data.CurrentFill}`)
         res.json(data);
     }
     else {
