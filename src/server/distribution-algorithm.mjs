@@ -115,16 +115,8 @@ function ProcentInput(servers, distribution, current_mwh){
         for(let i = 0; i < servers.length; i++) {
             let out = { "Key": servers[i]["Key"], "current_input": 0 }
             let posiblecharge = servers[i]["MaxChargeRate"] * procent;
-            if (posiblecharge <= servers[i]["MaxChargeRate"]){
-                //console.log("posiblecharge",posiblecharge)
-                out["current_input"] = posiblecharge
-                current_mwh -= posiblecharge
-            }
-            else {
-                console.log("MaxChargeRate",servers[i]["MaxChargeRate"])
-                out["current_input"] = servers[i]["MaxChargeRate"]
-                current_mwh -= servers[i]["MaxChargeRate"]
-            }
+            out["current_input"] = posiblecharge
+            current_mwh -= posiblecharge
             distribution.push(out);
         }
         if (current_mwh < 0){current_mwh = 0}
@@ -138,16 +130,8 @@ function ProcentInput(servers, distribution, current_mwh){
         for(let i = 0; i < servers.length; i++) {
             let out = { "Key": servers[i]["Key"], "current_input": 0 }
             let posiblecharge = servers[i]["MaxDischargeRate"] * procent;
-            if (posiblecharge <= servers[i]["MaxDischargeRate"]){
-                //console.log("posiblecharge",posiblecharge)
-                out["current_input"] = posiblecharge
-                current_mwh -= posiblecharge
-            }
-            else {
-                console.log("MaxDischargeRate",servers[i]["MaxDischargeRate"])
-                out["current_input"] = servers[i]["MaxDischargeRate"]
-                current_mwh -= servers[i]["MaxDischargeRate"]
-            }
+            out["current_input"] = posiblecharge
+            current_mwh -= posiblecharge
             distribution.push(out);
         }
         if (current_mwh > 0){current_mwh = 0}
