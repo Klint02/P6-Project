@@ -23,6 +23,7 @@ var con = mysql.createConnection({
 });
 var log = new logger(con);
 let Keys = [];
+let failed_requests = [];
 
 app.use('/shared', express.static(__dirname + '/shared'));
 let data = {
@@ -111,6 +112,7 @@ async function ServerCommander(current_mw, timestamp) {
                     await GiveCommand(distribution[i].Key, "Stop")
                 }
             } catch {
+                failed_requests.push(distribution[i]);
                 console.log("Request failed");
             }
         };
@@ -150,6 +152,7 @@ async function start_simulation (req) {
         await ServerCommander(energyRightNowBuffer[i].Exchange_Sum, energyRightNowBuffer[i].Minutes1DK);
     }
     console.log("Simulation complete")
+    console.log(`Failed requests: ${failed_requests.length}`)
     console.log(data);
 }
 
